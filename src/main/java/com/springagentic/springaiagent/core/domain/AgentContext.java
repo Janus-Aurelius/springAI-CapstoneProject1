@@ -1,0 +1,171 @@
+package com.springagentic.springaiagent.core.domain;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Deque;
+import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.UUID;
+
+public class AgentContext {
+    private final String threadId;  // Grouping for persistent history (The Conversation)
+    private final String runId;     // Unique ID for THIS specific concurrent execution
+    private final String userGoal;
+
+    private Plan plan;
+    private final List<String> observations = new ArrayList<>();
+    private final Map<String, String> stepSummaries = new ConcurrentHashMap<>();
+    private final Deque<AgentContextMemento> mementoStack = new ArrayDeque<>();
+
+    // Guardrails / Termination tracking
+    private int totalReplanCount = 0;
+    private int totalActionCount = 0;
+    private String finalConclusion;
+    private String terminationReason; // e.g., "SUCCESS", "MAX_LOOPS_REACHED", "FATAL_ERROR"
+
+    private String status = "RUNNING"; // RUNNING, AWAITING_APPROVAL, SUCCESS, FAILED, etc.
+    private String suspendedStepId;
+    private String suspendedToolName;
+    private String suspendedToolArgs;
+    private String humanDecision;
+    private String humanFeedback;
+    private String modifiedToolArgs;
+
+    public void saveCheckpoint() {
+        this.mementoStack.push(new AgentContextMemento(
+            this.plan,
+            new ArrayList<>(this.observations),
+            new HashMap<>(this.stepSummaries),
+            this.totalReplanCount,
+            this.totalActionCount
+        ));
+    }
+
+    public boolean rollback() {
+        if (this.mementoStack.isEmpty()) {
+            return false;
+        }
+        AgentContextMemento memento = this.mementoStack.pop();
+        this.plan = memento.plan();
+        this.observations.clear();
+        this.observations.addAll(memento.observations());
+        this.stepSummaries.clear();
+        this.stepSummaries.putAll(memento.stepSummaries());
+        this.totalReplanCount = memento.totalReplanCount();
+        this.totalActionCount = memento.totalActionCount();
+        return true;
+    }
+
+    public void clearCheckpoints() {
+        this.mementoStack.clear();
+    }
+
+    public void putStepSummary(String stepId, String summary) {
+        this.stepSummaries.put(stepId, summary);
+    }
+
+    public Map<String, String> getStepSummaries() {
+        return this.stepSummaries;
+    }
+
+    public AgentContext(String threadId, String userGoal) {
+        this.threadId = threadId;
+        this.runId = UUID.randomUUID().toString();
+        this.userGoal = userGoal;
+    }
+
+    // --- Getters ---
+    public String getThreadId() { return threadId; }
+    public String getRunId() { return runId; }
+    public String getUserGoal() { return userGoal; }
+    public Plan getPlan() { return plan; }
+
+    // --- Setters / Modifiers ---
+    public void setPlan(Plan plan) {
+        this.plan = plan;
+    }
+
+    public void addObservation(String toolName, String result) {
+        this.observations.add("Action [" + toolName + "] Result: " + result);
+        this.totalActionCount++;
+    }
+
+    public List<String> getObservationsList() {
+        return this.observations;
+    }
+
+    public void addObservationRaw(String obs) {
+        this.observations.add(obs);
+    }
+
+    public void incrementActionCount(int count) {
+        this.totalActionCount += count;
+    }
+
+    public void incrementReplanCount() {
+        this.totalReplanCount++;
+    }
+
+    // --- Guardrail Checks ---
+    public boolean hasExceededLimits() {
+        return totalActionCount > 15 || totalReplanCount > 3;
+    }
+
+    public void terminate(String reason, String conclusion) {
+        this.terminationReason = reason;
+        this.finalConclusion = conclusion;
+        this.status = reason;
+    }
+
+    public boolean isTerminated() {
+        return terminationReason != null;
+    }
+
+    public String getFinalConclusion() { return finalConclusion; }
+
+    public Object getObservations() {
+        return this.observations;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void suspend(String stepId, String toolName, String toolArgs) {
+        this.status = "AWAITING_APPROVAL";
+        this.suspendedStepId = stepId;
+        this.suspendedToolName = toolName;
+        this.suspendedToolArgs = toolArgs;
+        this.humanDecision = null;
+        this.humanFeedback = null;
+    }
+
+    public void resume(String decision, String feedback, String modifiedToolArgs) {
+        this.status = "RUNNING";
+        this.humanDecision = decision;
+        this.humanFeedback = feedback;
+        this.modifiedToolArgs = modifiedToolArgs;
+    }
+
+    public void clearSuspension() {
+        this.suspendedStepId = null;
+        this.suspendedToolName = null;
+        this.suspendedToolArgs = null;
+        this.humanDecision = null;
+        this.humanFeedback = null;
+        this.modifiedToolArgs = null;
+    }
+
+    public String getSuspendedStepId() { return suspendedStepId; }
+    public String getSuspendedToolName() { return suspendedToolName; }
+    public String getSuspendedToolArgs() { return suspendedToolArgs; }
+    public String getHumanDecision() { return humanDecision; }
+    public String getHumanFeedback() { return humanFeedback; }
+    public String getModifiedToolArgs() { return modifiedToolArgs; }
+}
