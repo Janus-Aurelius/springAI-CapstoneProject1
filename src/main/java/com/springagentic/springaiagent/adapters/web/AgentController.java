@@ -20,11 +20,31 @@ public class AgentController {
     private final TaskRouter taskRouter;
     private final ExecutionEngine executionEngine;
     private final MemoryStore memoryStore;
+    private final List<io.modelcontextprotocol.client.McpSyncClient> mcpSyncClients;
 
-    public AgentController(TaskRouter taskRouter, ExecutionEngine executionEngine, MemoryStore memoryStore) {
+    public AgentController(TaskRouter taskRouter, ExecutionEngine executionEngine, MemoryStore memoryStore,
+                           @org.springframework.beans.factory.annotation.Autowired(required = false) List<io.modelcontextprotocol.client.McpSyncClient> mcpSyncClients) {
         this.taskRouter = taskRouter;
         this.executionEngine = executionEngine;
         this.memoryStore = memoryStore;
+        this.mcpSyncClients = mcpSyncClients != null ? mcpSyncClients : List.of();
+    }
+
+    private List<String> getAllAllowedTools() {
+        List<String> allowedTools = new java.util.ArrayList<>(List.of("search_database", "calculate_metrics", "write_database"));
+        for (io.modelcontextprotocol.client.McpSyncClient client : mcpSyncClients) {
+            try {
+                var toolsResult = client.listTools();
+                if (toolsResult != null && toolsResult.tools() != null) {
+                    for (var tool : toolsResult.tools()) {
+                        allowedTools.add(tool.name());
+                    }
+                }
+            } catch (Exception e) {
+                // Ignore connection issues for offline sidecars
+            }
+        }
+        return allowedTools;
     }
 
     @PostMapping("/chat")
@@ -34,7 +54,7 @@ public class AgentController {
         AgentDefinition dummyAgent = new AgentDefinition(
                 "generic-assistant-01",
                 "You are a helpful assistant.",
-                List.of("search_database", "calculate_metrics", "write_database"), // Allowed tools
+                getAllAllowedTools(), // Dynamically allowed tools
                 0.7
         );
 
@@ -72,7 +92,7 @@ public class AgentController {
         AgentDefinition dummyAgent = new AgentDefinition(
                 "generic-assistant-01",
                 "You are a helpful assistant.",
-                List.of("search_database", "calculate_metrics", "write_database"),
+                getAllAllowedTools(), // Dynamically allowed tools
                 0.7
         );
 
