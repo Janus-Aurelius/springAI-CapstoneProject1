@@ -11,6 +11,8 @@ import com.springagentic.springaiagent.core.spi.ToolRegistry;
 import com.springagentic.springaiagent.adapters.tools.JacksonToolRegistry;
 import com.springagentic.springaiagent.core.domain.ObservationTruncator;
 import com.springagentic.springaiagent.framework.registry.AgentDefinition;
+import com.springagentic.springaiagent.core.sandbox.McpContainerFactory;
+import com.springagentic.springaiagent.core.security.SecretRedactor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -42,10 +44,13 @@ public class CognitiveEngineUpgradesTest {
         truncator = mock(ObservationTruncator.class);
         toolRegistry = new JacksonToolRegistry();
 
-        engine = new ExecutionEngine(planner, reasoner, toolExecutor, memoryStore, truncator, toolRegistry);
+        McpContainerFactory containerFactory = mock(McpContainerFactory.class);
+        SecretRedactor secretRedactor = mock(SecretRedactor.class);
+        engine = new ExecutionEngine(planner, reasoner, toolExecutor, memoryStore, truncator, toolRegistry, containerFactory, secretRedactor);
 
         // Configure default truncator mock behavior
         when(truncator.truncate(anyString(), anyInt())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(toolExecutor.supports(anyString())).thenReturn(true);
     }
 
     @Test
@@ -325,5 +330,59 @@ public class CognitiveEngineUpgradesTest {
 
         // Second claim -> Should fail (already claimed/running)
         assertFalse(store.claimSuspendedRun("thread-123", context.getRunId()));
+    }
+
+    @Test
+    public void testParallelExecutionRollbackOnFailure() {
+        // Create 2 steps running in parallel: A and B
+        Step stepA = new Step("step-A", "Task A", "Outcome A", Collections.emptyList());
+        Step stepB = new Step("step-B", "Task B", "Outcome B", Collections.emptyList());
+        Plan plan = new Plan(List.of(stepA, stepB));
+
+        // Mock planner and memory
+        when(planner.createPlan(any(), any())).thenReturn(plan);
+        when(memoryStore.getThreadHistory(any())).thenReturn(new ArrayList<>());
+
+        // Step A succeeds, Step B fails softly (returns ReasoningResult.Error or throws exception)
+        when(reasoner.think(any(), eq(stepA), any())).thenReturn(new ReasoningResult.FinalAnswer("Result A"));
+        when(reasoner.think(any(), eq(stepB), any())).thenReturn(new ReasoningResult.Error("Task B encountered a soft failure"));
+
+        AgentDefinition agentDef = new AgentDefinition("agent-01", "system", new ArrayList<>(), 0.5);
+
+        // Run engine
+        AgentContext context = engine.runComplexTask("thread-1", "Parallel rollback run", agentDef);
+
+        // Since Step B failed softly, a rollback is executed, resetting summaries to pre-batch baseline (empty)
+        assertTrue(context.getStepSummaries().isEmpty(), "Summaries should be rolled back to empty");
+    }
+
+    @Test
+    public void testParallelExecutionRollbackBlockedByMutatingTool() {
+        toolRegistry.registerTool("write_db", "Mutates database", String.class, true);
+        
+        // Create 2 steps running in parallel: A (mutating) and B (failing)
+        Step stepA = new Step("step-A", "Write DB", "Outcome A", Collections.emptyList());
+        Step stepB = new Step("step-B", "Task B", "Outcome B", Collections.emptyList());
+        Plan plan = new Plan(List.of(stepA, stepB));
+
+        // Mock planner
+        when(planner.createPlan(any(), any())).thenReturn(plan);
+        when(memoryStore.getThreadHistory(any())).thenReturn(new ArrayList<>());
+
+        // Step A runs mutating tool 'write_db', Step B fails softly
+        when(reasoner.think(any(), eq(stepA), any()))
+            .thenReturn(new ReasoningResult.Action("write_db", "{}"))
+            .thenReturn(new ReasoningResult.FinalAnswer("Result A"));
+        when(reasoner.think(any(), eq(stepB), any())).thenReturn(new ReasoningResult.Error("Task B failed"));
+
+        AgentDefinition agentDef = new AgentDefinition("agent-01", "system", List.of("write_db"), 0.5);
+
+        // Run engine
+        AgentContext context = engine.runComplexTask("thread-1", "Blocked rollback run", agentDef);
+
+        // Verify that the run terminates under FATAL_ERROR because rollback was blocked by mutating action
+        assertEquals("FATAL_ERROR", context.getStatus());
+        assertEquals("FATAL_ERROR", context.getTerminationReason());
+        assertTrue(context.getFinalConclusion().contains("failed"), "Should terminate with step failure error");
     }
 }

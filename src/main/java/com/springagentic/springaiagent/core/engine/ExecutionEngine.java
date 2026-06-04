@@ -8,7 +8,13 @@ import com.springagentic.springaiagent.core.domain.Step;
 import com.springagentic.springaiagent.core.spi.MemoryStore;
 import com.springagentic.springaiagent.core.spi.ToolExecutor;
 import com.springagentic.springaiagent.core.spi.ToolRegistry;
+import com.springagentic.springaiagent.core.sandbox.McpContainerFactory;
+import com.springagentic.springaiagent.core.sandbox.ManagedSandbox;
+import com.springagentic.springaiagent.core.sandbox.SandboxProfile;
+import com.springagentic.springaiagent.core.sandbox.ResourceUnavailableException;
+import com.springagentic.springaiagent.core.security.SecretRedactor;
 import com.springagentic.springaiagent.framework.registry.AgentDefinition;
+import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,16 +33,21 @@ public class ExecutionEngine {
     private final MemoryStore memoryStore;
     private final ObservationTruncator observationTruncator;
     private final ToolRegistry toolRegistry;
+    private final McpContainerFactory containerFactory;
+    private final SecretRedactor secretRedactor;
 
     public ExecutionEngine(Planner planner, Reasoner reasoner, ToolExecutor toolExecutor, 
                            MemoryStore memoryStore, ObservationTruncator observationTruncator,
-                           ToolRegistry toolRegistry) {
+                           ToolRegistry toolRegistry, McpContainerFactory containerFactory,
+                           SecretRedactor secretRedactor) {
         this.planner = planner;
         this.reasoner = reasoner;
         this.toolExecutor = toolExecutor;
         this.memoryStore = memoryStore;
         this.observationTruncator = observationTruncator;
         this.toolRegistry = toolRegistry;
+        this.containerFactory = containerFactory;
+        this.secretRedactor = secretRedactor;
     }
 
     public AgentContext runComplexTask(String threadId, String userGoal, AgentDefinition agentDef) {
@@ -123,11 +134,18 @@ public class ExecutionEngine {
             log.info("DAG SCHEDULER: Scheduling {} steps in parallel: {}", 
                      stepsToExecute.size(), stepsToExecute.stream().map(Step::stepId).toList());
 
+            // 1. Save single baseline checkpoint before parallel execution fanning
+            context.saveCheckpoint();
+
+            BatchTransactionCoordinator coordinator = new BatchTransactionCoordinator(context.getRunId() + "-" + System.currentTimeMillis());
+
             // Execute ready steps in parallel using virtual threads
             try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
                 List<Future<StepResult>> futures = new ArrayList<>();
                 for (Step step : stepsToExecute) {
-                    futures.add(executor.submit(() -> executeSingleStep(context, step, agentDef)));
+                    Future<StepResult> future = executor.submit(() -> executeSingleStep(context, step, agentDef, coordinator));
+                    coordinator.registerFuture(future);
+                    futures.add(future);
                 }
 
                 List<StepResult> stepResults = new ArrayList<>();
@@ -139,6 +157,8 @@ public class ExecutionEngine {
                         stepResults.add(new StepResult(null, "Execution exception: " + e.getMessage(), true, new ArrayList<>(), 0));
                     }
                 }
+
+                boolean rolledBackThisBatch = false;
 
                 // Thread-Safe Convergent Writes to the shared context
                 synchronized (context) {
@@ -166,20 +186,29 @@ public class ExecutionEngine {
                             context.putStepSummary(res.stepId(), res.summary());
                             context.addObservationRaw("Step: " + res.stepId() + " Result: Completed. " + res.summary());
                         } else {
-                            // Step failed softly: Rollback and replan
-                            log.warn("Step '{}' failed: {}. Triggering rollback...", res.stepId(), res.errorMessage());
-                            boolean rolledBack = context.rollback();
-                            if (!rolledBack) {
-                                log.error("Rollback failed (no checkpoints or mutating boundary crossed). Terminating loop.");
-                                context.terminate("FATAL_ERROR", "Step " + res.stepId() + " failed: " + res.errorMessage());
-                            } else {
-                                log.info("Rollback successful. Triggering replanning to recover.");
-                                context.incrementReplanCount();
-                                context.setPlan(planner.createPlan(context, history));
-                                replanTriggered = true;
+                            // Step failed softly: Rollback and replan (only rollback once per batch)
+                            if (!rolledBackThisBatch) {
+                                log.warn("Step '{}' failed: {}. Triggering rollback...", res.stepId(), res.errorMessage());
+                                boolean rolledBack = context.rollback();
+                                rolledBackThisBatch = true;
+                                if (!rolledBack) {
+                                    log.error("Rollback failed (no checkpoints or mutating boundary crossed). Terminating loop.");
+                                    context.terminate("FATAL_ERROR", "Step " + res.stepId() + " failed: " + res.errorMessage());
+                                } else {
+                                    log.info("Rollback successful. Triggering replanning to recover.");
+                                    context.incrementReplanCount();
+                                    context.setPlan(planner.createPlan(context, history));
+                                    replanTriggered = true;
+                                }
                             }
                         }
                     }
+
+                    // Discard baseline checkpoint if we didn't rollback, to prevent memory leaks
+                    if (!rolledBackThisBatch) {
+                        context.discardCheckpoint();
+                    }
+
                     memoryStore.saveRun(context);
                 }
 
@@ -206,19 +235,22 @@ public class ExecutionEngine {
         return context.getFinalConclusion();
     }
 
-    private StepResult executeSingleStep(AgentContext sharedContext, Step step, AgentDefinition agentDef) {
-        // Create an isolated view of the current observations to prevent reading mutating data during a turn
-        List<String> localObservations;
-        synchronized (sharedContext) {
-            localObservations = new ArrayList<>(sharedContext.getObservationsList());
+    private StepResult executeSingleStep(AgentContext sharedContext, Step step, AgentDefinition agentDef, BatchTransactionCoordinator coordinator) {
+        if (!coordinator.checkHealth()) {
+            return new StepResult(step.stepId(), "Aborted: Sibling step failed.", false, new ArrayList<>(), 0);
         }
 
-        // Save rollback checkpoint before executing step
-        sharedContext.saveCheckpoint();
-
-        boolean stepComplete = false;
         int localActionCount = 0;
         List<String> accumulatedStepObservations = new ArrayList<>();
+
+        try {
+            // Create an isolated view of the current observations to prevent reading mutating data during a turn
+            List<String> localObservations;
+            synchronized (sharedContext) {
+                localObservations = new ArrayList<>(sharedContext.getObservationsList());
+            }
+
+            boolean stepComplete = false;
 
         // Check if we are resuming a suspended step
         boolean resumingSuspended = false;
@@ -247,14 +279,34 @@ public class ExecutionEngine {
             String obs;
             if ("APPROVED".equalsIgnoreCase(humanDecision)) {
                 String finalArgs = (modifiedToolArgs != null && !modifiedToolArgs.trim().isEmpty()) ? modifiedToolArgs : resumedToolArgs;
-                if (toolRegistry.isMutating(resumedToolName)) {
-                    log.info("MUTATING ACTION: Clearing memento checkpoints at side-effect boundary.");
-                    sharedContext.clearCheckpoints();
-                }
+                 if (toolRegistry.isMutating(resumedToolName)) {
+                     log.info("MUTATING ACTION: Clearing memento checkpoints at side-effect boundary.");
+                     coordinator.markMutated();
+                     sharedContext.clearCheckpoints();
+                 }
                 try {
-                    String toolResult = toolExecutor.execute(resumedToolName, finalArgs);
-                    String truncatedResult = observationTruncator.truncate(toolResult, 2000);
-                    obs = "Action [" + resumedToolName + "] Result: " + truncatedResult;
+                    // 1. Scrub arguments through DLP before any dispatch
+                    secretRedactor.assertClean(resumedToolName, finalArgs);
+
+                    if (toolExecutor.supports(resumedToolName)) {
+                        String toolResult = toolExecutor.execute(resumedToolName, finalArgs);
+                        String truncatedResult = observationTruncator.truncate(toolResult, 2000);
+                        obs = "Action [" + resumedToolName + "] Result: " + truncatedResult;
+                    } else {
+                        // Run inside leased sandbox
+                        SandboxProfile profile = toolRegistry.getSandboxProfile(resumedToolName);
+                        try (ManagedSandbox sandbox = containerFactory.lease(profile)) {
+                            String toolResult = executeToolInSandbox(resumedToolName, finalArgs, sandbox);
+                            String truncatedResult = observationTruncator.truncate(toolResult, 2000);
+                            obs = "Action [" + resumedToolName + "] Result: " + truncatedResult;
+                        } catch (ResourceUnavailableException e) {
+                            log.error("Sandbox pool exhausted for {}", resumedToolName, e);
+                            obs = "Action [" + resumedToolName + "] Result: FAILED — sandbox pool exhausted.";
+                        }
+                    }
+                } catch (SecurityException e) {
+                    log.error("DLP BLOCK: Security violation for {}", resumedToolName, e);
+                    obs = "Action [" + resumedToolName + "] Result: SECURITY_VIOLATION — execution blocked.";
                 } catch (Exception e) {
                     String errorMsg = "FAILED: Tool execution encountered an error: " + e.getMessage();
                     log.error("Tool execution error inside step " + step.stepId(), e);
@@ -271,6 +323,9 @@ public class ExecutionEngine {
         }
 
         while (!stepComplete && !sharedContext.hasExceededLimits()) {
+            if (!coordinator.checkHealth()) {
+                return new StepResult(step.stepId(), "Aborted: Sibling step failed.", false, accumulatedStepObservations, localActionCount);
+            }
             // Build local transient context for Reasoner reasoning
             AgentContext localContext = new AgentContext(sharedContext.getThreadId(), sharedContext.getUserGoal());
             localContext.setPlan(sharedContext.getPlan());
@@ -298,17 +353,40 @@ public class ExecutionEngine {
                         }
                         return StepResult.suspend(step.stepId(), accumulatedStepObservations, localActionCount);
                     } else {
+                        if (!coordinator.checkHealth()) {
+                            return new StepResult(step.stepId(), "Aborted: Sibling step failed.", false, accumulatedStepObservations, localActionCount);
+                        }
                         // Mutating Checkpoint boundary management
                         if (toolRegistry.isMutating(action.toolName())) {
                             log.info("MUTATING ACTION: Clearing memento checkpoints at side-effect boundary.");
+                            coordinator.markMutated();
                             sharedContext.clearCheckpoints();
                         }
 
                         String obs;
                         try {
-                            String toolResult = toolExecutor.execute(action.toolName(), action.jsonArgs());
-                            String truncatedResult = observationTruncator.truncate(toolResult, 2000);
-                            obs = "Action [" + action.toolName() + "] Result: " + truncatedResult;
+                            // 1. Scrub arguments through DLP before any dispatch
+                            secretRedactor.assertClean(action.toolName(), action.jsonArgs());
+
+                            if (toolExecutor.supports(action.toolName())) {
+                                String toolResult = toolExecutor.execute(action.toolName(), action.jsonArgs());
+                                String truncatedResult = observationTruncator.truncate(toolResult, 2000);
+                                obs = "Action [" + action.toolName() + "] Result: " + truncatedResult;
+                            } else {
+                                // Run inside leased sandbox
+                                SandboxProfile profile = toolRegistry.getSandboxProfile(action.toolName());
+                                try (ManagedSandbox sandbox = containerFactory.lease(profile)) {
+                                    String toolResult = executeToolInSandbox(action.toolName(), action.jsonArgs(), sandbox);
+                                    String truncatedResult = observationTruncator.truncate(toolResult, 2000);
+                                    obs = "Action [" + action.toolName() + "] Result: " + truncatedResult;
+                                } catch (ResourceUnavailableException e) {
+                                    log.error("Sandbox pool exhausted for {}", action.toolName(), e);
+                                    obs = "Action [" + action.toolName() + "] Result: FAILED — sandbox pool exhausted.";
+                                }
+                            }
+                        } catch (SecurityException e) {
+                            log.error("DLP BLOCK: Security violation for {}", action.toolName(), e);
+                            obs = "Action [" + action.toolName() + "] Result: SECURITY_VIOLATION — execution blocked.";
                         } catch (Exception e) {
                             String errorMsg = "FAILED: Tool execution encountered an error: " + e.getMessage();
                             log.error("Tool execution error inside step " + step.stepId(), e);
@@ -332,12 +410,53 @@ public class ExecutionEngine {
 
                 case ReasoningResult.Error error -> {
                     log.error("ERROR [Step {}]: {}", step.stepId(), error.errorMessage());
-                    return new StepResult(step.stepId(), error.errorMessage(), true, accumulatedStepObservations, localActionCount);
+                    return new StepResult(step.stepId(), error.errorMessage(), false, accumulatedStepObservations, localActionCount);
                 }
             }
         }
 
-        return new StepResult(step.stepId(), "Step action count limit exceeded.", false, accumulatedStepObservations, localActionCount);
+            return new StepResult(step.stepId(), "Step action count limit exceeded.", false, accumulatedStepObservations, localActionCount);
+        } catch (Exception e) {
+            log.error("Exception in step run, invalidating batch", e);
+            coordinator.invalidateBatch(); // Trigger poison pill cancellation
+            return new StepResult(step.stepId(), "Exception: " + e.getMessage(), true, accumulatedStepObservations, localActionCount);
+        }
+    }
+
+    private String executeToolInSandbox(String toolName, String jsonArgs, ManagedSandbox sandbox) throws Exception {
+        String argsToUse = (jsonArgs == null || jsonArgs.isBlank()) ? "{}" : jsonArgs;
+        if ("execute_python_sandbox".equals(toolName)) {
+            try {
+                var node = new com.fasterxml.jackson.databind.ObjectMapper().readTree(argsToUse);
+                String code = node.has("code") ? node.get("code").asText() : "";
+                String escapedCode = code.replace("'", "'\\''");
+                return sandbox.executeCommand("python3 -c '" + escapedCode + "'", Duration.ofSeconds(30));
+            } catch (Exception e) {
+                return "Error parsing python code parameters: " + e.getMessage();
+            }
+        } else if ("network_fetch_proxy".equals(toolName)) {
+            try {
+                var node = new com.fasterxml.jackson.databind.ObjectMapper().readTree(argsToUse);
+                String url = node.has("url") ? node.get("url").asText() : "";
+                if (url.contains("'") || url.contains(";") || url.contains("&") || url.contains("|")) {
+                    throw new IllegalArgumentException("Invalid URL characters detected.");
+                }
+                return sandbox.executeCommand("curl -sSL '" + url + "'", Duration.ofSeconds(30));
+            } catch (Exception e) {
+                return "Error executing network fetch: " + e.getMessage();
+            }
+        } else if ("query_isolated_database".equals(toolName)) {
+            try {
+                var node = new com.fasterxml.jackson.databind.ObjectMapper().readTree(argsToUse);
+                String query = node.has("query") ? node.get("query").asText() : "";
+                String escapedQuery = query.replace("'", "'\\''");
+                return sandbox.executeCommand("psql -c '" + escapedQuery + "'", Duration.ofSeconds(30));
+            } catch (Exception e) {
+                return "Error executing database query: " + e.getMessage();
+            }
+        } else {
+            return sandbox.executeCommand("echo 'Executing unknown tool: " + toolName + " with args: " + argsToUse + "'", Duration.ofSeconds(5));
+        }
     }
 
     // Step Execution return record

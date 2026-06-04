@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  squid:
+    image: ubuntu/squid:latest
+    container_name: squid
+    volumes:
+      - ./src/main/resources/sandbox/squid.conf:/etc/squid/squid.conf
+    ports:
+      - "3128:3128"
+    networks:
+      - sandbox_net
+      - external_net
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring-ai-agent
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_AI_OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - squid
+    networks:
+      - sandbox_net
+      - external_net
+    restart: unless-stopped
+
+networks:
+  sandbox_net:
+    name: sandbox_net
+    driver: bridge
+    internal: true
+  external_net:
+    name: external_net
+    driver: bridge

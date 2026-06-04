@@ -1,6 +1,7 @@
 package com.springagentic.springaiagent.adapters.tools;
 
 import com.springagentic.springaiagent.core.domain.ToolSchema;
+import com.springagentic.springaiagent.core.sandbox.SandboxProfile;
 import com.springagentic.springaiagent.core.spi.ToolRegistry;
 import org.springframework.ai.model.ModelOptionsUtils;
 import org.springframework.stereotype.Component;
@@ -16,21 +17,31 @@ public class JacksonToolRegistry implements ToolRegistry {
 
     private final Map<String, ToolDefinition> registry = new ConcurrentHashMap<>();
 
-    private record ToolDefinition(String name, String description, Class<?> parameterClass, boolean isMutating, boolean requiresApproval) {}
+    private record ToolDefinition(String name, String description, Class<?> parameterClass, String jsonSchema, boolean isMutating, boolean requiresApproval, SandboxProfile profile) {}
 
     @Override
     public void registerTool(String name, String description, Class<?> parameterClass) {
-        registerTool(name, description, parameterClass, false, false);
+        registerTool(name, description, parameterClass, false, false, SandboxProfile.COMPUTE);
     }
 
     @Override
     public void registerTool(String name, String description, Class<?> parameterClass, boolean isMutating) {
-        registerTool(name, description, parameterClass, isMutating, false);
+        registerTool(name, description, parameterClass, isMutating, false, SandboxProfile.COMPUTE);
     }
 
     @Override
     public void registerTool(String name, String description, Class<?> parameterClass, boolean isMutating, boolean requiresApproval) {
-        registry.put(name, new ToolDefinition(name, description, parameterClass, isMutating, requiresApproval));
+        registerTool(name, description, parameterClass, isMutating, requiresApproval, SandboxProfile.COMPUTE);
+    }
+
+    @Override
+    public void registerTool(String name, String description, Class<?> parameterClass, boolean isMutating, boolean requiresApproval, SandboxProfile profile) {
+        registry.put(name, new ToolDefinition(name, description, parameterClass, null, isMutating, requiresApproval, profile));
+    }
+
+    @Override
+    public void registerTool(String name, String description, String jsonSchemaParameters, boolean isMutating, boolean requiresApproval, SandboxProfile profile) {
+        registry.put(name, new ToolDefinition(name, description, null, jsonSchemaParameters, isMutating, requiresApproval, profile));
     }
 
     @Override
@@ -43,6 +54,12 @@ public class JacksonToolRegistry implements ToolRegistry {
     public boolean requiresApproval(String toolName) {
         ToolDefinition def = registry.get(toolName);
         return def != null && def.requiresApproval();
+    }
+
+    @Override
+    public SandboxProfile getSandboxProfile(String toolName) {
+        ToolDefinition def = registry.get(toolName);
+        return def != null && def.profile() != null ? def.profile() : SandboxProfile.COMPUTE;
     }
 
     @Override
@@ -63,6 +80,10 @@ public class JacksonToolRegistry implements ToolRegistry {
             return Optional.empty();
         }
         
+        if (def.jsonSchema() != null) {
+            return Optional.of(new ToolSchema(def.name(), def.description(), def.jsonSchema()));
+        }
+
         // Generate JSON schema from class using Spring AI's JsonSchemaGenerator
         String jsonSchema = org.springframework.ai.util.json.schema.JsonSchemaGenerator.generateForType(
             def.parameterClass(),

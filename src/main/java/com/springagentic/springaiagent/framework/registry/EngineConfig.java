@@ -23,7 +23,7 @@ public class EngineConfig {
     @Bean
     @Qualifier("planningLlm")
     public LlmProvider planningLlmProvider(ChatClient.Builder builder, ToolRegistry toolRegistry) {
-        ChatClient client = builder
+        ChatClient client = builder.clone()
                 .defaultOptions(OpenAiChatOptions.builder().model("gpt-4o"))
                 .build();
         return new SpringAiLlmProvider(client, toolRegistry);
@@ -32,10 +32,13 @@ public class EngineConfig {
     @Bean
     @Qualifier("reasoningLlm")
     public LlmProvider reasoningLlmProvider(ChatClient.Builder builder, ToolRegistry toolRegistry) {
-        ChatClient client = builder
+        ChatClient reasoningClient = builder.clone()
                 .defaultOptions(OpenAiChatOptions.builder().model("gpt-4o-mini"))
                 .build();
-        return new SpringAiLlmProvider(client, toolRegistry);
+        ChatClient planningClient = builder.clone()
+                .defaultOptions(OpenAiChatOptions.builder().model("gpt-4o"))
+                .build();
+        return new SpringAiLlmProvider(reasoningClient, planningClient, toolRegistry);
     }
 
     // 1. Create Planner
@@ -55,8 +58,10 @@ public class EngineConfig {
     public ExecutionEngine executionEngine(Planner planner, Reasoner reasoner,
                                            ToolExecutor toolExecutor, MemoryStore memoryStore,
                                            ObservationTruncator observationTruncator,
-                                           ToolRegistry toolRegistry) {
-        return new ExecutionEngine(planner, reasoner, toolExecutor, memoryStore, observationTruncator, toolRegistry);
+                                           ToolRegistry toolRegistry,
+                                           com.springagentic.springaiagent.core.sandbox.McpContainerFactory containerFactory,
+                                           com.springagentic.springaiagent.core.security.SecretRedactor secretRedactor) {
+        return new ExecutionEngine(planner, reasoner, toolExecutor, memoryStore, observationTruncator, toolRegistry, containerFactory, secretRedactor);
     }
 
     // 4. Create the Task Router (The Front Door)

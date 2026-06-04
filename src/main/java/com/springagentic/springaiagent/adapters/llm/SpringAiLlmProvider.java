@@ -21,10 +21,16 @@ public class SpringAiLlmProvider implements LlmProvider {
     private static final Logger log = LoggerFactory.getLogger(SpringAiLlmProvider.class);
 
     private final ChatClient chatClient;
+    private final ChatClient fallbackClient;
     private final ToolRegistry toolRegistry;
 
     public SpringAiLlmProvider(ChatClient chatClient, ToolRegistry toolRegistry) {
+        this(chatClient, null, toolRegistry);
+    }
+
+    public SpringAiLlmProvider(ChatClient chatClient, ChatClient fallbackClient, ToolRegistry toolRegistry) {
         this.chatClient = chatClient;
+        this.fallbackClient = fallbackClient;
         this.toolRegistry = toolRegistry;
     }
 
@@ -73,39 +79,71 @@ public class SpringAiLlmProvider implements LlmProvider {
             3. FINAL_ANSWER: {"type": "FINAL_ANSWER", "text": "the final deduction"}
             """;
 
-        PromptTemplate template = new PromptTemplate(systemPromptTemplate);
-        String systemPrompt = template.render(Map.of(
-            "task", currentStep.description(),
-            "tools", schemasStr.toString(),
-            "observations", context.getObservations().toString()
-        ));
+        String systemPrompt = systemPromptTemplate
+                .replace("{task}", currentStep.description())
+                .replace("{tools}", schemasStr.toString())
+                .replace("{observations}", context.getObservations().toString());
 
-        // 3. Request execution and handle errors gracefully
-        try {
-            LlmDecision decision = chatClient.prompt()
-                    .system(systemPrompt)
-                    .user("What is your next move?")
-                    .call()
-                    .entity(LlmDecision.class);
+        int retryCount = 0;
+        int maxRetries = 2;
+        String lastErrorMsg = null;
+        String malformedJson = null;
+        String rawContent = null;
+        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
-            if (decision == null || decision.type() == null) {
-                return new ReasoningResult.Error("LLM returned a null or empty decision type.");
-            }
-
-            return switch (decision.type().toUpperCase()) {
-                case "ACTION" -> {
-                    if (decision.toolName() == null) {
-                        yield new ReasoningResult.Error("LLM returned ACTION decision type but toolName was null.");
-                    }
-                    yield new ReasoningResult.Action(decision.toolName(), decision.jsonArgs() != null ? decision.jsonArgs() : "{}");
+        while (retryCount <= maxRetries) {
+            try {
+                ChatClient clientToUse = chatClient;
+                if (retryCount > 0 && fallbackClient != null && retryCount == maxRetries) {
+                    log.info("Self-correction failed. Falling back to planning model client.");
+                    clientToUse = fallbackClient;
                 }
-                case "REPLAN" -> new ReasoningResult.Replan(decision.reason() != null ? decision.reason() : "No reason provided.");
-                case "FINAL_ANSWER" -> new ReasoningResult.FinalAnswer(decision.text() != null ? decision.text() : "");
-                default -> new ReasoningResult.Error("LLM returned unknown decision type: " + decision.type());
-            };
-        } catch (Exception e) {
-            log.error("Failed to communicate with LLM or parse structured decision DTO", e);
-            return new ReasoningResult.Error("LLM communication or parsing failure: " + e.getMessage());
+
+                String userPrompt = "What is your next move?";
+                if (retryCount > 0) {
+                    userPrompt = String.format(
+                        "Your previous response was malformed JSON and could not be parsed: %s\n" +
+                        "Raw response received was:\n%s\n" +
+                        "Please correct the JSON formatting. Ensure it strictly matches the schema and is properly escaped.",
+                        lastErrorMsg, malformedJson
+                    );
+                }
+
+                rawContent = clientToUse.prompt()
+                        .system(systemPrompt)
+                        .user(userPrompt)
+                        .call()
+                        .content();
+
+                if (rawContent == null || rawContent.isBlank()) {
+                    throw new RuntimeException("LLM returned null or empty content.");
+                }
+
+                LlmDecision decision = mapper.readValue(rawContent, LlmDecision.class);
+
+                if (decision == null || decision.type() == null) {
+                    throw new RuntimeException("Parsed decision or decision type is null.");
+                }
+
+                return switch (decision.type().toUpperCase()) {
+                    case "ACTION" -> {
+                        if (decision.toolName() == null) {
+                            throw new RuntimeException("ACTION decision but toolName was null.");
+                        }
+                        yield new ReasoningResult.Action(decision.toolName(), decision.jsonArgs() != null ? decision.jsonArgs() : "{}");
+                    }
+                    case "REPLAN" -> new ReasoningResult.Replan(decision.reason() != null ? decision.reason() : "No reason provided.");
+                    case "FINAL_ANSWER" -> new ReasoningResult.FinalAnswer(decision.text() != null ? decision.text() : "");
+                    default -> throw new RuntimeException("Unknown decision type: " + decision.type());
+                };
+            } catch (Exception e) {
+                lastErrorMsg = e.getMessage();
+                log.warn("LlmProvider think attempt {} failed: {}", retryCount, lastErrorMsg);
+                malformedJson = (rawContent != null) ? rawContent : "No response string available (HTTP/API failure).";
+                retryCount++;
+            }
         }
+
+        return new ReasoningResult.Error("Failed to parse LLM structured decision after " + maxRetries + " retries. Last error: " + lastErrorMsg);
     }
 }

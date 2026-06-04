@@ -33,7 +33,7 @@ public class AgentContext {
     private String humanFeedback;
     private String modifiedToolArgs;
 
-    public void saveCheckpoint() {
+    public synchronized void saveCheckpoint() {
         this.mementoStack.push(new AgentContextMemento(
             this.plan,
             new ArrayList<>(this.observations),
@@ -43,7 +43,7 @@ public class AgentContext {
         ));
     }
 
-    public boolean rollback() {
+    public synchronized boolean rollback() {
         if (this.mementoStack.isEmpty()) {
             return false;
         }
@@ -58,8 +58,14 @@ public class AgentContext {
         return true;
     }
 
-    public void clearCheckpoints() {
+    public synchronized void clearCheckpoints() {
         this.mementoStack.clear();
+    }
+
+    public synchronized void discardCheckpoint() {
+        if (!this.mementoStack.isEmpty()) {
+            this.mementoStack.pop();
+        }
     }
 
     public void putStepSummary(String stepId, String summary) {
@@ -124,6 +130,8 @@ public class AgentContext {
     }
 
     public String getFinalConclusion() { return finalConclusion; }
+
+    public String getTerminationReason() { return terminationReason; }
 
     public Object getObservations() {
         return this.observations;
