@@ -255,19 +255,52 @@ public class McpContainerFactory {
 
     @PreDestroy
     public void cleanup() {
-        log.info("Cleaning up sandbox containers...");
-        executorService.shutdownNow();
+        log.info("SANDBOX SHUTDOWN: Stopping all sandbox containers...");
+
+        // Collect every container we own: active (leased) + idle containers sitting in pool queues
+        Set<String> allContainerIds = new HashSet<>(activeContainerIds);
+        List<String> drainedCompute = new ArrayList<>();
+        List<String> drainedFetch   = new ArrayList<>();
+        computeQueue.drainTo(drainedCompute);
+        fetchQueue.drainTo(drainedFetch);
+        allContainerIds.addAll(drainedCompute);
+        allContainerIds.addAll(drainedFetch);
+
+        log.info("SANDBOX SHUTDOWN: Removing {} container(s)...", allContainerIds.size());
+
         if (dockerClient != null) {
-            for (String containerId : activeContainerIds) {
+            for (String containerId : allContainerIds) {
                 try {
-                    dockerClient.stopContainerCmd(containerId).withTimeout(1).exec();
+                    // Force-remove: sends SIGKILL + removes in one step.
+                    // These containers only run `sleep 3600`, so no graceful shutdown needed.
                     dockerClient.removeContainerCmd(containerId).withForce(true).exec();
+                    log.info("SANDBOX SHUTDOWN: Removed container {}", containerId.substring(0, 12));
                 } catch (Exception e) {
-                    // Ignore
+                    log.warn("SANDBOX SHUTDOWN: Failed to remove container {}: {}", containerId.substring(0, 12), e.getMessage());
                 }
             }
+            try {
+                dockerClient.close();
+            } catch (Exception e) {
+                log.warn("SANDBOX SHUTDOWN: Error closing Docker client: {}", e.getMessage());
+            }
         }
+
+        // Shut down executor AFTER cleanup so in-flight async tasks can complete
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+
+        log.info("SANDBOX SHUTDOWN: Complete.");
     }
+
+
 
     // Testing getters
     public int getComputeQueueSize() { return computeQueue.size(); }

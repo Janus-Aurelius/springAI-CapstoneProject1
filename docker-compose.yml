@@ -40,6 +40,7 @@ services:
       # - MCP_NOTION_URL=${MCP_NOTION_URL:-http://mcp-notion:8086/sse}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    stop_grace_period: 30s
     depends_on:
       - squid
       - mcp-postgres
