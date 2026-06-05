@@ -19,26 +19,32 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class EngineConfig {
 
+    @org.springframework.beans.factory.annotation.Value("${app.llm.planning.model}")
+    private String planningModel;
+
+    @org.springframework.beans.factory.annotation.Value("${app.llm.reasoning.model}")
+    private String reasoningModel;
+
     // Define two LlmProvider beans with different models
     @Bean
     @Qualifier("planningLlm")
     public LlmProvider planningLlmProvider(ChatClient.Builder builder, ToolRegistry toolRegistry) {
         ChatClient client = builder.clone()
-                .defaultOptions(OpenAiChatOptions.builder().model("gpt-4o"))
+                .defaultOptions(OpenAiChatOptions.builder().model(planningModel))
                 .build();
-        return new SpringAiLlmProvider(client, toolRegistry);
+        return new SpringAiLlmProvider(client, planningModel, toolRegistry);
     }
 
     @Bean
     @Qualifier("reasoningLlm")
     public LlmProvider reasoningLlmProvider(ChatClient.Builder builder, ToolRegistry toolRegistry) {
         ChatClient reasoningClient = builder.clone()
-                .defaultOptions(OpenAiChatOptions.builder().model("gpt-4o-mini"))
+                .defaultOptions(OpenAiChatOptions.builder().model(reasoningModel))
                 .build();
         ChatClient planningClient = builder.clone()
-                .defaultOptions(OpenAiChatOptions.builder().model("gpt-4o"))
+                .defaultOptions(OpenAiChatOptions.builder().model(planningModel))
                 .build();
-        return new SpringAiLlmProvider(reasoningClient, planningClient, toolRegistry);
+        return new SpringAiLlmProvider(reasoningClient, reasoningModel, planningClient, planningModel, toolRegistry);
     }
 
     // 1. Create Planner

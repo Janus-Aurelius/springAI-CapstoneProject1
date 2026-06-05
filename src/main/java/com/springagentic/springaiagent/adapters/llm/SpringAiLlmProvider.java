@@ -23,25 +23,65 @@ public class SpringAiLlmProvider implements LlmProvider {
     private final ChatClient chatClient;
     private final ChatClient fallbackClient;
     private final ToolRegistry toolRegistry;
+    private final String modelName;
+    private final String fallbackModelName;
 
-    public SpringAiLlmProvider(ChatClient chatClient, ToolRegistry toolRegistry) {
-        this(chatClient, null, toolRegistry);
+    public SpringAiLlmProvider(ChatClient chatClient, String modelName, ToolRegistry toolRegistry) {
+        this(chatClient, modelName, null, null, toolRegistry);
     }
 
-    public SpringAiLlmProvider(ChatClient chatClient, ChatClient fallbackClient, ToolRegistry toolRegistry) {
+    public SpringAiLlmProvider(ChatClient chatClient, String modelName, ChatClient fallbackClient, String fallbackModelName, ToolRegistry toolRegistry) {
         this.chatClient = chatClient;
+        this.modelName = modelName;
         this.fallbackClient = fallbackClient;
+        this.fallbackModelName = fallbackModelName;
         this.toolRegistry = toolRegistry;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T structuredRequest(String systemPrompt, String userPrompt, Class<T> returnType) {
         try {
-            return chatClient.prompt()
-                    .system(systemPrompt)
-                    .user(userPrompt)
+            if (returnType == String.class) {
+                String content = chatClient.prompt()
+                        .system(systemPrompt)
+                        .user(userPrompt)
+                        .call()
+                        .content();
+                if (content != null && content.contains("<think>")) {
+                    int endThink = content.indexOf("</think>");
+                    if (endThink != -1) {
+                        content = content.substring(endThink + 8).trim();
+                    } else {
+                        int startThink = content.indexOf("<think>");
+                        content = content.substring(startThink + 7).trim();
+                    }
+                }
+                return (T) content;
+            }
+
+            org.springframework.ai.converter.BeanOutputConverter<T> converter = 
+                    new org.springframework.ai.converter.BeanOutputConverter<>(returnType);
+
+            org.springframework.ai.openai.OpenAiChatOptions.Builder options = org.springframework.ai.openai.OpenAiChatOptions.builder()
+                    .model(modelName)
+                    .maxTokens(4096);
+
+            String rawContent = chatClient.prompt()
+                    .system(systemPrompt + "\n" + converter.getFormat())
+                    .user(userPrompt + "\n\nIMPORTANT: Your response must consist ONLY of the raw JSON object matching the schema above. " +
+                            "Do NOT include any conversational introduction, preamble, markdown code block backticks (no ```json), " +
+                            "or explanatory text. Start your response directly with '{' and end with '}'.")
+                    .options(options)
                     .call()
-                    .entity(returnType);
+                    .content();
+
+            if (rawContent == null || rawContent.isBlank()) {
+                throw new RuntimeException("LLM returned null or empty content.");
+            }
+
+            String cleanJson = cleanAndExtractJson(rawContent);
+            return converter.convert(cleanJson);
         } catch (Exception e) {
             log.error("Failed to process structuredRequest for type: {}", returnType.getSimpleName(), e);
             throw new RuntimeException("LLM request failed: " + e.getMessage(), e);
@@ -109,17 +149,20 @@ public class SpringAiLlmProvider implements LlmProvider {
                     );
                 }
 
+                String currentModel = (clientToUse == chatClient) ? modelName : fallbackModelName;
+                org.springframework.ai.openai.OpenAiChatOptions.Builder options = org.springframework.ai.openai.OpenAiChatOptions.builder()
+                        .model(currentModel)
+                        .maxTokens(4096);
+
                 rawContent = clientToUse.prompt()
                         .system(systemPrompt)
                         .user(userPrompt)
+                        .options(options)
                         .call()
                         .content();
 
-                if (rawContent == null || rawContent.isBlank()) {
-                    throw new RuntimeException("LLM returned null or empty content.");
-                }
-
-                LlmDecision decision = mapper.readValue(rawContent, LlmDecision.class);
+                String cleanJson = cleanAndExtractJson(rawContent);
+                LlmDecision decision = mapper.readValue(cleanJson, LlmDecision.class);
 
                 if (decision == null || decision.type() == null) {
                     throw new RuntimeException("Parsed decision or decision type is null.");
@@ -145,5 +188,49 @@ public class SpringAiLlmProvider implements LlmProvider {
         }
 
         return new ReasoningResult.Error("Failed to parse LLM structured decision after " + maxRetries + " retries. Last error: " + lastErrorMsg);
+    }
+
+    private String cleanAndExtractJson(String input) {
+        if (input == null) {
+            return null;
+        }
+        String processed = input.trim();
+        
+        // Remove <think>...</think> blocks
+        if (processed.contains("<think>")) {
+            int endThink = processed.indexOf("</think>");
+            if (endThink != -1) {
+                processed = processed.substring(endThink + 8).trim();
+            } else {
+                int startThink = processed.indexOf("<think>");
+                processed = processed.substring(startThink + 7).trim();
+            }
+        }
+        
+        // Remove markdown code blocks
+        if (processed.contains("```")) {
+            int firstIdx = processed.indexOf("```");
+            int startIdx = firstIdx + 3;
+            String remainder = processed.substring(startIdx).trim();
+            if (remainder.toLowerCase().startsWith("json")) {
+                remainder = remainder.substring(4).trim();
+            }
+            
+            int lastIdx = remainder.lastIndexOf("```");
+            if (lastIdx != -1) {
+                processed = remainder.substring(0, lastIdx).trim();
+            } else {
+                processed = remainder;
+            }
+        }
+        
+        // Extract the JSON object boundaries
+        int firstBrace = processed.indexOf('{');
+        int lastBrace = processed.lastIndexOf('}');
+        if (firstBrace != -1 && lastBrace != -1 && lastBrace > firstBrace) {
+            processed = processed.substring(firstBrace, lastBrace + 1).trim();
+        }
+        
+        return processed;
     }
 }

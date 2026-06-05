@@ -212,7 +212,7 @@ public class ExecutionEngine {
                     memoryStore.saveRun(context);
                 }
 
-                if (replanTriggered || context.isTerminated() || context.getStatus().equals("AWAITING_APPROVAL")) {
+                if (context.isTerminated() || context.getStatus().equals("AWAITING_APPROVAL")) {
                     break;
                 }
             }
@@ -276,24 +276,21 @@ public class ExecutionEngine {
 
         if (resumingSuspended) {
             log.info("RESUMING Step [{}]: Tool [{}] Decision [{}]", step.stepId(), resumedToolName, humanDecision);
-            String obs;
             if ("APPROVED".equalsIgnoreCase(humanDecision)) {
                 String finalArgs = (modifiedToolArgs != null && !modifiedToolArgs.trim().isEmpty()) ? modifiedToolArgs : resumedToolArgs;
-                 if (toolRegistry.isMutating(resumedToolName)) {
-                     log.info("MUTATING ACTION: Clearing memento checkpoints at side-effect boundary.");
-                     coordinator.markMutated();
-                     sharedContext.clearCheckpoints();
-                 }
+                if (toolRegistry.isMutating(resumedToolName)) {
+                    log.info("MUTATING ACTION: Clearing memento checkpoints at side-effect boundary.");
+                    coordinator.markMutated();
+                    sharedContext.clearCheckpoints();
+                }
+                String obs;
                 try {
-                    // 1. Scrub arguments through DLP before any dispatch
                     secretRedactor.assertClean(resumedToolName, finalArgs);
-
                     if (toolExecutor.supports(resumedToolName)) {
                         String toolResult = toolExecutor.execute(resumedToolName, finalArgs);
                         String truncatedResult = observationTruncator.truncate(toolResult, 2000);
                         obs = "Action [" + resumedToolName + "] Result: " + truncatedResult;
                     } else {
-                        // Run inside leased sandbox
                         SandboxProfile profile = toolRegistry.getSandboxProfile(resumedToolName);
                         try (ManagedSandbox sandbox = containerFactory.lease(profile)) {
                             String toolResult = executeToolInSandbox(resumedToolName, finalArgs, sandbox);
@@ -312,16 +309,28 @@ public class ExecutionEngine {
                     log.error("Tool execution error inside step " + step.stepId(), e);
                     obs = "Action [" + resumedToolName + "] Result: " + errorMsg;
                 }
-            } else if ("REJECTED".equalsIgnoreCase(humanDecision)) {
-                obs = "Action [" + resumedToolName + "] Result: REJECTED BY USER" + (humanFeedback != null ? ": " + humanFeedback : "");
-            } else { // FEEDBACK
-                obs = "Action [" + resumedToolName + "] Result: SUSPENDED. Human feedback provided: " + (humanFeedback != null ? humanFeedback : "");
-            }
-            localObservations.add(obs);
-            accumulatedStepObservations.add(obs);
-            localActionCount++;
-        }
+                // APPROVED: tool already ran — return immediately. Do NOT re-enter the
+                // reasoner while-loop or it will call the same mutating tool again,
+                // triggering an infinite approval suspension cycle.
+                log.info("STEP COMPLETE (resumed+approved) [Step {}]: {}", step.stepId(), obs);
+                accumulatedStepObservations.add(obs);
+                return new StepResult(step.stepId(), "Step completed after human approval. " + obs, accumulatedStepObservations, localActionCount + 1);
 
+            } else if ("REJECTED".equalsIgnoreCase(humanDecision)) {
+                String obs = "Action [" + resumedToolName + "] Result: REJECTED BY USER" + (humanFeedback != null ? ": " + humanFeedback : "");
+                log.info("STEP ABORTED (rejected) [Step {}]: {}", step.stepId(), obs);
+                accumulatedStepObservations.add(obs);
+                // Treat rejection as a soft failure so the outer engine can replan
+                return new StepResult(step.stepId(), obs, false, accumulatedStepObservations, localActionCount + 1);
+
+            } else { // FEEDBACK — human wants the agent to re-reason with their comments
+                String obs = "Action [" + resumedToolName + "] Result: SUSPENDED. Human feedback provided: " + (humanFeedback != null ? humanFeedback : "");
+                localObservations.add(obs);
+                accumulatedStepObservations.add(obs);
+                localActionCount++;
+                // Fall through into the while-loop so the reasoner can adapt
+            }
+        }
         while (!stepComplete && !sharedContext.hasExceededLimits()) {
             if (!coordinator.checkHealth()) {
                 return new StepResult(step.stepId(), "Aborted: Sibling step failed.", false, accumulatedStepObservations, localActionCount);

@@ -31,6 +31,8 @@ public class Planner {
             
             Distilled Step Summaries of Completed Steps so far:
             {summaries}
+            
+            IMPORTANT: Output ONLY the final Plan JSON structure. Do NOT write any discussion, commentary, preamble, or conversational debate. Keep your step descriptions and plan simple.
             """;
 
         PromptTemplate template = new PromptTemplate(systemPromptTemplate);
@@ -43,7 +45,25 @@ public class Planner {
         String userPrompt = userTemplate.render(Map.of("goal", context.getUserGoal()));
 
         log.info("PLANNER: Generating execution plan...");
-        return llmProvider.structuredRequest(systemPrompt, userPrompt, Plan.class);
+        Plan plan = llmProvider.structuredRequest(systemPrompt, userPrompt, Plan.class);
+
+        if (plan == null || plan.steps() == null || plan.steps().isEmpty()) {
+            log.warn("PLANNER: Received null or empty plan from LLM!");
+        } else {
+            log.info("PLANNER: Plan generated with {} step(s):", plan.steps().size());
+            for (int i = 0; i < plan.steps().size(); i++) {
+                var step = plan.steps().get(i);
+                log.info("  Step [{}/{}] id='{}' deps={} | description='{}' | expectedOutcome='{}'",
+                        i + 1, plan.steps().size(),
+                        step.stepId(),
+                        step.dependsOn() != null ? step.dependsOn() : "[]",
+                        step.description(),
+                        step.expectedOutcome());
+            }
+        }
+
+        return plan;
+
     }
 }
 

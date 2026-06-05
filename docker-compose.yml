@@ -22,23 +22,33 @@ services:
       - "8080:8080"
     environment:
       - SPRING_AI_OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SPRING_AI_OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://api.openai.com}
+      - PLANNING_MODEL=${PLANNING_MODEL:-gpt-4o}
+      - REASONING_MODEL=${REASONING_MODEL:-gpt-4o-mini}
       - DOCKER_HOST=unix:///var/run/docker.sock
       - MCP_POSTGRES_URL=${MCP_POSTGRES_URL:-http://mcp-postgres:8081/sse}
-      - MCP_GITHUB_URL=${MCP_GITHUB_URL:-http://mcp-github:8082/sse}
-      - MCP_PUPPETEER_URL=${MCP_PUPPETEER_URL:-http://mcp-puppeteer:8083/sse}
-      - MCP_BRAVE_SEARCH_URL=${MCP_BRAVE_SEARCH_URL:-http://mcp-brave-search:8084/sse}
-      - MCP_SLACK_URL=${MCP_SLACK_URL:-http://mcp-slack:8085/sse}
-      - MCP_NOTION_URL=${MCP_NOTION_URL:-http://mcp-notion:8086/sse}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_HOST=postgres
+      - DB_NAME=${POSTGRES_DB:-postgres}
+      - DB_USER=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      # - MCP_GITHUB_URL=${MCP_GITHUB_URL:-http://mcp-github:8082/sse}
+      # - MCP_PUPPETEER_URL=${MCP_PUPPETEER_URL:-http://mcp-puppeteer:8083/sse}
+      # - MCP_BRAVE_SEARCH_URL=${MCP_BRAVE_SEARCH_URL:-http://mcp-brave-search:8084/sse}
+      # - MCP_SLACK_URL=${MCP_SLACK_URL:-http://mcp-slack:8085/sse}
+      # - MCP_NOTION_URL=${MCP_NOTION_URL:-http://mcp-notion:8086/sse}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - squid
       - mcp-postgres
-      - mcp-github
-      - mcp-puppeteer
-      - mcp-brave-search
-      - mcp-slack
-      - mcp-notion
+      - redis
+      # - mcp-github
+      # - mcp-puppeteer
+      # - mcp-brave-search
+      # - mcp-slack
+      # - mcp-notion
     networks:
       - sandbox_net
       - external_net
@@ -69,63 +79,72 @@ services:
       - external_net
     restart: unless-stopped
 
-  mcp-github:
-    image: node:20-alpine
-    container_name: mcp-github
-    command: npx -y mcp-proxy --port 8082 -- npx -y @modelcontextprotocol/server-github
-    environment:
-      - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
+  redis:
+    image: redis:alpine
+    container_name: redis
     ports:
-      - "8082:8082"
+      - "6379:6379"
     networks:
       - external_net
     restart: unless-stopped
 
-  mcp-puppeteer:
-    image: ghcr.io/puppeteer/puppeteer:latest
-    container_name: mcp-puppeteer
-    command: npx -y mcp-proxy --port 8083 -- npx -y @modelcontextprotocol/server-puppeteer
-    ports:
-      - "8083:8083"
-    networks:
-      - external_net
-    restart: unless-stopped
+  # mcp-github:
+  #   image: node:20-alpine
+  #   container_name: mcp-github
+  #   command: npx -y mcp-proxy --port 8082 -- npx -y @modelcontextprotocol/server-github
+  #   environment:
+  #     - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
+  #   ports:
+  #     - "8082:8082"
+  #   networks:
+  #     - external_net
+  #   restart: unless-stopped
 
-  mcp-brave-search:
-    image: node:20-alpine
-    container_name: mcp-brave-search
-    command: npx -y mcp-proxy --port 8084 -- npx -y @modelcontextprotocol/server-brave-search
-    environment:
-      - BRAVE_API_KEY=${BRAVE_API_KEY}
-    ports:
-      - "8084:8084"
-    networks:
-      - external_net
-    restart: unless-stopped
+  # mcp-puppeteer:
+  #   image: ghcr.io/puppeteer/puppeteer:latest
+  #   container_name: mcp-puppeteer
+  #   command: npx -y mcp-proxy --port 8083 -- npx -y @modelcontextprotocol/server-puppeteer
+  #   ports:
+  #     - "8083:8083"
+  #   networks:
+  #     - external_net
+  #   restart: unless-stopped
 
-  mcp-slack:
-    image: node:20-alpine
-    container_name: mcp-slack
-    command: npx -y mcp-proxy --port 8085 -- npx -y @modelcontextprotocol/server-slack
-    environment:
-      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
-    ports:
-      - "8085:8085"
-    networks:
-      - external_net
-    restart: unless-stopped
+  # mcp-brave-search:
+  #   image: node:20-alpine
+  #   container_name: mcp-brave-search
+  #   command: npx -y mcp-proxy --port 8084 -- npx -y @modelcontextprotocol/server-brave-search
+  #   environment:
+  #     - BRAVE_API_KEY=${BRAVE_API_KEY}
+  #   ports:
+  #     - "8084:8084"
+  #   networks:
+  #     - external_net
+  #   restart: unless-stopped
 
-  mcp-notion:
-    image: node:20-alpine
-    container_name: mcp-notion
-    command: npx -y mcp-proxy --port 8086 -- npx -y @modelcontextprotocol/server-notion
-    environment:
-      - NOTION_API_KEY=${NOTION_API_KEY}
-    ports:
-      - "8086:8086"
-    networks:
-      - external_net
-    restart: unless-stopped
+  # mcp-slack:
+  #   image: node:20-alpine
+  #   container_name: mcp-slack
+  #   command: npx -y mcp-proxy --port 8085 -- npx -y @modelcontextprotocol/server-slack
+  #   environment:
+  #     - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
+  #   ports:
+  #     - "8085:8085"
+  #   networks:
+  #     - external_net
+  #   restart: unless-stopped
+
+  # mcp-notion:
+  #   image: node:20-alpine
+  #   container_name: mcp-notion
+  #   command: npx -y mcp-proxy --port 8086 -- npx -y @modelcontextprotocol/server-notion
+  #   environment:
+  #     - NOTION_API_KEY=${NOTION_API_KEY}
+  #   ports:
+  #     - "8086:8086"
+  #   networks:
+  #     - external_net
+  #   restart: unless-stopped
 
 networks:
   sandbox_net:

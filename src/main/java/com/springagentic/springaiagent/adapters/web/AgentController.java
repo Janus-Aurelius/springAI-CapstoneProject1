@@ -31,7 +31,7 @@ public class AgentController {
     }
 
     private List<String> getAllAllowedTools() {
-        List<String> allowedTools = new java.util.ArrayList<>(List.of("search_database", "calculate_metrics", "write_database"));
+        List<String> allowedTools = new java.util.ArrayList<>(List.of("search_database", "calculate_metrics", "write_database", "search_archive", "web_search"));
         for (io.modelcontextprotocol.client.McpSyncClient client : mcpSyncClients) {
             try {
                 var toolsResult = client.listTools();

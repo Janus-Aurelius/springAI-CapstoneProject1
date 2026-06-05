@@ -7,7 +7,7 @@ import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
-import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
+import com.github.dockerjava.zerodep.ZerodepDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
 import com.springagentic.springaiagent.adapters.sandbox.DockerManagedSandbox;
 import jakarta.annotation.PostConstruct;
@@ -54,7 +54,11 @@ public class McpContainerFactory {
         log.info("Initializing Docker client...");
         try {
             DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
-            DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
+            log.info("Docker host from config: {}, scheme: {}, path: {}", 
+                     config.getDockerHost(), 
+                     config.getDockerHost().getScheme(), 
+                     config.getDockerHost().getPath());
+            DockerHttpClient httpClient = new ZerodepDockerHttpClient.Builder()
                     .dockerHost(config.getDockerHost())
                     .sslConfig(config.getSSLConfig())
                     .maxConnections(100)

@@ -35,6 +35,11 @@ public class DummyToolExecutor implements ToolExecutor {
         String endDate
     ) {}
 
+    public record WebSearchParams(
+        @JsonPropertyDescription("The web search query to search for information online")
+        String query
+    ) {}
+
     public DummyToolExecutor(ToolRegistry toolRegistry) {
         // Register schemas at runtime
         toolRegistry.registerTool(
@@ -54,11 +59,21 @@ public class DummyToolExecutor implements ToolExecutor {
             true, // isMutating
             true  // requiresApproval
         );
+        toolRegistry.registerTool(
+            "search_archive",
+            "Searches the historical archive database for users.",
+            DatabaseQueryParams.class
+        );
+        toolRegistry.registerTool(
+            "web_search",
+            "Searches the web for up-to-date information.",
+            WebSearchParams.class
+        );
     }
 
     @Override
     public boolean supports(String toolName) {
-        return "search_database".equals(toolName) || "calculate_metrics".equals(toolName) || "write_database".equals(toolName);
+        return "search_database".equals(toolName) || "calculate_metrics".equals(toolName) || "write_database".equals(toolName) || "search_archive".equals(toolName) || "web_search".equals(toolName);
     }
 
     @Override
@@ -72,12 +87,83 @@ public class DummyToolExecutor implements ToolExecutor {
             Thread.currentThread().interrupt(); 
         }
 
+        if ("search_database".equals(toolName)) {
+            if (jsonArgs != null && jsonArgs.contains("Bob")) {
+                return """
+                    {
+                        "status": "error",
+                        "tool": "search_database",
+                        "message": "User 'Bob' not found in active database."
+                    }
+                    """;
+            }
+            String mockData = "This is mock payload data. Verify parameters were read correctly.";
+            if (jsonArgs != null && jsonArgs.contains("Alice")) {
+                mockData = "User 'Alice' was found in the database. Account status: Active. ID: 88712.";
+            }
+            return """
+                {
+                    "status": "success",
+                    "tool": "search_database",
+                    "mock_data": "%s"
+                }
+                """.formatted(mockData);
+        }
+
+        if ("search_archive".equals(toolName)) {
+            if (jsonArgs != null && jsonArgs.contains("Bob")) {
+                return """
+                    {
+                        "status": "success",
+                        "tool": "search_archive",
+                        "mock_data": "User 'Bob' was found in historical archive database. Account status: Dormant. ID: 11223."
+                    }
+                    """;
+            }
+            return """
+                {
+                    "status": "success",
+                    "tool": "search_archive",
+                    "mock_data": "No matching archive record found."
+                }
+                """;
+        }
+
+        if ("calculate_metrics".equals(toolName)) {
+            return """
+                {
+                    "status": "success",
+                    "tool": "calculate_metrics",
+                    "mock_data": "Target metrics calculated successfully. Active score: 92. Performance: Optimal."
+                }
+                """;
+        }
+
+        if ("web_search".equals(toolName)) {
+            if (jsonArgs != null && jsonArgs.contains("Bob")) {
+                return """
+                    {
+                        "status": "success",
+                        "tool": "web_search",
+                        "mock_data": "Search results for 'Bob': found profile on LinkedIn. Bob is a Senior Data Analyst at TechCorp. Email: bob@techcorp.com."
+                    }
+                    """;
+            }
+            return """
+                {
+                    "status": "success",
+                    "tool": "web_search",
+                    "mock_data": "No matching web search results found."
+                }
+                """;
+        }
+
         // Return dummy JSON result
         return """
             {
                 "status": "success",
                 "tool": "%s",
-                "mock_data": "This is mock payload data. Verify parameters were read correctly."
+                "mock_data": "Generic fallback execution."
             }
             """.formatted(toolName);
     }
