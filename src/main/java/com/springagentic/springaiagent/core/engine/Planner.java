@@ -44,25 +44,30 @@ public class Planner {
         PromptTemplate userTemplate = new PromptTemplate("Goal: {goal}");
         String userPrompt = userTemplate.render(Map.of("goal", context.getUserGoal()));
 
-        log.info("PLANNER: Generating execution plan...");
-        Plan plan = llmProvider.structuredRequest(systemPrompt, userPrompt, Plan.class);
+        try {
+            org.slf4j.MDC.put("threadId", context.getThreadId());
+            log.info("PLANNER: Generating execution plan...");
+            Plan plan = llmProvider.structuredRequest(systemPrompt, userPrompt, Plan.class);
 
-        if (plan == null || plan.steps() == null || plan.steps().isEmpty()) {
-            log.warn("PLANNER: Received null or empty plan from LLM!");
-        } else {
-            log.info("PLANNER: Plan generated with {} step(s):", plan.steps().size());
-            for (int i = 0; i < plan.steps().size(); i++) {
-                var step = plan.steps().get(i);
-                log.info("  Step [{}/{}] id='{}' deps={} | description='{}' | expectedOutcome='{}'",
-                        i + 1, plan.steps().size(),
-                        step.stepId(),
-                        step.dependsOn() != null ? step.dependsOn() : "[]",
-                        step.description(),
-                        step.expectedOutcome());
+            if (plan == null || plan.steps() == null || plan.steps().isEmpty()) {
+                log.warn("PLANNER: Received null or empty plan from LLM!");
+            } else {
+                log.info("PLANNER: Plan generated with {} step(s):", plan.steps().size());
+                for (int i = 0; i < plan.steps().size(); i++) {
+                    var step = plan.steps().get(i);
+                    log.info("  Step [{}/{}] id='{}' deps={} | description='{}' | expectedOutcome='{}'",
+                            i + 1, plan.steps().size(),
+                            step.stepId(),
+                            step.dependsOn() != null ? step.dependsOn() : "[]",
+                            step.description(),
+                            step.expectedOutcome());
+                }
             }
-        }
 
-        return plan;
+            return plan;
+        } finally {
+            org.slf4j.MDC.remove("threadId");
+        }
 
     }
 }

@@ -17,6 +17,8 @@ public class Reasoner {
     }
 
     public ReasoningResult think(AgentContext context, Step step, List<String> allowedTools) {
+        String threadId = org.slf4j.MDC.get("threadId");
+        ReasoningTraceLogger.logTrace(threadId, step.stepId(), "REASONER_START", "Analyzing step: " + step.description());
         System.out.println("REASONER: Analyzing step -> " + step.description());
         return llmProvider.think(context, step, allowedTools);
     }

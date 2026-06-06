@@ -22,8 +22,11 @@ public class AgentContext {
     // Guardrails / Termination tracking
     private int totalReplanCount = 0;
     private int totalActionCount = 0;
+    private long totalTokensConsumed = 0;
     private String finalConclusion;
     private String terminationReason; // e.g., "SUCCESS", "MAX_LOOPS_REACHED", "FATAL_ERROR"
+
+    private final List<String> actionHistory = new ArrayList<>(); // Track (toolName + observation) hashes
 
     private String status = "RUNNING"; // RUNNING, AWAITING_APPROVAL, SUCCESS, FAILED, etc.
     private String suspendedStepId;
@@ -96,6 +99,23 @@ public class AgentContext {
     public void addObservation(String toolName, String result) {
         this.observations.add("Action [" + toolName + "] Result: " + result);
         this.totalActionCount++;
+        // Track for stagnation: hash of tool + result
+        this.actionHistory.add(Integer.toHexString((toolName + result).hashCode()));
+    }
+
+    public boolean isStagnated(int threshold) {
+        if (actionHistory.size() < threshold) return false;
+        String last = actionHistory.get(actionHistory.size() - 1);
+        for (int i = 1; i < threshold; i++) {
+            if (!last.equals(actionHistory.get(actionHistory.size() - 1 - i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void addTokens(long tokens) {
+        this.totalTokensConsumed += tokens;
     }
 
     public List<String> getObservationsList() {
@@ -115,8 +135,8 @@ public class AgentContext {
     }
 
     // --- Guardrail Checks ---
-    public boolean hasExceededLimits() {
-        return totalActionCount > 15 || totalReplanCount > 3;
+    public boolean hasExceededLimits(int maxActions, int maxReplans, long maxTokenBudget) {
+        return totalActionCount > maxActions || totalReplanCount > maxReplans || totalTokensConsumed > maxTokenBudget;
     }
 
     public void terminate(String reason, String conclusion) {

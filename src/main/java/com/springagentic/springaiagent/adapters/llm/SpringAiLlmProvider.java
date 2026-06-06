@@ -6,36 +6,31 @@ import com.springagentic.springaiagent.core.domain.Step;
 import com.springagentic.springaiagent.core.domain.ToolSchema;
 import com.springagentic.springaiagent.core.spi.LlmProvider;
 import com.springagentic.springaiagent.core.spi.ToolRegistry;
+import com.springagentic.springaiagent.framework.config.LlmProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
+@Component
 public class SpringAiLlmProvider implements LlmProvider {
 
     private static final Logger log = LoggerFactory.getLogger(SpringAiLlmProvider.class);
 
-    private final ChatClient chatClient;
-    private final ChatClient fallbackClient;
+    private final LlmRouter llmRouter;
     private final ToolRegistry toolRegistry;
-    private final String modelName;
-    private final String fallbackModelName;
+    private final LlmProperties llmProperties;
 
-    public SpringAiLlmProvider(ChatClient chatClient, String modelName, ToolRegistry toolRegistry) {
-        this(chatClient, modelName, null, null, toolRegistry);
-    }
-
-    public SpringAiLlmProvider(ChatClient chatClient, String modelName, ChatClient fallbackClient, String fallbackModelName, ToolRegistry toolRegistry) {
-        this.chatClient = chatClient;
-        this.modelName = modelName;
-        this.fallbackClient = fallbackClient;
-        this.fallbackModelName = fallbackModelName;
+    public SpringAiLlmProvider(LlmRouter llmRouter, ToolRegistry toolRegistry, LlmProperties llmProperties) {
+        this.llmRouter = llmRouter;
         this.toolRegistry = toolRegistry;
+        this.llmProperties = llmProperties;
     }
 
     @Override
@@ -43,19 +38,14 @@ public class SpringAiLlmProvider implements LlmProvider {
     public <T> T structuredRequest(String systemPrompt, String userPrompt, Class<T> returnType) {
         try {
             if (returnType == String.class) {
-                String content = chatClient.prompt()
-                        .system(systemPrompt)
-                        .user(userPrompt)
-                        .call()
-                        .content();
-                if (content != null && content.contains("<think>")) {
-                    int endThink = content.indexOf("</think>");
-                    if (endThink != -1) {
-                        content = content.substring(endThink + 8).trim();
-                    } else {
-                        int startThink = content.indexOf("<think>");
-                        content = content.substring(startThink + 7).trim();
-                    }
+                ChatResponse response = llmRouter.generate(
+                    List.of(new SystemMessage(systemPrompt), new UserMessage(userPrompt)),
+                    TaskType.PLANNER
+                );
+                String content = response.getResult().getOutput().getText();
+                
+                if (llmProperties.stripReasoning()) {
+                    content = stripReasoning(content);
                 }
                 return (T) content;
             }
@@ -63,18 +53,16 @@ public class SpringAiLlmProvider implements LlmProvider {
             org.springframework.ai.converter.BeanOutputConverter<T> converter = 
                     new org.springframework.ai.converter.BeanOutputConverter<>(returnType);
 
-            org.springframework.ai.openai.OpenAiChatOptions.Builder options = org.springframework.ai.openai.OpenAiChatOptions.builder()
-                    .model(modelName)
-                    .maxTokens(4096);
-
-            String rawContent = chatClient.prompt()
-                    .system(systemPrompt + "\n" + converter.getFormat())
-                    .user(userPrompt + "\n\nIMPORTANT: Your response must consist ONLY of the raw JSON object matching the schema above. " +
+            String fullUserPrompt = userPrompt + "\n\nIMPORTANT: Your response must consist ONLY of the raw JSON object matching the schema above. " +
                             "Do NOT include any conversational introduction, preamble, markdown code block backticks (no ```json), " +
-                            "or explanatory text. Start your response directly with '{' and end with '}'.")
-                    .options(options)
-                    .call()
-                    .content();
+                            "or explanatory text. Start your response directly with '{' and end with '}'.";
+
+            ChatResponse response = llmRouter.generate(
+                List.of(new SystemMessage(systemPrompt + "\n" + converter.getFormat()), new UserMessage(fullUserPrompt)),
+                TaskType.PLANNER
+            );
+
+            String rawContent = response.getResult().getOutput().getText();
 
             if (rawContent == null || rawContent.isBlank()) {
                 throw new RuntimeException("LLM returned null or empty content.");
@@ -133,12 +121,6 @@ public class SpringAiLlmProvider implements LlmProvider {
 
         while (retryCount <= maxRetries) {
             try {
-                ChatClient clientToUse = chatClient;
-                if (retryCount > 0 && fallbackClient != null && retryCount == maxRetries) {
-                    log.info("Self-correction failed. Falling back to planning model client.");
-                    clientToUse = fallbackClient;
-                }
-
                 String userPrompt = "What is your next move?";
                 if (retryCount > 0) {
                     userPrompt = String.format(
@@ -149,18 +131,15 @@ public class SpringAiLlmProvider implements LlmProvider {
                     );
                 }
 
-                String currentModel = (clientToUse == chatClient) ? modelName : fallbackModelName;
-                org.springframework.ai.openai.OpenAiChatOptions.Builder options = org.springframework.ai.openai.OpenAiChatOptions.builder()
-                        .model(currentModel)
-                        .maxTokens(4096);
+                ChatResponse response = llmRouter.generate(
+                    List.of(new SystemMessage(systemPrompt), new UserMessage(userPrompt)),
+                    TaskType.REASONER
+                );
+                
+                // Track tokens
+                context.addTokens(response.getMetadata().getUsage().getTotalTokens());
 
-                rawContent = clientToUse.prompt()
-                        .system(systemPrompt)
-                        .user(userPrompt)
-                        .options(options)
-                        .call()
-                        .content();
-
+                rawContent = response.getResult().getOutput().getText();
                 String cleanJson = cleanAndExtractJson(rawContent);
                 LlmDecision decision = mapper.readValue(cleanJson, LlmDecision.class);
 
@@ -190,22 +169,28 @@ public class SpringAiLlmProvider implements LlmProvider {
         return new ReasoningResult.Error("Failed to parse LLM structured decision after " + maxRetries + " retries. Last error: " + lastErrorMsg);
     }
 
+    private String stripReasoning(String content) {
+        if (content == null) return null;
+        if (content.contains("<think>")) {
+            int endThink = content.indexOf("</think>");
+            if (endThink != -1) {
+                return content.substring(endThink + 8).trim();
+            } else {
+                int startThink = content.indexOf("<think>");
+                return content.substring(startThink + 7).trim();
+            }
+        }
+        return content;
+    }
+
     private String cleanAndExtractJson(String input) {
         if (input == null) {
             return null;
         }
         String processed = input.trim();
         
-        // Remove <think>...</think> blocks
-        if (processed.contains("<think>")) {
-            int endThink = processed.indexOf("</think>");
-            if (endThink != -1) {
-                processed = processed.substring(endThink + 8).trim();
-            } else {
-                int startThink = processed.indexOf("<think>");
-                processed = processed.substring(startThink + 7).trim();
-            }
-        }
+        // Always strip <think> for JSON extraction if present
+        processed = stripReasoning(processed);
         
         // Remove markdown code blocks
         if (processed.contains("```")) {
@@ -233,4 +218,4 @@ public class SpringAiLlmProvider implements LlmProvider {
         
         return processed;
     }
-}
+}

@@ -4,7 +4,6 @@ import com.springagentic.springaiagent.core.domain.AgentContext;
 import com.springagentic.springaiagent.core.domain.Plan;
 import com.springagentic.springaiagent.core.domain.ReasoningResult;
 import com.springagentic.springaiagent.core.domain.Step;
-import com.springagentic.springaiagent.core.spi.LlmProvider;
 import com.springagentic.springaiagent.core.spi.MemoryStore;
 import com.springagentic.springaiagent.core.spi.ToolExecutor;
 import com.springagentic.springaiagent.core.spi.ToolRegistry;
@@ -13,12 +12,11 @@ import com.springagentic.springaiagent.core.domain.ObservationTruncator;
 import com.springagentic.springaiagent.framework.registry.AgentDefinition;
 import com.springagentic.springaiagent.core.sandbox.McpContainerFactory;
 import com.springagentic.springaiagent.core.security.SecretRedactor;
+import com.springagentic.springaiagent.framework.config.LlmProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,6 +32,7 @@ public class CognitiveEngineUpgradesTest {
     private ObservationTruncator truncator;
     private ToolRegistry toolRegistry;
     private ExecutionEngine engine;
+    private LlmProperties llmProperties;
 
     @BeforeEach
     public void setUp() {
@@ -43,10 +42,15 @@ public class CognitiveEngineUpgradesTest {
         memoryStore = mock(MemoryStore.class);
         truncator = mock(ObservationTruncator.class);
         toolRegistry = new JacksonToolRegistry();
+        
+        // Mock LlmProperties
+        llmProperties = mock(LlmProperties.class);
+        LlmProperties.GuardrailProperties guardrails = new LlmProperties.GuardrailProperties(20, 5, 3, 100000L, 2000);
+        when(llmProperties.guardrails()).thenReturn(guardrails);
 
         McpContainerFactory containerFactory = mock(McpContainerFactory.class);
         SecretRedactor secretRedactor = mock(SecretRedactor.class);
-        engine = new ExecutionEngine(planner, reasoner, toolExecutor, memoryStore, truncator, toolRegistry, containerFactory, secretRedactor);
+        engine = new ExecutionEngine(planner, reasoner, toolExecutor, memoryStore, truncator, toolRegistry, containerFactory, secretRedactor, llmProperties);
 
         // Configure default truncator mock behavior
         when(truncator.truncate(anyString(), anyInt())).thenAnswer(invocation -> invocation.getArgument(0));

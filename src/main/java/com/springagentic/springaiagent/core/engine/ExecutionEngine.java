@@ -14,6 +14,7 @@ import com.springagentic.springaiagent.core.sandbox.SandboxProfile;
 import com.springagentic.springaiagent.core.sandbox.ResourceUnavailableException;
 import com.springagentic.springaiagent.core.security.SecretRedactor;
 import com.springagentic.springaiagent.framework.registry.AgentDefinition;
+import com.springagentic.springaiagent.framework.config.LlmProperties;
 import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +36,12 @@ public class ExecutionEngine {
     private final ToolRegistry toolRegistry;
     private final McpContainerFactory containerFactory;
     private final SecretRedactor secretRedactor;
+    private final LlmProperties llmProperties;
 
     public ExecutionEngine(Planner planner, Reasoner reasoner, ToolExecutor toolExecutor, 
                            MemoryStore memoryStore, ObservationTruncator observationTruncator,
                            ToolRegistry toolRegistry, McpContainerFactory containerFactory,
-                           SecretRedactor secretRedactor) {
+                           SecretRedactor secretRedactor, LlmProperties llmProperties) {
         this.planner = planner;
         this.reasoner = reasoner;
         this.toolExecutor = toolExecutor;
@@ -48,6 +50,7 @@ public class ExecutionEngine {
         this.toolRegistry = toolRegistry;
         this.containerFactory = containerFactory;
         this.secretRedactor = secretRedactor;
+        this.llmProperties = llmProperties;
     }
 
     public AgentContext runComplexTask(String threadId, String userGoal, AgentDefinition agentDef) {
@@ -73,7 +76,10 @@ public class ExecutionEngine {
         }
 
         // 3. The Main Parallel Execution Loop
-        while (!context.isTerminated() && !context.getStatus().equals("AWAITING_APPROVAL") && !context.hasExceededLimits()) {
+        while (!context.isTerminated() && !context.getStatus().equals("AWAITING_APPROVAL") && 
+               !context.hasExceededLimits(llmProperties.guardrails().maxActions(), 
+                                         llmProperties.guardrails().maxReplans(), 
+                                         llmProperties.guardrails().maxTokenBudget())) {
             boolean replanTriggered = false;
             Plan currentPlan = context.getPlan();
 
@@ -227,8 +233,11 @@ public class ExecutionEngine {
         }
 
         // Final Guardrail Check
-        if (context.hasExceededLimits() && !context.isTerminated() && !context.getStatus().equals("AWAITING_APPROVAL")) {
-            context.terminate("GUARDRAIL_TRIGGERED", "Agent exceeded max actions or replan loops.");
+        if (context.hasExceededLimits(llmProperties.guardrails().maxActions(), 
+                                     llmProperties.guardrails().maxReplans(), 
+                                     llmProperties.guardrails().maxTokenBudget()) 
+            && !context.isTerminated() && !context.getStatus().equals("AWAITING_APPROVAL")) {
+            context.terminate("GUARDRAIL_TRIGGERED", "Agent exceeded max actions, replan loops, or token budget.");
         }
 
         memoryStore.saveRun(context);
@@ -244,6 +253,8 @@ public class ExecutionEngine {
         List<String> accumulatedStepObservations = new ArrayList<>();
 
         try {
+            org.slf4j.MDC.put("threadId", sharedContext.getThreadId());
+
             // Create an isolated view of the current observations to prevent reading mutating data during a turn
             List<String> localObservations;
             synchronized (sharedContext) {
@@ -288,13 +299,13 @@ public class ExecutionEngine {
                     secretRedactor.assertClean(resumedToolName, finalArgs);
                     if (toolExecutor.supports(resumedToolName)) {
                         String toolResult = toolExecutor.execute(resumedToolName, finalArgs);
-                        String truncatedResult = observationTruncator.truncate(toolResult, 2000);
+                        String truncatedResult = observationTruncator.truncate(toolResult, llmProperties.guardrails().maxObservationTokens());
                         obs = "Action [" + resumedToolName + "] Result: " + truncatedResult;
                     } else {
                         SandboxProfile profile = toolRegistry.getSandboxProfile(resumedToolName);
                         try (ManagedSandbox sandbox = containerFactory.lease(profile)) {
                             String toolResult = executeToolInSandbox(resumedToolName, finalArgs, sandbox);
-                            String truncatedResult = observationTruncator.truncate(toolResult, 2000);
+                            String truncatedResult = observationTruncator.truncate(toolResult, llmProperties.guardrails().maxObservationTokens());
                             obs = "Action [" + resumedToolName + "] Result: " + truncatedResult;
                         } catch (ResourceUnavailableException e) {
                             log.error("Sandbox pool exhausted for {}", resumedToolName, e);
@@ -309,19 +320,18 @@ public class ExecutionEngine {
                     log.error("Tool execution error inside step " + step.stepId(), e);
                     obs = "Action [" + resumedToolName + "] Result: " + errorMsg;
                 }
-                // APPROVED: tool already ran — return immediately. Do NOT re-enter the
-                // reasoner while-loop or it will call the same mutating tool again,
-                // triggering an infinite approval suspension cycle.
-                log.info("STEP COMPLETE (resumed+approved) [Step {}]: {}", step.stepId(), obs);
+                localObservations.add(obs);
                 accumulatedStepObservations.add(obs);
-                return new StepResult(step.stepId(), "Step completed after human approval. " + obs, accumulatedStepObservations, localActionCount + 1);
+                localActionCount++;
+                // Continue to while-loop to let reasoner finalize the step
 
             } else if ("REJECTED".equalsIgnoreCase(humanDecision)) {
                 String obs = "Action [" + resumedToolName + "] Result: REJECTED BY USER" + (humanFeedback != null ? ": " + humanFeedback : "");
                 log.info("STEP ABORTED (rejected) [Step {}]: {}", step.stepId(), obs);
+                localObservations.add(obs);
                 accumulatedStepObservations.add(obs);
-                // Treat rejection as a soft failure so the outer engine can replan
-                return new StepResult(step.stepId(), obs, false, accumulatedStepObservations, localActionCount + 1);
+                localActionCount++;
+                // Continue to while-loop to let reasoner adapt
 
             } else { // FEEDBACK — human wants the agent to re-reason with their comments
                 String obs = "Action [" + resumedToolName + "] Result: SUSPENDED. Human feedback provided: " + (humanFeedback != null ? humanFeedback : "");
@@ -331,9 +341,22 @@ public class ExecutionEngine {
                 // Fall through into the while-loop so the reasoner can adapt
             }
         }
-        while (!stepComplete && !sharedContext.hasExceededLimits()) {
+        while (!stepComplete && !sharedContext.hasExceededLimits(llmProperties.guardrails().maxActions(), 
+                                                                llmProperties.guardrails().maxReplans(), 
+                                                                llmProperties.guardrails().maxTokenBudget())) {
             if (!coordinator.checkHealth()) {
                 return new StepResult(step.stepId(), "Aborted: Sibling step failed.", false, accumulatedStepObservations, localActionCount);
+            }
+
+            // Stagnation Check
+            if (sharedContext.isStagnated(llmProperties.guardrails().stagnationThreshold())) {
+                log.warn("STAGNATION DETECTED [Step {}]: Agent is looping with same tool/args/result.", step.stepId());
+                String obs = "Action [STAGNATION_ERROR] Result: You are repeating yourself. Try a different approach or tool.";
+                localObservations.add(obs);
+                accumulatedStepObservations.add(obs);
+                localActionCount++;
+                // Force a replan by returning a replan result
+                return new StepResult(step.stepId(), accumulatedStepObservations, localActionCount, true);
             }
             // Build local transient context for Reasoner reasoning
             AgentContext localContext = new AgentContext(sharedContext.getThreadId(), sharedContext.getUserGoal());
@@ -377,16 +400,21 @@ public class ExecutionEngine {
                             // 1. Scrub arguments through DLP before any dispatch
                             secretRedactor.assertClean(action.toolName(), action.jsonArgs());
 
+                            ReasoningTraceLogger.logTrace(sharedContext.getThreadId(), step.stepId(), "TOOL_EXECUTION_START", 
+                                String.format("Tool: %s\nArgs: %s", action.toolName(), action.jsonArgs()));
+
                             if (toolExecutor.supports(action.toolName())) {
                                 String toolResult = toolExecutor.execute(action.toolName(), action.jsonArgs());
-                                String truncatedResult = observationTruncator.truncate(toolResult, 2000);
+                                ReasoningTraceLogger.logTrace(sharedContext.getThreadId(), step.stepId(), "TOOL_EXECUTION_RESULT", toolResult);
+                                String truncatedResult = observationTruncator.truncate(toolResult, llmProperties.guardrails().maxObservationTokens());
                                 obs = "Action [" + action.toolName() + "] Result: " + truncatedResult;
                             } else {
                                 // Run inside leased sandbox
                                 SandboxProfile profile = toolRegistry.getSandboxProfile(action.toolName());
                                 try (ManagedSandbox sandbox = containerFactory.lease(profile)) {
                                     String toolResult = executeToolInSandbox(action.toolName(), action.jsonArgs(), sandbox);
-                                    String truncatedResult = observationTruncator.truncate(toolResult, 2000);
+                                    ReasoningTraceLogger.logTrace(sharedContext.getThreadId(), step.stepId(), "TOOL_EXECUTION_RESULT_SANDBOX", toolResult);
+                                    String truncatedResult = observationTruncator.truncate(toolResult, llmProperties.guardrails().maxObservationTokens());
                                     obs = "Action [" + action.toolName() + "] Result: " + truncatedResult;
                                 } catch (ResourceUnavailableException e) {
                                     log.error("Sandbox pool exhausted for {}", action.toolName(), e);
@@ -429,6 +457,8 @@ public class ExecutionEngine {
             log.error("Exception in step run, invalidating batch", e);
             coordinator.invalidateBatch(); // Trigger poison pill cancellation
             return new StepResult(step.stepId(), "Exception: " + e.getMessage(), true, accumulatedStepObservations, localActionCount);
+        } finally {
+            org.slf4j.MDC.remove("threadId");
         }
     }
 

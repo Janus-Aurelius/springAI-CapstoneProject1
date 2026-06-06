@@ -14,24 +14,27 @@ A practical guide for teammates to start the system, understand how it works, an
 
 ### Environment setup
 
-Copy `.env.example` to `.env` and fill in your **Groq API key**:
+Copy `.env.example` to `.env` and configure your **LLM Fleet**:
 
 ```bash
 cp .env.example .env
 ```
 
+The system supports a **Resilient Multi-Provider Gateway**. You can configure a primary provider (e.g., Groq for speed) and a fallback (e.g., OpenAI for reliability):
+
 Edit `.env`:
 ```env
+# Primary (e.g. Groq)
 OPENAI_API_KEY=gsk_your_groq_key_here
 OPENAI_BASE_URL=https://api.groq.com/openai/v1
-PLANNING_MODEL=qwen/qwen3-32b
-REASONING_MODEL=qwen/qwen3-32b
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=postgres
+PLANNING_MODEL=llama-3.1-70b-versatile
+REASONING_MODEL=llama-3.1-8b-instant
+
+# Fallback (e.g. OpenAI)
+FALLBACK_OPENAI_API_KEY=sk-proj-your-openai-key-here
 ```
 
-> **Note**: The system uses Groq's OpenAI-compatible API. Get your key at https://console.groq.com
+> **Note**: The system is compatible with any OpenAI-standard endpoint (Groq, DeepSeek, OpenAI, vLLM).
 
 ---
 
@@ -377,7 +380,7 @@ HTTP Request
 | Symptom | Cause | Fix |
 |---|---|---|
 | `500 Internal Server Error` on `/chat` | LLM API key wrong or model not found | Check `.env` OPENAI_API_KEY and PLANNING_MODEL |
-| Plan is `null` or `PLANNER: Received null or empty plan!` | LLM returned invalid JSON | Try a simpler prompt; check Groq rate limits |
+| Plan is `null` or `PLANNER: Received null or empty plan!` | LLM returned invalid JSON | Try a simpler prompt; check provider rate limits |
 | `AWAITING_APPROVAL` never resolves | You need to call `/resume` manually | See Section 7 |
 | `DAG SCHEDULER DEADLOCK` | Circular dependencies in plan | Model produced a bad plan; retry or simplify prompt |
 | `OTLP Connection refused` warnings | No OpenTelemetry collector running | Safe to ignore — metrics export only, does not affect functionality |

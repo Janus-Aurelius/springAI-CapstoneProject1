@@ -1,0 +1,83 @@
+spring:
+  application:
+    name: springaiagent
+  threads:
+    virtual:
+      enabled: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  ai:
+    chat:
+      memory:
+        redis:
+          host: ${REDIS_HOST:localhost}
+          port: ${REDIS_PORT:6379}
+        repository:
+          jdbc:
+            initialize-schema: always
+    vectorstore:
+      redis:
+        uri: redis://${REDIS_HOST:localhost}:${REDIS_PORT:6379}
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:postgres}:5432/${DB_NAME:postgres}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  autoconfigure:
+    exclude: org.springframework.ai.model.chat.memory.repository.jdbc.autoconfigure.JdbcChatMemoryRepositoryAutoConfiguration
+
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+
+app:
+  llm:
+    strip-reasoning: true
+    guardrails:
+      max-actions: 20
+      max-replans: 5
+      stagnation-threshold: 3
+      max-token-budget: 100000
+      max-observation-tokens: 2000
+    providers:
+      - id: "primary-groq"
+        base-url: "${OPENAI_BASE_URL:https://api.groq.com/openai/v1}"
+        api-key: "${OPENAI_API_KEY:dummy-key}"
+        is-primary: true
+        max-context-window: 8192
+        models:
+          planner: "${PLANNING_MODEL:llama-3.1-70b-versatile}"
+          reasoner: "${REASONING_MODEL:llama-3.1-8b-instant}"
+      - id: "fallback-openai"
+        base-url: "https://api.openai.com/v1"
+        api-key: "${FALLBACK_OPENAI_API_KEY:dummy-key}"
+        is-primary: false
+        max-context-window: 128000
+        models:
+          planner: "gpt-4o"
+          reasoner: "gpt-4o-mini"
+
+sandbox:
+  core-pool-size: 2
+  max-pool-size: 5
+  compute-image: python:3.12-alpine
+  fetch-image: alpine:latest
+
+mcp:
+  server:
+    postgres:
+      url: ${MCP_POSTGRES_URL:http://localhost:8081/sse}
+    github:
+      url: ${MCP_GITHUB_URL:http://localhost:8082/sse}
+    puppeteer:
+      url: ${MCP_PUPPETEER_URL:http://localhost:8083/sse}
+    brave-search:
+      url: ${MCP_BRAVE_SEARCH_URL:http://localhost:8084/sse}
+    slack:
+      url: ${MCP_SLACK_URL:http://localhost:8085/sse}
+    notion:
+      url: ${MCP_NOTION_URL:http://localhost:8086/sse}

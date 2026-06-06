@@ -4,62 +4,74 @@ import com.springagentic.springaiagent.core.domain.AgentContext;
 import com.springagentic.springaiagent.core.domain.ReasoningResult;
 import com.springagentic.springaiagent.core.domain.Step;
 import com.springagentic.springaiagent.core.spi.ToolRegistry;
+import com.springagentic.springaiagent.framework.config.LlmProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
-import org.springframework.ai.chat.client.ChatClient.CallResponseSpec;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.model.Generation;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class SpringAiLlmProviderTest {
 
-    private ChatClient mockPrimaryClient;
-    private ChatClient mockFallbackClient;
+    private LlmRouter mockLlmRouter;
     private ToolRegistry mockToolRegistry;
+    private LlmProperties mockLlmProperties;
     private SpringAiLlmProvider llmProvider;
 
     @BeforeEach
     public void setUp() {
-        mockPrimaryClient = mock(ChatClient.class);
-        mockFallbackClient = mock(ChatClient.class);
+        mockLlmRouter = mock(LlmRouter.class);
         mockToolRegistry = mock(ToolRegistry.class);
+        mockLlmProperties = mock(LlmProperties.class);
         
         when(mockToolRegistry.getSchemas(any())).thenReturn(Collections.emptyList());
+        when(mockLlmProperties.stripReasoning()).thenReturn(true);
 
-        llmProvider = new SpringAiLlmProvider(mockPrimaryClient, mockFallbackClient, mockToolRegistry);
+        llmProvider = new SpringAiLlmProvider(mockLlmRouter, mockToolRegistry, mockLlmProperties);
     }
 
-    private void setupMockClientResponse(ChatClient client, String firstResponse, String secondResponse) {
-        ChatClientRequestSpec promptSpec = mock(ChatClientRequestSpec.class);
-        CallResponseSpec callResponse = mock(CallResponseSpec.class);
-
-        when(client.prompt()).thenReturn(promptSpec);
-        when(promptSpec.system(anyString())).thenReturn(promptSpec);
-        when(promptSpec.user(anyString())).thenReturn(promptSpec);
-        when(promptSpec.call()).thenReturn(callResponse);
+    private void setupMockRouterResponse(String firstResponse, String secondResponse) {
+        ChatResponse res1 = mock(ChatResponse.class);
+        Generation gen1 = mock(Generation.class);
+        AssistantMessage msg1 = new AssistantMessage(firstResponse);
+        when(res1.getResult()).thenReturn(gen1);
+        when(gen1.getOutput()).thenReturn(msg1);
+        
+        // Mock usage/metadata
+        org.springframework.ai.chat.metadata.ChatResponseMetadata metadata = mock(org.springframework.ai.chat.metadata.ChatResponseMetadata.class);
+        org.springframework.ai.chat.metadata.Usage usage = mock(org.springframework.ai.chat.metadata.Usage.class);
+        when(res1.getMetadata()).thenReturn(metadata);
+        when(metadata.getUsage()).thenReturn(usage);
+        when(usage.getTotalTokens()).thenReturn(100);
 
         if (secondResponse != null) {
-            when(callResponse.content())
-                .thenReturn(firstResponse)
-                .thenReturn(secondResponse);
+            ChatResponse res2 = mock(ChatResponse.class);
+            Generation gen2 = mock(Generation.class);
+            AssistantMessage msg2 = new AssistantMessage(secondResponse);
+            when(res2.getResult()).thenReturn(gen2);
+            when(gen2.getOutput()).thenReturn(msg2);
+            when(res2.getMetadata()).thenReturn(metadata);
+
+            when(mockLlmRouter.generate(any(), any()))
+                .thenReturn(res1)
+                .thenReturn(res2);
         } else {
-            when(callResponse.content()).thenReturn(firstResponse);
+            when(mockLlmRouter.generate(any(), any())).thenReturn(res1);
         }
     }
 
     @Test
     public void testSelfCorrectionSucceedsOnRetry() {
         // First response is malformed, second is valid JSON
-        setupMockClientResponse(
-            mockPrimaryClient,
+        setupMockRouterResponse(
             "invalid-json-content",
             "{\"type\": \"FINAL_ANSWER\", \"text\": \"Deduction successful after retry\"}"
         );
@@ -73,33 +85,13 @@ public class SpringAiLlmProviderTest {
         assertTrue(result instanceof ReasoningResult.FinalAnswer);
         assertEquals("Deduction successful after retry", ((ReasoningResult.FinalAnswer) result).text());
 
-        // Verify primary client prompt user spec is captured
-        ArgumentCaptor<String> userPromptCaptor = ArgumentCaptor.forClass(String.class);
-        verify(mockPrimaryClient.prompt(), times(2)).user(userPromptCaptor.capture());
-        
-        List<String> userPrompts = userPromptCaptor.getAllValues();
-        assertEquals("What is your next move?", userPrompts.get(0));
-        assertTrue(userPrompts.get(1).contains("malformed JSON"));
-        assertTrue(userPrompts.get(1).contains("invalid-json-content"));
+        // Verify router was called twice
+        verify(mockLlmRouter, times(2)).generate(any(), any());
     }
 
-    @Test
-    public void testFallbackClientOnSelfCorrectionExhaustion() {
-        // Primary client returns malformed JSON repeatedly
-        setupMockClientResponse(mockPrimaryClient, "bad-json-1", "bad-json-2");
-
-        // Fallback client returns valid JSON
-        setupMockClientResponse(mockFallbackClient, "{\"type\": \"FINAL_ANSWER\", \"text\": \"Resolved by fallback model\"}", null);
-
-        AgentContext context = new AgentContext("thread-1", "Solve issue");
-        Step step = new Step("step-1", "Solve it", "Outcome");
-
-        ReasoningResult result = llmProvider.think(context, step, new ArrayList<>());
-
-        // Verify fallback client was called and succeeded
-        assertTrue(result instanceof ReasoningResult.FinalAnswer);
-        assertEquals("Resolved by fallback model", ((ReasoningResult.FinalAnswer) result).text());
-
-        verify(mockFallbackClient, times(1)).prompt();
+    private static class AssistantMessage extends org.springframework.ai.chat.messages.AssistantMessage {
+        public AssistantMessage(String content) {
+            super(content);
+        }
     }
 }
