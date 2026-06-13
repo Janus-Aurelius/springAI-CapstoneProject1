@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import com.springagentic.springaiagent.core.spi.MemoryStore;
 import com.springagentic.springaiagent.core.engine.ExecutionEngine;
+import io.modelcontextprotocol.client.McpSyncClient;
 
 @RestController
 @RequestMapping("/api/v1/agent")
@@ -20,19 +21,20 @@ public class AgentController {
     private final TaskRouter taskRouter;
     private final ExecutionEngine executionEngine;
     private final MemoryStore memoryStore;
-    private final List<io.modelcontextprotocol.client.McpSyncClient> mcpSyncClients;
+    private final org.springframework.context.ApplicationContext applicationContext;
 
     public AgentController(TaskRouter taskRouter, ExecutionEngine executionEngine, MemoryStore memoryStore,
-                           @org.springframework.beans.factory.annotation.Autowired(required = false) List<io.modelcontextprotocol.client.McpSyncClient> mcpSyncClients) {
+                           org.springframework.context.ApplicationContext applicationContext) {
         this.taskRouter = taskRouter;
         this.executionEngine = executionEngine;
         this.memoryStore = memoryStore;
-        this.mcpSyncClients = mcpSyncClients != null ? mcpSyncClients : List.of();
+        this.applicationContext = applicationContext;
     }
 
     private List<String> getAllAllowedTools() {
         List<String> allowedTools = new java.util.ArrayList<>(List.of("search_database", "calculate_metrics", "write_database", "search_archive", "web_search"));
-        for (io.modelcontextprotocol.client.McpSyncClient client : mcpSyncClients) {
+        java.util.Map<String, McpSyncClient> clientsMap = applicationContext.getBeansOfType(McpSyncClient.class);
+        for (io.modelcontextprotocol.client.McpSyncClient client : clientsMap.values()) {
             try {
                 var toolsResult = client.listTools();
                 if (toolsResult != null && toolsResult.tools() != null) {

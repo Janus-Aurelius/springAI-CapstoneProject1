@@ -229,7 +229,13 @@ public class ExecutionEngine {
         List<Step> finalRemaining = new ArrayList<>(finalPlan.steps());
         finalRemaining.removeIf(step -> context.getStepSummaries().containsKey(step.stepId()));
         if (!context.isTerminated() && !context.getStatus().equals("AWAITING_APPROVAL") && finalRemaining.isEmpty()) {
-            context.terminate("SUCCESS", "All planned steps were completed successfully.");
+            String lastStepId = finalPlan.steps().isEmpty() ? null : finalPlan.steps().get(finalPlan.steps().size() - 1).stepId();
+            String finalSummary = lastStepId != null ? context.getStepSummaries().get(lastStepId) : null;
+            String conclusion = "All planned steps were completed successfully.";
+            if (finalSummary != null && !finalSummary.trim().isEmpty()) {
+                conclusion += " Result: " + finalSummary;
+            }
+            context.terminate("SUCCESS", conclusion);
         }
 
         // Final Guardrail Check
@@ -251,6 +257,7 @@ public class ExecutionEngine {
 
         int localActionCount = 0;
         List<String> accumulatedStepObservations = new ArrayList<>();
+        List<String> localActionHistory = new ArrayList<>();
 
         try {
             org.slf4j.MDC.put("threadId", sharedContext.getThreadId());
@@ -349,8 +356,21 @@ public class ExecutionEngine {
             }
 
             // Stagnation Check
-            if (sharedContext.isStagnated(llmProperties.guardrails().stagnationThreshold())) {
-                log.warn("STAGNATION DETECTED [Step {}]: Agent is looping with same tool/args/result.", step.stepId());
+            boolean stagnated = false;
+            int threshold = llmProperties.guardrails().stagnationThreshold();
+            if (localActionHistory.size() >= threshold) {
+                String last = localActionHistory.get(localActionHistory.size() - 1);
+                stagnated = true;
+                for (int i = 1; i < threshold; i++) {
+                    if (!last.equals(localActionHistory.get(localActionHistory.size() - 1 - i))) {
+                        stagnated = false;
+                        break;
+                    }
+                }
+            }
+
+            if (stagnated) {
+                log.warn("STAGNATION DETECTED [Step {}]: Agent is looping with same tool/args.", step.stepId());
                 String obs = "Action [STAGNATION_ERROR] Result: You are repeating yourself. Try a different approach or tool.";
                 localObservations.add(obs);
                 accumulatedStepObservations.add(obs);
@@ -370,6 +390,7 @@ public class ExecutionEngine {
             switch (decision) {
                 case ReasoningResult.Action action -> {
                     log.info("ACTION [Step {}]: Executing tool '{}'", step.stepId(), action.toolName());
+                    localActionHistory.add(Integer.toHexString((action.toolName() + action.jsonArgs()).hashCode()));
 
                     if (!agentDef.allowedToolNames().contains(action.toolName())) {
                         String errorMsg = "FAILED: Tool '" + action.toolName() + "' is not allowed for this agent. Allowed tools are: " + agentDef.allowedToolNames();

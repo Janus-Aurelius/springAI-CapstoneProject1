@@ -232,7 +232,7 @@ public class CognitiveEngineUpgradesTest {
         engine.resumeComplexTask(context, agentDef);
 
         assertEquals("SUCCESS", context.getStatus());
-        assertEquals("All planned steps were completed successfully.", context.getFinalConclusion());
+        assertEquals("All planned steps were completed successfully. Result: Job completed successfully", context.getFinalConclusion());
         assertEquals("Job completed successfully", context.getStepSummaries().get("step-1"));
         assertNull(context.getSuspendedStepId());
         verify(toolExecutor, times(1)).execute(eq("write_database"), eq("{\"query\":\"INSERT\"}"));
@@ -269,7 +269,7 @@ public class CognitiveEngineUpgradesTest {
         engine.resumeComplexTask(context, agentDef);
 
         assertEquals("SUCCESS", context.getStatus());
-        assertEquals("All planned steps were completed successfully.", context.getFinalConclusion());
+        assertEquals("All planned steps were completed successfully. Result: Alternative recovery path selected", context.getFinalConclusion());
         assertEquals("Alternative recovery path selected", context.getStepSummaries().get("step-1"));
         assertNull(context.getSuspendedStepId());
         verify(toolExecutor, never()).execute(anyString(), anyString());
@@ -309,7 +309,7 @@ public class CognitiveEngineUpgradesTest {
         engine.resumeComplexTask(context, agentDef);
 
         assertEquals("SUCCESS", context.getStatus());
-        assertEquals("All planned steps were completed successfully.", context.getFinalConclusion());
+        assertEquals("All planned steps were completed successfully. Result: Job completed with modified args", context.getFinalConclusion());
         assertEquals("Job completed with modified args", context.getStepSummaries().get("step-1"));
         assertNull(context.getSuspendedStepId());
         verify(toolExecutor, times(1)).execute(eq("write_database"), eq("{\"query\":\"INSERT_MODIFIED\"}"));

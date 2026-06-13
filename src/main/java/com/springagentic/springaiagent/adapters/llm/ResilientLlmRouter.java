@@ -68,21 +68,32 @@ public class ResilientLlmRouter implements LlmRouter {
                 // 4. Call LLM with Reactive TTFT Monitoring
                 OpenAiChatModel client = registry.getClient(config.id());
                 
-                // We use stream() to monitor TTFT (Time-To-First-Token)
-                Flux<ChatResponse> responseFlux = client.stream(new Prompt(truncatedMessages, options));
-                
-                // Apply 10s timeout for the first token, and 5s between tokens
-                List<ChatResponse> chunks = responseFlux
-                        .timeout(Duration.ofSeconds(10)) 
-                        .collectList()
-                        .block(Duration.ofMinutes(2));
+                ChatResponse response;
+                try {
+                    // We try stream() first to monitor TTFT (Time-To-First-Token) and support surefire tests
+                    Flux<ChatResponse> responseFlux = client.stream(new Prompt(truncatedMessages, options));
+                    
+                    // Apply 30s timeout to allow slower providers under load or tool-calling setups to respond
+                    List<ChatResponse> chunks = responseFlux
+                            .timeout(Duration.ofSeconds(30)) 
+                            .collectList()
+                            .block(Duration.ofMinutes(2));
 
-                if (chunks == null || chunks.isEmpty()) {
-                    throw new RuntimeException("Empty response stream from provider " + config.id());
+                    if (chunks == null || chunks.isEmpty()) {
+                        throw new RuntimeException("Empty response stream from provider " + config.id());
+                    }
+
+                    // Aggregate chunks back into a single ChatResponse
+                    response = aggregateChunks(chunks);
+                } catch (com.openai.errors.OpenAIInvalidDataException streamEx) {
+                    log.warn("Streaming chunk deserialization failed for provider {} (likely missing 'id'). Falling back to non-streaming call. Error: {}", config.id(), streamEx.getMessage());
+                    // Fall back to synchronous call to bypass streaming chunk schema incompatibility issues (e.g. missing 'id')
+                    response = client.call(new Prompt(truncatedMessages, options));
+                    if (response == null) {
+                        throw new RuntimeException("Empty response from provider " + config.id());
+                    }
                 }
-
-                // 5. Aggregate chunks back into a single ChatResponse
-                return aggregateChunks(chunks);
+                return response;
 
             } catch (Exception e) {
                 log.error("Provider {} failed: {}", config.id(), e.getMessage());

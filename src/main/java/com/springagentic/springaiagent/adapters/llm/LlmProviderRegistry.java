@@ -2,11 +2,15 @@ package com.springagentic.springaiagent.adapters.llm;
 
 import com.springagentic.springaiagent.framework.config.LlmProperties;
 import com.openai.client.OpenAIClient;
+import com.openai.client.OpenAIClientAsync;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync;
 import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,8 +24,16 @@ public class LlmProviderRegistry {
 
     public LlmProviderRegistry(LlmProperties properties) {
         this.properties = properties;
-        for (LlmProperties.ProviderConfig config : properties.providers()) {
-            configs.put(config.id(), config);
+        if (properties.providers() != null) {
+            for (LlmProperties.ProviderConfig config : properties.providers()) {
+                System.out.println("Registering LLM Provider: " + config.id() + " with base URL: " + config.baseUrl());
+                if (config.models() != null) {
+                    System.out.println("  Models: " + config.models());
+                }
+                configs.put(config.id(), config);
+            }
+        } else {
+            System.err.println("WARNING: No LLM providers found in properties!");
         }
     }
 
@@ -36,14 +48,31 @@ public class LlmProviderRegistry {
     }
 
     private OpenAiChatModel createClient(LlmProperties.ProviderConfig config) {
-        // Use the official OpenAI Java SDK client with explicit timeouts
-        OpenAIClient client = OpenAIOkHttpClient.builder()
+        String key = config.apiKey();
+        String keyHint = (key != null && key.length() > 5) ? key.substring(0, 5) + "..." : "null/short";
+        System.out.println("Creating OpenAI client for [" + config.id() + "] at [" + config.baseUrl() + "] with key hint: " + keyHint);
+        
+        OpenAIClient openAiClient = OpenAIOkHttpClient.builder()
                 .baseUrl(config.baseUrl())
                 .apiKey(config.apiKey())
-                .timeout(Duration.ofSeconds(30)) // Total request timeout
+                .timeout(Duration.ofSeconds(30))
                 .build();
+
+        OpenAIClientAsync openAiClientAsync = OpenAIOkHttpClientAsync.builder()
+                .baseUrl(config.baseUrl())
+                .apiKey(config.apiKey())
+                .timeout(Duration.ofSeconds(30))
+                .build();
+
+        OpenAiChatOptions options = OpenAiChatOptions.builder()
+                .baseUrl(config.baseUrl())
+                .apiKey(config.apiKey())
+                .build();
+
         return OpenAiChatModel.builder()
-                .openAiClient(client)
+                .openAiClient(openAiClient)
+                .openAiClientAsync(openAiClientAsync)
+                .options(options)
                 .build();
     }
 

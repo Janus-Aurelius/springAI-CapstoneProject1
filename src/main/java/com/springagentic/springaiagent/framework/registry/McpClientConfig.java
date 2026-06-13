@@ -25,52 +25,52 @@ public class McpClientConfig {
         this.progressWebSocketHandler = progressWebSocketHandler;
     }
 
-    @Value("${mcp.server.postgres.url}")
+    @Value("${mcp.server.postgres.url:}")
     private String postgresUrl;
 
-    @Value("${mcp.server.github.url}")
+    @Value("${mcp.server.github.url:}")
     private String githubUrl;
 
-    @Value("${mcp.server.puppeteer.url}")
+    @Value("${mcp.server.puppeteer.url:}")
     private String puppeteerUrl;
 
-    @Value("${mcp.server.brave-search.url}")
-    private String braveSearchUrl;
+    @Value("${mcp.server.tavily-search.url:}")
+    private String tavilySearchUrl;
 
-    @Value("${mcp.server.slack.url}")
+    @Value("${mcp.server.slack.url:}")
     private String slackUrl;
 
-    @Value("${mcp.server.notion.url}")
+    @Value("${mcp.server.notion.url:}")
     private String notionUrl;
 
     @Bean
     public McpSyncClient postgresMcpClient() {
-        return createMcpClient("postgres", postgresUrl);
+        return postgresUrl.isEmpty() ? null : createMcpClient("postgres", postgresUrl);
     }
 
     @Bean
     public McpSyncClient githubMcpClient() {
-        return createMcpClient("github", githubUrl);
+        return githubUrl.isEmpty() ? null : createMcpClient("github", githubUrl);
     }
 
     @Bean
     public McpSyncClient puppeteerMcpClient() {
-        return createMcpClient("puppeteer", puppeteerUrl);
+        return puppeteerUrl.isEmpty() ? null : createMcpClient("puppeteer", puppeteerUrl);
     }
 
     @Bean
-    public McpSyncClient braveSearchMcpClient() {
-        return createMcpClient("brave-search", braveSearchUrl);
+    public McpSyncClient tavilySearchMcpClient() {
+        return tavilySearchUrl.isEmpty() ? null : createMcpClient("tavily-search", tavilySearchUrl);
     }
 
     @Bean
     public McpSyncClient slackMcpClient() {
-        return createMcpClient("slack", slackUrl);
+        return slackUrl.isEmpty() ? null : createMcpClient("slack", slackUrl);
     }
 
     @Bean
     public McpSyncClient notionMcpClient() {
-        return createMcpClient("notion", notionUrl);
+        return notionUrl.isEmpty() ? null : createMcpClient("notion", notionUrl);
     }
 
     private McpSyncClient createMcpClient(String name, String url) {

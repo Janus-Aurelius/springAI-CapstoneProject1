@@ -20,13 +20,17 @@ public class McpToolExecutor implements ToolExecutor {
 
     private static final Logger log = LoggerFactory.getLogger(McpToolExecutor.class);
 
-    private final List<McpSyncClient> mcpSyncClients;
+    private final org.springframework.context.ApplicationContext applicationContext;
     private final Map<String, McpSyncClient> toolToClientMap = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    public McpToolExecutor(@Autowired(required = false) List<McpSyncClient> mcpSyncClients) {
-        this.mcpSyncClients = mcpSyncClients != null ? mcpSyncClients : List.of();
+    public McpToolExecutor(org.springframework.context.ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    private List<McpSyncClient> getMcpSyncClients() {
+        return List.copyOf(applicationContext.getBeansOfType(McpSyncClient.class).values());
     }
 
     @Override
@@ -34,7 +38,7 @@ public class McpToolExecutor implements ToolExecutor {
         if (toolToClientMap.containsKey(toolName)) {
             return true;
         }
-        for (McpSyncClient client : mcpSyncClients) {
+        for (McpSyncClient client : getMcpSyncClients()) {
             try {
                 var toolsResult = client.listTools();
                 if (toolsResult != null && toolsResult.tools() != null) {
@@ -74,7 +78,7 @@ public class McpToolExecutor implements ToolExecutor {
                 return "{\"status\": \"error\", \"message\": \"Null result returned from MCP server\"}";
             }
 
-            if (result.isError()) {
+            if (Boolean.TRUE.equals(result.isError())) {
                 log.error("MCP tool [{}] returned an error result: {}", toolName, result.content());
             }
 

@@ -28,7 +28,9 @@ public class McpToolExecutorTest {
         when(listResult.tools()).thenReturn(List.of(mockTool));
         when(mockClient.listTools()).thenReturn(listResult);
 
-        McpToolExecutor executor = new McpToolExecutor(List.of(mockClient));
+        org.springframework.context.ApplicationContext mockContext = mock(org.springframework.context.ApplicationContext.class);
+        when(mockContext.getBeansOfType(McpSyncClient.class)).thenReturn(Map.of("mockClient", mockClient));
+        McpToolExecutor executor = new McpToolExecutor(mockContext);
         assertTrue(executor.supports("test_tool"));
         assertFalse(executor.supports("non_existent"));
     }
@@ -50,7 +52,9 @@ public class McpToolExecutorTest {
 
         when(mockClient.callTool(any(CallToolRequest.class))).thenReturn(callResult);
 
-        McpToolExecutor executor = new McpToolExecutor(List.of(mockClient));
+        org.springframework.context.ApplicationContext mockContext = mock(org.springframework.context.ApplicationContext.class);
+        when(mockContext.getBeansOfType(McpSyncClient.class)).thenReturn(Map.of("mockClient", mockClient));
+        McpToolExecutor executor = new McpToolExecutor(mockContext);
         executor.supports("test_tool"); // Populate mapping
 
         String result = executor.execute("test_tool", "{\"arg1\":\"val1\"}");

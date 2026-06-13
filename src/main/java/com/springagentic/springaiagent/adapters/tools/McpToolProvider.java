@@ -19,18 +19,21 @@ public class McpToolProvider implements ApplicationListener<ApplicationReadyEven
     private static final Logger log = LoggerFactory.getLogger(McpToolProvider.class);
 
     private final ToolRegistry toolRegistry;
-    private final List<McpSyncClient> mcpSyncClients;
+    private final org.springframework.context.ApplicationContext applicationContext;
 
     @Autowired
-    public McpToolProvider(ToolRegistry toolRegistry, @Autowired(required = false) List<McpSyncClient> mcpSyncClients) {
+    public McpToolProvider(ToolRegistry toolRegistry, org.springframework.context.ApplicationContext applicationContext) {
         this.toolRegistry = toolRegistry;
-        this.mcpSyncClients = mcpSyncClients != null ? mcpSyncClients : List.of();
+        this.applicationContext = applicationContext;
     }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        log.info("Bootstrapping MCP Tools. Found {} MCP client(s).", mcpSyncClients.size());
-        for (McpSyncClient client : mcpSyncClients) {
+        java.util.Map<String, McpSyncClient> clientsMap = applicationContext.getBeansOfType(McpSyncClient.class);
+        log.info("Bootstrapping MCP Tools. Found {} MCP client(s) in context: {}", 
+                clientsMap.size(), clientsMap.keySet());
+        
+        for (McpSyncClient client : clientsMap.values()) {
             try {
                 var toolsResult = client.listTools();
                 if (toolsResult != null && toolsResult.tools() != null) {

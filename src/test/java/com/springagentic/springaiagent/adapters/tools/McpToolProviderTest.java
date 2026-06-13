@@ -33,7 +33,9 @@ public class McpToolProviderTest {
         when(result.tools()).thenReturn(List.of(mockTool));
         when(mcpClient.listTools()).thenReturn(result);
 
-        McpToolProvider provider = new McpToolProvider(registry, List.of(mcpClient));
+        org.springframework.context.ApplicationContext mockContext = mock(org.springframework.context.ApplicationContext.class);
+        when(mockContext.getBeansOfType(McpSyncClient.class)).thenReturn(Map.of("mcpClient", mcpClient));
+        McpToolProvider provider = new McpToolProvider(registry, mockContext);
         provider.onApplicationEvent(mock(ApplicationReadyEvent.class));
 
         verify(registry).registerTool(
@@ -60,7 +62,9 @@ public class McpToolProviderTest {
         when(result.tools()).thenReturn(List.of(mockTool));
         when(mcpClient.listTools()).thenReturn(result);
 
-        McpToolProvider provider = new McpToolProvider(registry, List.of(mcpClient));
+        org.springframework.context.ApplicationContext mockContext = mock(org.springframework.context.ApplicationContext.class);
+        when(mockContext.getBeansOfType(McpSyncClient.class)).thenReturn(Map.of("mcpClient", mcpClient));
+        McpToolProvider provider = new McpToolProvider(registry, mockContext);
         provider.onApplicationEvent(mock(ApplicationReadyEvent.class));
 
         verify(registry).registerTool(
