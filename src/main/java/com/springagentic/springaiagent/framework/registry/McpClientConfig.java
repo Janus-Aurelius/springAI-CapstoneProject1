@@ -37,12 +37,6 @@ public class McpClientConfig {
     @Value("${mcp.server.tavily-search.url:}")
     private String tavilySearchUrl;
 
-    @Value("${mcp.server.slack.url:}")
-    private String slackUrl;
-
-    @Value("${mcp.server.notion.url:}")
-    private String notionUrl;
-
     @Bean
     public McpSyncClient postgresMcpClient() {
         return postgresUrl.isEmpty() ? null : createMcpClient("postgres", postgresUrl);
@@ -61,16 +55,6 @@ public class McpClientConfig {
     @Bean
     public McpSyncClient tavilySearchMcpClient() {
         return tavilySearchUrl.isEmpty() ? null : createMcpClient("tavily-search", tavilySearchUrl);
-    }
-
-    @Bean
-    public McpSyncClient slackMcpClient() {
-        return slackUrl.isEmpty() ? null : createMcpClient("slack", slackUrl);
-    }
-
-    @Bean
-    public McpSyncClient notionMcpClient() {
-        return notionUrl.isEmpty() ? null : createMcpClient("notion", notionUrl);
     }
 
     private McpSyncClient createMcpClient(String name, String url) {

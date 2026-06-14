@@ -127,8 +127,4 @@ mcp:
       url: ${MCP_PUPPETEER_URL:http://mcp-puppeteer:8083/sse}
     tavily-search:
       url: ${MCP_TAVILY_SEARCH_URL:http://mcp-tavily-search:8084/sse}
-    slack:
-      url: ${MCP_SLACK_URL:http://mcp-slack:8085/sse}
-    notion:
-      url: ${MCP_NOTION_URL:http://mcp-notion:8086/sse}
 
