@@ -29,34 +29,32 @@ public class McpToolExecutor implements ToolExecutor {
         this.applicationContext = applicationContext;
     }
 
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        log.info("Initializing McpToolExecutor: populating tool map...");
+        for (McpSyncClient client : getMcpSyncClients()) {
+            if (client == null) continue;
+            try {
+                var toolsResult = client.listTools();
+                if (toolsResult != null && toolsResult.tools() != null) {
+                    for (var tool : toolsResult.tools()) {
+                        toolToClientMap.put(tool.name(), client);
+                        log.info("Registered MCP tool [{}]", tool.name());
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("Failed to list tools from an MCP client during initialization: {}", e.getMessage());
+            }
+        }
+    }
+
     private List<McpSyncClient> getMcpSyncClients() {
         return List.copyOf(applicationContext.getBeansOfType(McpSyncClient.class).values());
     }
 
     @Override
     public boolean supports(String toolName) {
-        if (toolToClientMap.containsKey(toolName)) {
-            return true;
-        }
-        for (McpSyncClient client : getMcpSyncClients()) {
-            if (client == null) {
-                continue;
-            }
-            try {
-                var toolsResult = client.listTools();
-                if (toolsResult != null && toolsResult.tools() != null) {
-                    for (var tool : toolsResult.tools()) {
-                        if (tool.name().equals(toolName)) {
-                            toolToClientMap.put(toolName, client);
-                            return true;
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                log.warn("Failed to check tool support for client: {}", e.getMessage());
-            }
-        }
-        return false;
+        return toolToClientMap.containsKey(toolName);
     }
 
     @Override

@@ -17,11 +17,21 @@ public class DefaultSecretRedactor implements SecretRedactor {
     @Value("${spring.ai.openai.api-key:}")
     private String openAiApiKey;
 
+    private final com.springagentic.springaiagent.framework.config.LlmProperties llmProperties;
     private final List<String> secrets = new ArrayList<>();
+
+    public DefaultSecretRedactor(com.springagentic.springaiagent.framework.config.LlmProperties llmProperties) {
+        this.llmProperties = llmProperties;
+    }
 
     @PostConstruct
     public void init() {
         addSecret(openAiApiKey);
+        if (llmProperties != null && llmProperties.providers() != null) {
+            for (var provider : llmProperties.providers()) {
+                addSecret(provider.apiKey());
+            }
+        }
     }
 
     private void addSecret(String value) {

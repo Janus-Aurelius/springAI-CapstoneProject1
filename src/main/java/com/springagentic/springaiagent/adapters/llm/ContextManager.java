@@ -29,17 +29,16 @@ public class ContextManager {
             return messages;
         }
 
-        // Keep System Message (index 0) and the last 2 messages
         List<Message> result = new ArrayList<>(messages);
         
-        // We need to keep System message and at least the last 2 messages if they exist
-        int systemIndex = 0;
+        // We need to keep System message (index 0) and at least the last 2 messages if they exist
         int keepLastN = Math.min(2, result.size() - 1);
         
         // Prune from the middle (starting after system message until we fit the budget)
-        while (result.size() > (1 + keepLastN) && countTokens(result) > budget) {
-            // Remove the oldest message after the system message
-            result.remove(1);
+        // Overhead of 4 tokens per message is added in countTokens, so we subtract it here too.
+        while (result.size() > (1 + keepLastN) && currentTokens > budget) {
+            Message removed = result.remove(1);
+            currentTokens -= (countTokens(removed.getText()) + 4);
         }
 
         return result;

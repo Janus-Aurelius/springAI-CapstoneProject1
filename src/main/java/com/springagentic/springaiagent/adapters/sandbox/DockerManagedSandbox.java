@@ -34,8 +34,13 @@ public class DockerManagedSandbox implements ManagedSandbox {
 
     @Override
     public String executeCommand(String command, Duration timeout) throws Exception {
+        return executeCommand(new String[]{"sh", "-c", command}, timeout);
+    }
+
+    @Override
+    public String executeCommand(String[] command, Duration timeout) throws Exception {
         ExecCreateCmdResponse execCreate = dockerClient.execCreateCmd(containerId)
-                .withCmd("sh", "-c", command)
+                .withCmd(command)
                 .withAttachStdout(true)
                 .withAttachStderr(true)
                 .exec();

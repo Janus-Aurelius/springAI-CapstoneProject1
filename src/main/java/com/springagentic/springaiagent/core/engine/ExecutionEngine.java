@@ -489,8 +489,7 @@ public class ExecutionEngine {
             try {
                 var node = new com.fasterxml.jackson.databind.ObjectMapper().readTree(argsToUse);
                 String code = node.has("code") ? node.get("code").asText() : "";
-                String escapedCode = code.replace("'", "'\\''");
-                return sandbox.executeCommand("python3 -c '" + escapedCode + "'", Duration.ofSeconds(30));
+                return sandbox.executeCommand(new String[]{"python3", "-c", code}, Duration.ofSeconds(30));
             } catch (Exception e) {
                 return "Error parsing python code parameters: " + e.getMessage();
             }
@@ -498,10 +497,10 @@ public class ExecutionEngine {
             try {
                 var node = new com.fasterxml.jackson.databind.ObjectMapper().readTree(argsToUse);
                 String url = node.has("url") ? node.get("url").asText() : "";
-                if (url.contains("'") || url.contains(";") || url.contains("&") || url.contains("|")) {
-                    throw new IllegalArgumentException("Invalid URL characters detected.");
+                if (url.startsWith("-")) {
+                    throw new IllegalArgumentException("Invalid URL: cannot start with hyphen.");
                 }
-                return sandbox.executeCommand("curl -sSL '" + url + "'", Duration.ofSeconds(30));
+                return sandbox.executeCommand(new String[]{"curl", "-sSL", url}, Duration.ofSeconds(30));
             } catch (Exception e) {
                 return "Error executing network fetch: " + e.getMessage();
             }
@@ -509,13 +508,12 @@ public class ExecutionEngine {
             try {
                 var node = new com.fasterxml.jackson.databind.ObjectMapper().readTree(argsToUse);
                 String query = node.has("query") ? node.get("query").asText() : "";
-                String escapedQuery = query.replace("'", "'\\''");
-                return sandbox.executeCommand("psql -c '" + escapedQuery + "'", Duration.ofSeconds(30));
+                return sandbox.executeCommand(new String[]{"psql", "-c", query}, Duration.ofSeconds(30));
             } catch (Exception e) {
                 return "Error executing database query: " + e.getMessage();
             }
         } else {
-            return sandbox.executeCommand("echo 'Executing unknown tool: " + toolName + " with args: " + argsToUse + "'", Duration.ofSeconds(5));
+            return sandbox.executeCommand(new String[]{"echo", "Executing unknown tool: " + toolName + " with args: " + argsToUse}, Duration.ofSeconds(5));
         }
     }
 

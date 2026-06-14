@@ -216,11 +216,13 @@ public class McpContainerFactory {
                 } catch (Exception e) {
                     log.warn("Failed to reset container {}, replacing it", containerId, e);
                     // Self-heal: destroy and replace
-                    destroyContainer(containerId);
                     try {
                         var inspect = dockerClient.inspectContainerCmd(containerId).exec();
                         String netMode = inspect.getHostConfig().getNetworkMode();
                         SandboxProfile profile = "none".equals(netMode) ? SandboxProfile.COMPUTE : SandboxProfile.FETCH;
+                        
+                        destroyContainer(containerId);
+                        
                         String newId = createContainer(profile);
                         if (profile == SandboxProfile.COMPUTE) {
                             computeQueue.offer(newId);
@@ -229,6 +231,7 @@ public class McpContainerFactory {
                         }
                     } catch (Exception ex) {
                         log.error("Failed to replace container", ex);
+                        destroyContainer(containerId);
                     }
                 } finally {
                     if (leasedCount != null) {

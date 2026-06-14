@@ -7,7 +7,7 @@ public class SecretRedactorTest {
 
     @Test
     public void testAssertCleanWithCleanArguments() {
-        DefaultSecretRedactor redactor = new DefaultSecretRedactor();
+        DefaultSecretRedactor redactor = new DefaultSecretRedactor(null);
         redactor.registerSecret("super-secret-openai-key-value-12345");
         
         // Should not throw exception
@@ -16,7 +16,7 @@ public class SecretRedactorTest {
 
     @Test
     public void testAssertCleanWithSensitiveLeakage() {
-        DefaultSecretRedactor redactor = new DefaultSecretRedactor();
+        DefaultSecretRedactor redactor = new DefaultSecretRedactor(null);
         redactor.registerSecret("super-secret-openai-key-value-12345");
 
         // Should throw SecurityException
