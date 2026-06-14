@@ -1,6 +1,8 @@
 package com.springagentic.springaiagent.adapters.llm;
 
 import com.springagentic.springaiagent.framework.config.LlmProperties;
+import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -14,10 +16,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,11 +26,12 @@ public class ResilientLlmRouter implements LlmRouter {
 
     private final LlmProviderRegistry registry;
     private final ContextManager contextManager;
-    private final Map<String, Long> cooldownMap = new ConcurrentHashMap<>();
+    private final Retry retry;
 
-    public ResilientLlmRouter(LlmProviderRegistry registry, ContextManager contextManager) {
+    public ResilientLlmRouter(LlmProviderRegistry registry, ContextManager contextManager, RetryRegistry retryRegistry) {
         this.registry = registry;
         this.contextManager = contextManager;
+        this.retry = retryRegistry.retry("llmProvider");
     }
 
     @Override
@@ -46,67 +46,55 @@ public class ResilientLlmRouter implements LlmRouter {
         Exception lastException = null;
 
         for (LlmProperties.ProviderConfig config : providers) {
-            if (isCooldowned(config.id())) {
-                log.warn("Skipping cooldowned provider: {}", config.id());
-                continue;
-            }
-
             try {
-                log.info("Attempting generation with provider: {}", config.id());
-                
-                // 1. Truncate context for this provider
-                List<Message> truncatedMessages = contextManager.truncate(messages, config.maxContextWindow());
-                
-                // 2. Resolve model name for the task
-                String modelName = config.models().get(taskType.name().toLowerCase());
-                if (modelName == null) {
-                    throw new IllegalStateException("Model not configured for task " + taskType + " in provider " + config.id());
-                }
-
-                // 3. Prepare options
-                OpenAiChatOptions options = OpenAiChatOptions.builder()
-                        .model(modelName)
-                        .temperature(0.2)
-                        .maxTokens(4096)
-                        .build();
-
-                // 4. Call LLM with Reactive TTFT Monitoring
-                OpenAiChatModel client = registry.getClient(config.id());
-                
-                ChatResponse response;
-                try {
-                    // We try stream() first to monitor TTFT (Time-To-First-Token) and support surefire tests
-                    Flux<ChatResponse> responseFlux = client.stream(new Prompt(truncatedMessages, options));
+                return Retry.decorateCheckedSupplier(retry, () -> {
+                    log.info("Attempting generation with provider: {}", config.id());
                     
-                    // Apply 30s timeout to allow slower providers under load or tool-calling setups to respond
-                    List<ChatResponse> chunks = responseFlux
-                            .timeout(Duration.ofSeconds(30)) 
-                            .collectList()
-                            .block(Duration.ofMinutes(2));
-
-                    if (chunks == null || chunks.isEmpty()) {
-                        throw new RuntimeException("Empty response stream from provider " + config.id());
+                    // 1. Truncate context for this provider
+                    List<Message> truncatedMessages = contextManager.truncate(messages, config.maxContextWindow());
+                    
+                    // 2. Resolve model name for the task
+                    String modelName = config.models().get(taskType.name().toLowerCase());
+                    if (modelName == null) {
+                        throw new IllegalStateException("Model not configured for task " + taskType + " in provider " + config.id());
                     }
 
-                    // Aggregate chunks back into a single ChatResponse
-                    response = aggregateChunks(chunks);
-                } catch (com.openai.errors.OpenAIInvalidDataException streamEx) {
-                    log.warn("Streaming chunk deserialization failed for provider {} (likely missing 'id'). Falling back to non-streaming call. Error: {}", config.id(), streamEx.getMessage());
-                    // Fall back to synchronous call to bypass streaming chunk schema incompatibility issues (e.g. missing 'id')
-                    response = client.call(new Prompt(truncatedMessages, options));
-                    if (response == null) {
-                        throw new RuntimeException("Empty response from provider " + config.id());
-                    }
-                }
-                return response;
+                    // 3. Prepare options
+                    OpenAiChatOptions options = OpenAiChatOptions.builder()
+                            .model(modelName)
+                            .temperature(0.2)
+                            .maxTokens(4096)
+                            .build();
 
-            } catch (Exception e) {
-                log.error("Provider {} failed: {}", config.id(), e.getMessage());
-                lastException = e;
-                
-                if (shouldCooldown(e)) {
-                    cooldownMap.put(config.id(), System.currentTimeMillis() + 30000); // 30s cooldown
-                }
+                    // 4. Call LLM
+                    OpenAiChatModel client = registry.getClient(config.id());
+                    
+                    try {
+                        Flux<ChatResponse> responseFlux = client.stream(new Prompt(truncatedMessages, options));
+                        
+                        List<ChatResponse> chunks = responseFlux
+                                .timeout(Duration.ofSeconds(30)) 
+                                .collectList()
+                                .block(Duration.ofMinutes(2));
+
+                        if (chunks == null || chunks.isEmpty()) {
+                            throw new RuntimeException("Empty response stream from provider " + config.id());
+                        }
+
+                        return aggregateChunks(chunks);
+                    } catch (com.openai.errors.OpenAIInvalidDataException streamEx) {
+                        log.warn("Streaming chunk deserialization failed for provider {}. Falling back to non-streaming call.", config.id());
+                        ChatResponse response = client.call(new Prompt(truncatedMessages, options));
+                        if (response == null) {
+                            throw new RuntimeException("Empty response from provider " + config.id());
+                        }
+                        return response;
+                    }
+                }).get();
+
+            } catch (Throwable e) {
+                log.error("Provider {} failed after retries: {}", config.id(), e.getMessage());
+                lastException = (e instanceof Exception) ? (Exception) e : new RuntimeException(e);
             }
         }
 
@@ -134,23 +122,5 @@ public class ResilientLlmRouter implements LlmRouter {
         Generation generation = new Generation(aggregatedMessage);
         
         return new ChatResponse(List.of(generation), lastChunk.getMetadata());
-    }
-
-    private boolean isCooldowned(String id) {
-        Long expiration = cooldownMap.get(id);
-        if (expiration == null) return false;
-        if (System.currentTimeMillis() > expiration) {
-            cooldownMap.remove(id);
-            return false;
-        }
-        return true;
-    }
-
-    private boolean shouldCooldown(Exception e) {
-        String msg = e.getMessage().toLowerCase();
-        return msg.contains("429") || msg.contains("too many requests") || 
-               msg.contains("500") || msg.contains("503") || 
-               msg.contains("timeout") || msg.contains("connection refused") ||
-               msg.contains("exhausted");
     }
 }

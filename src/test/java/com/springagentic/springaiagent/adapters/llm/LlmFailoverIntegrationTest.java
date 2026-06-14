@@ -1,6 +1,8 @@
 package com.springagentic.springaiagent.adapters.llm;
 
 import com.springagentic.springaiagent.framework.config.LlmProperties;
+import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -22,13 +24,19 @@ public class LlmFailoverIntegrationTest {
 
     private LlmProviderRegistry mockRegistry;
     private ContextManager mockContextManager;
+    private RetryRegistry mockRetryRegistry;
     private ResilientLlmRouter router;
 
     @BeforeEach
     public void setUp() {
         mockRegistry = mock(LlmProviderRegistry.class);
         mockContextManager = mock(ContextManager.class);
-        router = new ResilientLlmRouter(mockRegistry, mockContextManager);
+        mockRetryRegistry = mock(RetryRegistry.class);
+        
+        Retry realRetry = Retry.ofDefaults("llmProvider");
+        when(mockRetryRegistry.retry("llmProvider")).thenReturn(realRetry);
+
+        router = new ResilientLlmRouter(mockRegistry, mockContextManager, mockRetryRegistry);
 
         // Mock context manager to return messages as is
         when(mockContextManager.truncate(any(), anyInt())).thenAnswer(inv -> inv.getArgument(0));
@@ -67,12 +75,12 @@ public class LlmFailoverIntegrationTest {
         // 5. Verify
         assertNotNull(response);
         assertEquals("Fallback success", response.getResult().getOutput().getText());
-        verify(primaryClient).stream(any(Prompt.class));
+        verify(primaryClient, times(3)).stream(any(Prompt.class));
         verify(fallbackClient).stream(any(Prompt.class));
     }
 
     @Test
-    public void testCooldownPreventsRetryingFailedProvider() {
+    public void testRetriesFailedProviderAndThenExhausts() {
         // 1. Setup one provider
         LlmProperties.ProviderConfig primary = new LlmProperties.ProviderConfig(
                 "primary", "url1", "key1", true, 8192, Map.of("planner", "p1")
@@ -81,17 +89,14 @@ public class LlmFailoverIntegrationTest {
 
         OpenAiChatModel primaryClient = mock(OpenAiChatModel.class);
         when(mockRegistry.getClient("primary")).thenReturn(primaryClient);
-        when(primaryClient.stream(any(Prompt.class))).thenReturn(Flux.error(new RuntimeException("HTTP 429")));
+        // Fail with something that triggers retry (Resilience4j default handles many RuntimeExceptions)
+        when(primaryClient.stream(any(Prompt.class))).thenReturn(Flux.error(new RuntimeException("Empty response stream from provider primary")));
 
-        // 2. First call triggers cooldown
+        // 2. Execute - should retry and then throw
         assertThrows(RuntimeException.class, () -> router.generate(List.of(), TaskType.PLANNER));
-
-        // 3. Second call should skip because of cooldown
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> router.generate(List.of(), TaskType.PLANNER));
-        assertTrue(ex.getMessage().contains("exhausted"));
         
-        // Verify primary client stream was only called once
-        verify(primaryClient, times(1)).stream(any(Prompt.class));
+        // Verify primary client stream was called multiple times (3 attempts default)
+        verify(primaryClient, times(3)).stream(any(Prompt.class));
     }
 
     @Test

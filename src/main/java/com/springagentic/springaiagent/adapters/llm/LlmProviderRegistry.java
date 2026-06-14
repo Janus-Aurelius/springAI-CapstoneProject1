@@ -5,6 +5,8 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.OpenAIClientAsync;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class LlmProviderRegistry {
 
+    private static final Logger log = LoggerFactory.getLogger(LlmProviderRegistry.class);
     private final LlmProperties properties;
     private final Map<String, OpenAiChatModel> materializedClients = new ConcurrentHashMap<>();
     private final Map<String, LlmProperties.ProviderConfig> configs = new ConcurrentHashMap<>();
@@ -26,14 +29,14 @@ public class LlmProviderRegistry {
         this.properties = properties;
         if (properties.providers() != null) {
             for (LlmProperties.ProviderConfig config : properties.providers()) {
-                System.out.println("Registering LLM Provider: " + config.id() + " with base URL: " + config.baseUrl());
+                log.info("Registering LLM Provider: {} with base URL: {}", config.id(), config.baseUrl());
                 if (config.models() != null) {
-                    System.out.println("  Models: " + config.models());
+                    log.info("  Models: {}", config.models());
                 }
                 configs.put(config.id(), config);
             }
         } else {
-            System.err.println("WARNING: No LLM providers found in properties!");
+            log.warn("WARNING: No LLM providers found in properties!");
         }
     }
 
@@ -50,7 +53,7 @@ public class LlmProviderRegistry {
     private OpenAiChatModel createClient(LlmProperties.ProviderConfig config) {
         String key = config.apiKey();
         String keyHint = (key != null && key.length() > 5) ? key.substring(0, 5) + "..." : "null/short";
-        System.out.println("Creating OpenAI client for [" + config.id() + "] at [" + config.baseUrl() + "] with key hint: " + keyHint);
+        log.info("Creating OpenAI client for [{}] at [{}] with key hint: {}", config.id(), config.baseUrl(), keyHint);
         
         OpenAIClient openAiClient = OpenAIOkHttpClient.builder()
                 .baseUrl(config.baseUrl())

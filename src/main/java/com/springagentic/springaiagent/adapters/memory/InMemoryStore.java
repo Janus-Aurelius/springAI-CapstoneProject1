@@ -2,6 +2,8 @@ package com.springagentic.springaiagent.adapters.memory;
 
 import com.springagentic.springaiagent.core.domain.AgentContext;
 import com.springagentic.springaiagent.core.spi.MemoryStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class InMemoryStore implements MemoryStore {
+    private static final Logger log = LoggerFactory.getLogger(InMemoryStore.class);
     // Key format: "threadId:runId"
     private final Map<String, AgentContext> store = new ConcurrentHashMap<>();
 
@@ -19,7 +22,7 @@ public class InMemoryStore implements MemoryStore {
     public void saveRun(AgentContext context) {
         String key = context.getThreadId() + ":" + context.getRunId();
         store.put(key, context);
-        System.out.println("MEMORY: Saved state for Run [" + context.getRunId() + "]");
+        log.info("MEMORY: Saved state for Run [{}]", context.getRunId());
     }
 
     @Override

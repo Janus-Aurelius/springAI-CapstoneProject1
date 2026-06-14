@@ -2729,3 +2729,152 @@ Tool: write_database
 Args: {}
 --------------------------------------------------------------------------------
 [2026-06-14 15:00:04.320] [Thread:thread-1] [Step:step-1] [TOOL_EXECUTION_RESULT]
+2026-06-14 15:29:30.409 [virtual-129] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_START] Tool: write_db
+Args: {}
+2026-06-14 15:29:30.410 [virtual-129] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_RESULT] null
+2026-06-14 15:29:30.456 [virtual-133] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_START] Tool: write_database
+Args: {}
+2026-06-14 15:29:30.456 [virtual-133] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_RESULT] null
+2026-06-14 15:32:05.441 [virtual-129] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_START] Tool: write_db
+Args: {}
+2026-06-14 15:32:05.442 [virtual-129] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_RESULT] null
+2026-06-14 15:32:05.472 [virtual-133] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_START] Tool: write_database
+Args: {}
+2026-06-14 15:32:05.472 [virtual-133] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_RESULT] null
+[2026-06-14 15:37:36.901] [Thread:d470fa93-ce3d-42a3-9f5c-1d6e07662677] [Step:search_starship_news] [REASONER_START]
+Analyzing step: Search the web for the latest news regarding the SpaceX Starship launch.
+--------------------------------------------------------------------------------
+[2026-06-14 15:37:46.302] [Thread:d470fa93-ce3d-42a3-9f5c-1d6e07662677] [Step:search_starship_news] [TOOL_EXECUTION_START]
+Tool: tavily_search
+Args: {"query": "latest SpaceX Starship launch news"}
+--------------------------------------------------------------------------------
+[2026-06-14 15:37:47.938] [Thread:d470fa93-ce3d-42a3-9f5c-1d6e07662677] [Step:search_starship_news] [TOOL_EXECUTION_RESULT]
+Detailed Results:
+
+Title: SpaceX just launched Starship V3 — its most powerful megarocket yet
+URL: https://www.space.com/space-exploration/launches-spacecraft/spacex-starship-v3-megarocket-first-test-flight
+Content: SpaceX just launched Starship V3 — its most powerful megarocket yet — into space for the 1st time in spectacular Flight 12 test (video).
+
+Title: SpaceX launches first Starship V3 - SpaceNews
+URL: https://spacenews.com/spacex-launches-first-starship-v3
+Content: Starship lifted off from the company's facility at Starbase, Texas, at 6:30 p.m. Eastern on a mission designated Flight 12. The launch took
+
+Title: SpaceX Just Revealed Its Biggest Plans Yet - YouTube
+URL: https://www.youtube.com/watch?v=12koKOx6MRQ
+Content: Well my friends SpaceX Starship Flight 13 is getting closer! This ... There's also the latest from Florida, Launch Complex 39A, 37A, New
+
+Title: LIVE: SpaceX launches prototype of Starship rocket in crucial test flight
+URL: https://www.youtube.com/watch?v=x6NwGfpNIHw
+Content: Watch live coverage as SpaceX launches the twelfth test flight of Starship, after scrubbing the May 21 launch due to technical issues.
+
+Title: Elon Musk's SpaceX launches Starship V3 rocket after delays - BBC
+URL: https://www.bbc.com/news/articles/c62d65y16nno
+Content: Elon Musk's SpaceX has launched the largest and most powerful rocket in history after its highly anticipated test flight was delayed.
+--------------------------------------------------------------------------------
+[2026-06-14 15:37:47.942] [Thread:d470fa93-ce3d-42a3-9f5c-1d6e07662677] [Step:search_starship_news] [REASONER_START]
+Analyzing step: Search the web for the latest news regarding the SpaceX Starship launch.
+--------------------------------------------------------------------------------
+[2026-06-14 15:37:55.917] [Thread:d470fa93-ce3d-42a3-9f5c-1d6e07662677] [Step:filter_latest_news] [REASONER_START]
+Analyzing step: Analyze the search results to identify the most current and relevant information.
+--------------------------------------------------------------------------------
+[2026-06-14 15:37:57.144] [Thread:d470fa93-ce3d-42a3-9f5c-1d6e07662677] [Step:summarize_news] [REASONER_START]
+Analyzing step: Summarize the latest news about the SpaceX Starship launch.
+--------------------------------------------------------------------------------
+[2026-06-14 15:38:39.155] [Thread:3ea809e2-3f4a-47f3-9513-3e3ffc63ea87] [Step:search_fable_launch] [REASONER_START]
+Analyzing step: Search for the latest news regarding the launch of the Anthropic Fable model.
+--------------------------------------------------------------------------------
+[2026-06-14 15:38:39.156] [Thread:3ea809e2-3f4a-47f3-9513-3e3ffc63ea87] [Step:search_fable_controversy] [REASONER_START]
+Analyzing step: Search for any controversies or criticisms associated with the Anthropic Fable model launch.
+--------------------------------------------------------------------------------
+[2026-06-14 15:38:39.954] [Thread:3ea809e2-3f4a-47f3-9513-3e3ffc63ea87] [Step:search_fable_controversy] [TOOL_EXECUTION_START]
+Tool: tavily_search
+Args: {"query": "Anthropic Fable model launch controversy criticism"}
+--------------------------------------------------------------------------------
+[2026-06-14 15:38:40.217] [Thread:3ea809e2-3f4a-47f3-9513-3e3ffc63ea87] [Step:search_fable_launch] [TOOL_EXECUTION_START]
+Tool: tavily_search
+Args: {"query": "Anthropic Fable model launch news"}
+--------------------------------------------------------------------------------
+[2026-06-14 15:38:41.775] [Thread:3ea809e2-3f4a-47f3-9513-3e3ffc63ea87] [Step:search_fable_launch] [TOOL_EXECUTION_RESULT]
+Detailed Results:
+
+Title: Anthropic launches Mythos-class Claude Fable 5 model, available ...
+URL: https://finance.yahoo.com/sectors/technology/article/anthropic-launches-mythos-class-claude-fable-5-model-available-to-the-public-170000267.html
+Content: 2. Best 0% APR cards. 3. Best balance transfer cards. 2. Best high-yield savings accounts. 3. Best money market accounts. # Anthropic launches Mythos-class Claude Fable 5 model, available to the public. Anthropic (ANTH.PVT) launched its most powerful AI model yet on Tuesday. Called Claude Fable 5, the software is the first of the company's so-called Mythos-class models. As part of the effort, Anthropic provided the firms with early access to Mythos Preview so they could use it to find and address vulnerabilities in their software. Unlike Mythos Preview, however, Anthropic said Claude Fable 5 will receive a general public release. That's because the company said it has instituted safeguards in the model that block responses to "high-risk areas" such as cybersecurity and biology. Anthropic on Tuesday launched Claude Fable 5, the first of the company's so-called Mythos-class models. In addition to Claude Fable 5, Anthropic said users that were given access to Mythos Preview as part of Project Glasswing will be upgraded to Mythos 5.
+
+Title: Anthropic releases its first Mythos-class model Claude ... - Instagram
+URL: https://www.instagram.com/p/DZX7iZIgL9Q?img_index=4
+Content: BREAKING: Anthropic just launched Claude Fable 5 — its first public Mythos-class AI model. This is the same AI family Anthropic previously
+
+Title: Anthropic just released Fable, their new model, which was ...
+URL: https://www.facebook.com/nxthompson/videos/anthropic-just-released-fable-their-new-model-which-was-previously-nicknamed-myt/1747756176218442
+Content: Anthropic just released Fable, their new model, which was previously nicknamed Mythos. I haven't had enough time to test how good it is.
+
+Title: Anthropic releases Mythos-like AI model to the public, Claude Fable 5
+URL: https://www.cnbc.com/2026/06/09/anthropic-mythos-claude-fable-5.html
+Content: [Skip Navigation](https://www.cnbc.com/2026/06/09/anthropic-mythos-claude-fable-5.html#MainContent). [Markets](https://www.cnbc.com/markets/). *   [Currencies](https://www.cnbc.com/currencies/). *   [Cryptocurrency](https://www.cnbc.com/cryptocurrency/). *   [Bonds](https://www.cnbc.com/bonds/). [Business](https://www.cnbc.com/business/). *   [Economy](https://www.cnbc.com/economy/). *   [Finance](https://www.cnbc.com/finance/). *   [Media](https://www.cnbc.com/media/). *   [Energy](https://www.cnbc.com/energy/). *   [Climate](https://www.cnbc.com/climate/). *   [Transportation](https://www.cnbc.com/transportation/). *   [Industrials](https://www.cnbc.com/industrials/). *   [Retail](https://www.cnbc.com/retail/). *   [Wealth](https://www.cnbc.com/wealth/). *   [Sports](https://www.cnbc.com/sports/). *   [Life](https://www.cnbc.com/life/). [Investing](https://www.cnbc.com/investing/). *   [Fintech](https://www.cnbc.com/fintech/). *   [Earnings](https://www.cnbc.com/earnings/). [Tech](https://www.cnbc.com/technology/). *   [Cybersecurity](https://www.cnbc.com/cybersecurity/). *   [Enterprise](https://www.cnbc.com/enterprise/). *   [Internet](https://www.cnbc.com/internet/). *   [Media](https://www.cnbc.com/media/). *   [Mobile](https://www.cnbc.com/mobile/). [Politics](https://www.cnbc.com/politics/). *   [Policy](https://www.cnbc.com/policy/). *   [Defense](https://www.cnbc.com/defense/). *   [Congress](https://www.cnbc.com/congress/). [Video](https://www.cnbc.com/tv/). [Watchlist](https://www.cnbc.com/watchlist/). *   [My Portfolio](https://www.cnbc.com/my-portfolio/). *   [INTL](https://www.cnbc.com/world/). [Watchlist](https://www.cnbc.com/watchlist/). [SIGN IN](https://www.cnbc.com/2026/06/09/anthropic-mythos-claude-fable-5.html#). [Create free account](https://www.cnbc.com/2026/06/09/anthropic-mythos-claude-fable-5.html#). [Markets](https://www.cnbc.com/markets/). [Business](https://www.cnbc.com/business/). [Investing](https://www.cnbc.com/investing/). [Tech](https://www.cnbc.com/technology/). [Politics](https://www.cnbc.com/politics/). [Video](https://www.cnbc.com/tv/). [Watchlist](https://www.cnbc.com/watchlist/). [Tech](https://www.cnbc.com/technology/). [The Exchange](https://www.cnbc.com/the-exchange/). Claude Fable 5 comes just days after Anthropic said it [confidentially filed](https://www.cnbc.com/2026/06/01/anthropic-ipo-s1-prospectus.html) its IPO prospectus with the Securities and Exchange Commission, setting up a potentially historic share sale after the company experienced a period of explosive growth this year. *   [](https://www.facebook.com/cnbc/). *   [](https://www.twitter.com/cnbc/). *   [](https://www.linkedin.com/company/cnbc/). *   [](https://www.instagram.com/cnbc/). *   [](https://www.youtube.com/user/cnbc/). *   [](https://www.cnbc.com/rss-feeds/). *   [CNBC Councils](https://www.cnbccouncils.com/). *   [Corrections](https://www.cnbc.com/corrections/). *   [About CNBC](https://www.cnbc.com/about/). *   [Podcasts](https://www.cnbc.com/podcast/). [Get In Touch](https://www.cnbc.com/news-tips/). *   ![Image 15: California Consumer Privacy Act (CCPA) Opt-Out Icon](https://static-redesign.cnbcfm.com/dist/17269f1b6083fd5f61be.svg)[Your Privacy Choices](https://www.cnbc.com/2026/06/09/anthropic-mythos-claude-fable-5.html). *   [Terms of Service](https://www.cnbc.com/terms/).
+
+Title: Anthropic Releases Fable 5, a 'Mythos-Class' AI Model With Guardrails
+URL: https://www.wsj.com/tech/ai/anthropic-claude-fable-ai-model-f41fb5d7
+Content: 2.   [Artificial Intelligence](https://www.wsj.com/tech/ai?mod=breadcrumb). [Video 2](https://www.wsj.com/tech/ai/anthropic-claude-fable-ai-model-f41fb5d7). [Video 3](https://www.wsj.com/tech/ai/anthropic-claude-fable-ai-model-f41fb5d7). 0:00![Image 1](https://www.wsj.com/tech/ai/anthropic-claude-fable-ai-model-f41fb5d7). [![Image 3](https://images.wsj.net/im-57678767?width=330&height=185)](https://www.wsj.com/tech/ai/democrats-unveil-flood-of-ai-proposals-in-potential-challenge-to-tech-giants-16819bfc?mod=WTRN_pos1). [Sen. Adam Schiff and other lawmakers seek oversight of the Pentagon’s AI use.](https://www.wsj.com/tech/ai/democrats-unveil-flood-of-ai-proposals-in-potential-challenge-to-tech-giants-16819bfc?mod=WTRN_pos1). [Continue To Article](https://www.wsj.com/tech/ai/democrats-unveil-flood-of-ai-proposals-in-potential-challenge-to-tech-giants-16819bfc?mod=WTRN_pos1). ### [Wall Street Is Rushing to Fund the AI Bonanza in Every Conceivable Way](https://www.wsj.com/finance/investing/global-stocks-markets-dow-news-06-08-2026-aac7c547?mod=WTRN_pos2). [![Image 4](https://images.wsj.net/im-39212091?width=330&height=185)](https://www.wsj.com/finance/investing/global-stocks-markets-dow-news-06-08-2026-aac7c547?mod=WTRN_pos2). [From giant debt deals to IPOs, tech companies keep raking in investor cash.](https://www.wsj.com/finance/investing/global-stocks-markets-dow-news-06-08-2026-aac7c547?mod=WTRN_pos2). [Continue To Article](https://www.wsj.com/finance/investing/global-stocks-markets-dow-news-06-08-2026-aac7c547?mod=WTRN_pos2). ### [Tech, Media & Telecom Roundup: Market Talk](https://www.wsj.com/business/tech-media-telecom-roundup-market-talk-a22e6776?mod=WTRN_pos4). [![Image 5](https://images.wsj.net/im-03491966?width=330&height=185)](https://www.wsj.com/business/tech-media-telecom-roundup-market-talk-a22e6776?mod=WTRN_pos4). [Find insight on private-equity trends, cryptocurrencies and more in the latest Market Talks covering Technology, Media and Telecom.](https://www.wsj.com/business/tech-media-telecom-roundup-market-talk-a22e6776?mod=WTRN_pos4). [Continue To Article](https://www.wsj.com/business/tech-media-telecom-roundup-market-talk-a22e6776?mod=WTRN_pos4). ### [OpenAI Files to Go Public in Test of Investor Appetite for Top AI Startups](https://www.wsj.com/tech/ai/openai-ipo-paperwork-eb7bebe1?mod=WTRN_pos5). [![Image 6](https://images.wsj.net/im-92083107?width=330&height=185)](https://www.wsj.com/tech/ai/openai-ipo-paperwork-eb7bebe1?mod=WTRN_pos5). [The ChatGPT maker confidentially filed for an offering, but said ‘it may be a while’ before it goes public](https://www.wsj.com/tech/ai/openai-ipo-paperwork-eb7bebe1?mod=WTRN_pos5). [Continue To Article](https://www.wsj.com/tech/ai/openai-ipo-paperwork-eb7bebe1?mod=WTRN_pos5). ### [Tech, Media & Telecom Roundup: Market Talk](https://www.wsj.com/business/tech-media-telecom-roundup-market-talk-24326580?mod=WTRN_pos6). [![Image 7](https://images.wsj.net/im-45348394?width=330&height=185)](https://www.wsj.com/business/tech-media-telecom-roundup-market-talk-24326580?mod=WTRN_pos6). [Continue To Article](https://www.wsj.com/business/tech-media-telecom-roundup-market-talk-24326580?mod=WTRN_pos6). ### [OpenAI Files for IPO](https://www.wsj.com/tech/openai-files-for-ipo-824ecc5e?mod=WTRN_pos7). [![Image 8](https://images.wsj.net/im-92083107?width=330&height=185)](https://www.wsj.com/tech/openai-files-for-ipo-824ecc5e?mod=WTRN_pos7). [Continue To Article](https://www.wsj.com/tech/openai-files-for-ipo-824ecc5e?mod=WTRN_pos7). [![Image 21](https://images.wsj.net/im-16986744?size=1.5)](https://www.wsj.com/tech/ai/broadcom-apollo-blackstone-launch-35-billion-ai-infrastructure-platform-8fc8f65e?mod=wsj_furtherreading_pos_1). [![Image 22](https://images.wsj.net/im-77588486?size=1.5)](https://www.wsj.com/tech/ai/chinas-deepseek-launches-long-awaited-ai-model-066a7d6e?mod=wsj_furtherreading_pos_2). [![Image 23](https://images.wsj.net/im-00626829?size=1.5)](https://www.wsj.com/tech/ai/meta-ai-model-muse-spark-09ceeac5?mod=wsj_furtherreading_pos_3). [![Image 25](https://images.wsj.net/im-81541522?size=1.5)](https://www.wsj.com/tech/ai/anthropic-set-to-preview-powerful-mythos-model-to-ward-off-ai-cyberthreats-75683cf5?mod=wsj_furtherreading_pos_5).
+--------------------------------------------------------------------------------
+[2026-06-14 15:38:41.789] [Thread:3ea809e2-3f4a-47f3-9513-3e3ffc63ea87] [Step:search_fable_launch] [REASONER_START]
+Analyzing step: Search for the latest news regarding the launch of the Anthropic Fable model.
+--------------------------------------------------------------------------------
+[2026-06-14 15:38:42.687] [Thread:3ea809e2-3f4a-47f3-9513-3e3ffc63ea87] [Step:search_fable_controversy] [TOOL_EXECUTION_RESULT]
+Detailed Results:
+
+Title: Anthropic's New Fable AI Model Is Met With User Backlash ... - WSJ
+URL: https://www.wsj.com/tech/ai/anthropic-fable-restrictions-ai-developers-cd9bf57c
+Content: *   [Video](https://www.wsj.com/video?mod=wsjheader). *   [U.S.](https://www.wsj.com/us-news?mod=nav_top_section "U.S."). *   [Tech](https://www.wsj.com/tech?mod=nav_top_section "Tech"). *   [Opinion](https://www.wsj.com/opinion?mod=nav_top_section "Opinion"). 2.   [Artificial Intelligence](https://www.wsj.com/tech/ai?mod=breadcrumb). Dubbed [Claude Fable 5](https://www.wsj.com/tech/ai/anthropic-claude-fable-ai-model-f41fb5d7?mod=article_inline), the new model that Anthropic released Tuesday is an update to the Mythos model that the company said was too dangerous to release widely. [![Image 3: Switzerland’s Radical Proposal on Immigration: Cap the Population](https://images.wsj.net/im-61621750?size=1.5&width=161&height=90)](https://www.wsj.com/world/europe/switzerlands-radical-proposal-on-immigration-cap-the-population-467967f5?mod=trending_now_news_1). [![Image 4: Students Are Using a ‘Backdoor’ to Attend Their Dream Schools](https://images.wsj.net/im-71529028?size=1.5&width=161&height=90)](https://www.wsj.com/us-news/education/college-admissions-alternative-enrollment-programs-community-online-87c10b03?mod=trending_now_news_2). [![Image 5: Trump Says Iran Deal Is Close but Tehran Says No Decision Has Been Made](https://images.wsj.net/im-95887520?size=1.5&width=161&height=90)](https://www.wsj.com/world/middle-east/trump-iran-strikes-peace-talks-38996e77?mod=trending_now_news_3). [![Image 6: You Have No Idea What a Trillion Dollars Is—and We Have Proof](https://images.wsj.net/im-62218362?size=1.5&width=161&height=90)](https://www.wsj.com/business/trillions-game-spacex-first-trillionaire-elon-musk-75cfbf1b?mod=trending_now_news_4). [![Image 7: What Elon Musk Bought and Sold During His Quest to ‘Own No House’](https://images.wsj.net/im-32341051?size=1.5&width=161&height=90)](https://www.wsj.com/real-estate/luxury-homes/elon-musk-homes-15968bfb?mod=trending_now_news_5). [![Image 8: Is That All From the GOP Congress?](https://opinion-images.wsj.net/im-91520178/?size=1.5&width=161&height=90)](https://www.wsj.com/opinion/congress-republicans-reconciliation-bill-defense-donald-trump-mitch-mcconnell-854e0eaa?mod=trending_now_opn_1). [![Image 9: ‘Rocky’ and the Love of America](https://opinion-images.wsj.net/im-61223576/?size=1.5&width=161&height=90)](https://www.wsj.com/opinion/rocky-and-the-love-of-america-94149587?mod=trending_now_opn_2). [![Image 10: Kathy Hochul and the ‘Gestating Parent’](https://opinion-images.wsj.net/im-38387230/?size=1.5&width=161&height=90)](https://www.wsj.com/opinion/new-york-bill-gestating-parent-kathy-hochul-a1dcd19e?mod=trending_now_opn_3). [![Image 12: Scott Pelley’s Idea of Journalism](https://opinion-images.wsj.net/im-12717848/?size=1.5&width=161&height=90)](https://www.wsj.com/opinion/scott-pelleys-idea-of-journalism-4f10d8f5?mod=trending_now_opn_5). [![Image 14](https://images.wsj.net/im-75588578?size=1.37)](https://www.wsj.com/business/ai-needs-ajinomotos-film-but-its-ceo-wont-raise-prices-just-because-90d4782b?mod=wsj_furtherreading_pos_2). [![Image 15](https://images.wsj.net/im-71598837?size=1.47)](https://www.wsj.com/tech/ai/bezos-bats-down-ai-job-loss-fears-while-launching-new-venture-d1e6fb09?mod=wsj_furtherreading_pos_3). [![Image 16](https://images.wsj.net/im-92623094?size=1.5)](https://www.wsj.com/finance/investing/kkr-launches-10b-ai-infrastructure-company-with-nvidia-vistra-kuwait-47a8246b?mod=wsj_furtherreading_pos_4). [![Image 17](https://images.wsj.net/im-71692700?size=1.5)](https://www.wsj.com/tech/ai/anthropic-claude-fable-ai-model-f41fb5d7?mod=wsj_furtherreading_pos_5). ### [Anthropic Releases New ‘Mythos-Class’ Model to General Public With Guardrails](https://www.wsj.com/tech/ai/anthropic-claude-fable-ai-model-f41fb5d7?mod=wsj_furtherreading_pos_5).
+
+Title: The Fable 5 Backlash Is Getting Serious - YouTube
+URL: https://www.youtube.com/watch?v=9LzBF70aI6k
+Content: The Fable 5 Backlash Is Getting Serious
+AI Revolution
+552000 subscribers
+225 likes
+2725 views
+11 Jun 2026
+Claude Fable 5 is already facing huge backlash, and the reason is bigger than simple safety filters. Users say Anthropic’s newest Claude model is refusing harmless prompts, triggering false alarms, and in some cases limiting advanced AI-related work in ways that were not clearly visible at first. Fable 5 may still be one of the most powerful public AI models ever released, but the controversy is now about trust: when Claude gives you an answer, are you getting the real Fable 5, a downgraded Opus fallback, or a weakened version shaped behind the scenes?
+
+📩 Brand Deals & Partnerships: collabs@nouralabs.com
+✉️ General Inquiries: airevolutionofficial@gmail.com
+🚀 New Channel: https://www.youtube.com/@space.revolution
+
+📌 What You’ll See:
+The Register on Fable 5 blocking harmless prompts, including the “hello” example
+SOURCE: https://www.theregister.com/ai-and-ml/2026/06/10/anthropic-claude-fable-5-refuses-innocuous-prompts/5253754
+Business Insider on Anthropic admitting it made the wrong tradeoff with Fable 5 guardrails
+SOURCE: https://www.businessinsider.com/anthropic-mythos-made-wrong-tradeoff-new-model-guardrails-llm-development-2026-6
+The Verge on Anthropic apologizing for invisible Claude Fable guardrails
+SOURCE: https://www.theverge.com/ai-artificial-intelligence/948280/anthropic-claude-fable-invisible-distillation-guardrail
+Anthropic’s official Claude Fable 5 and Claude Mythos 5 announcement
+SOURCE: https://www.anthropic.com/news/claude-fable-5-mythos-5
+Claude Fable 5 and Claude Mythos 5 system card
+SOURCE: https://www-cdn.anthropic.com/d00db56fa754a1b115b6dd7cb2e3c342ee809620.pdf
+
+🚨 Why It Matters
+Claude Fable 5 shows a new problem in frontier AI. The most powerful models are no longer judged only by how smart they are, but by how much users can trust what they are getting. If a model can refuse harmless work, fall back to a weaker model, or limit certain answers behind the scenes, the real question becomes whether closed AI systems are becoming too controlled to fully trust.
+
+#ai #fable5 #anthropic
+42 comments
+
+
+Title: Anthropic's Fable is the most locked-down public model we've ...
+URL: https://www.understandingai.org/p/anthropics-fable-is-the-most-locked
+Content: When Anthropic announced its latest model, Claude Fable 5, on Tuesday, a statement tucked away on page 13 of the system card attracted an immediate outcry. AI researcher Nathan Lambert called it “appalling.” Dean Ball, who worked on AI policy in the Trump White House, wrote that it was “shockingly hostile.” Many others joined in the pile-on. Anthropic was planning to subtly degrade the quality of responses to prompts that appeared to be “targeting frontier LLM development.” Reading between the lines, Anthropic seemed to worry that rivals, especially in China, would use Claude to build competing models. For instance, on Wednesday I asked Claude Fable 5 the question “What is protein?” This was enough to trigger a downgrade. The reason that Fable 5’s safeguards are so strict is that it is based on Claude Mythos, a model so capable at hacking that Anthropic decided in April not to release it to the general public.
+
+Title: Researchers Are Furious Over Anthropic's Hidden AI Limits - Business Insider
+URL: https://www.businessinsider.com/researchers-furious-anthropic-mythos-fable-hidden-ai-limits-2026-6
+Content: # Anthropic purposely made its new Mythos-based models bad at AI research, and developers are fuming. In a system card for Mythos 5 and Fable 5 published Tuesday, Anthropic said it limited the models' usefulness for tasks related to developing frontier large language models. "Anthropic's latest model will NOT help you if it thinks your ML research/ML engineering is interesting, and/or will secretly degrade its IQ so that the average engineer won't notice," AI research firm SemiAnalysis wrote on X on Tuesday, referring to machine learning, a type of AI. "mythos will be bad ON PURPOSE on ai 'frontier llm research' tasks, this is very very sad for the research community," Elie Bakouch, an AI model training expert at startup Prime Intellect, wrote on X. Look out for an alert in your inbox the next time  publishes a story! Look out for an alert in your inbox the next time a new  story is published!
+
+Title: Anthropic Says It's Taking Claude Fable 5 Offline to Comply With US ...
+URL: https://www.wired.com/story/anthropic-says-us-government-ordered-it-to-shut-down-mythos-models
+Content: [![Image 5: Here’s How AI Agents Can Protect EV Chargers](https://media.wired.com/photos/6a2aad442915c6817b50fff5/16:9/w_640%2Cc_limit/undefined)](https://www.wired.com/story/researchers-in-spain-show-how-ai-agents-can-protect-ev-chargers/#intcid=_wired-article-bottom-recirc-bkt-a_38350522-44e6-4e67-8ae7-10cec47065ee_closr_fallback_cral-top2-2). [![Image 6: Anthropic Says It’s Taking Claude Fable 5 Offline to Comply With US Government Order](https://media.wired.com/photos/6a2cb2e540437fd74449a752/16:9/w_640%2Cc_limit/undefined)](https://www.wired.com/story/anthropic-says-us-government-ordered-it-to-shut-down-mythos-models/#intcid=_wired-article-bottom-recirc-bkt-a_38350522-44e6-4e67-8ae7-10cec47065ee_closr_fallback_cral-top2-2). [Anthropic Says It’s Taking Claude Fable 5 Offline to Comply With US Government Order](https://www.wired.com/story/anthropic-says-us-government-ordered-it-to-shut-down-mythos-models/#intcid=_wired-article-bottom-recirc-bkt-a_38350522-44e6-4e67-8ae7-10cec47065ee_closr_fallback_cral-top2-2). [![Image 7: Meta Employees Absolutely Hate Mark Zuckerberg’s Plan for a Companywide AI Hackathon](https://media.wired.com/photos/6a29a9c94fc22a32725fb4b6/16:9/w_640%2Cc_limit/undefined)](https://www.wired.com/story/meta-employees-absolutely-hate-mark-zuckerbergs-hackathon-idea/#intcid=_wired-article-bottom-recirc-bkt-a_38350522-44e6-4e67-8ae7-10cec47065ee_closr_fallback_cral-top2-2). [![Image 8: ‘Tell Him He’s a Piece of Shit’: Meta’s New AI Unit Is a Total Mess](https://media.wired.com/photos/6a2c555e0473de232b255ae6/16:9/w_640%2Cc_limit/undefined)](https://www.wired.com/story/mark-zuckerberg-meta-employee-meeting-interrupt-ai/#intcid=_wired-article-bottom-recirc-bkt-a_38350522-44e6-4e67-8ae7-10cec47065ee_closr_fallback_cral-top2-2). [![Image 9: Donald Trump’s White House UFC Event Would Be Embarrassing Anywhere](https://media.wired.com/photos/6a2c08dfad190de9ce708f41/16:9/w_640%2Cc_limit/undefined)](https://www.wired.com/story/donald-trumps-white-house-ufc-event-would-be-embarrassing-anywhere/#intcid=_wired-article-bottom-recirc-bkt-a_38350522-44e6-4e67-8ae7-10cec47065ee_closr_fallback_cral-top2-2). [![Image 10: Chinese Drivers Are Using Tiny Plastic Heads to Fool Tesla’s Autopilot Safeguards](https://media.wired.com/photos/6a2b1869a0ec339aba978d7d/16:9/w_640%2Cc_limit/undefined)](https://www.wired.com/story/chinese-drivers-are-using-tiny-plastic-heads-to-fool-teslas-autopilot-safeguards/#intcid=_wired-article-bottom-recirc-bkt-a_38350522-44e6-4e67-8ae7-10cec47065ee_closr_fallback_cral-top2-2). [![Image 11: Elon Musk Is the World’s First Trillionaire](https://media.wired.com/photos/6a2c365a14f8a13c2f9c4aa1/16:9/w_640%2Cc_limit/undefined)](https://www.wired.com/story/elon-musk-is-the-worlds-first-trillionaire-wow/#intcid=_wired-article-bottom-recirc-bkt-a_38350522-44e6-4e67-8ae7-10cec47065ee_closr_fallback_cral-top2-2). [![Image 12: China Didn’t Make Americans Hate Data Centers](https://media.wired.com/photos/6a2bc68dcccd59782588bff1/16:9/w_640%2Cc_limit/undefined)](https://www.wired.com/story/china-us-data-center-opposition/#intcid=_wired-article-bottom-recirc-bkt-a_38350522-44e6-4e67-8ae7-10cec47065ee_closr_fallback_cral-top2-2). [![Image 14: A White Supremacist Youth Group Helped Orchestrate the Belfast Riots](https://media.wired.com/photos/6a2b2d394b6bc680abb42459/16:9/w_640%2Cc_limit/undefined)](https://www.wired.com/story/a-white-supremacist-youth-group-helped-orchestrate-the-belfast-riots/#intcid=_wired-article-bottom-recirc-bkt-a_38350522-44e6-4e67-8ae7-10cec47065ee_closr_fallback_cral-top2-2). [![Image 15: Real-Life Disclosure Day Will Look Nothing Like Steven Spielberg’s New Movie](https://media.wired.com/photos/6a28743ce76eea53dfe3ee41/16:9/w_640%2Cc_limit/undefined)](https://www.wired.com/story/real-life-disclosure-day-wont-look-like-steven-spielberg-movie/#intcid=_wired-article-bottom-recirc-bkt-a_38350522-44e6-4e67-8ae7-10cec47065ee_closr_fallback_cral-top2-2). [![Image 16: Matchmakers Are Being Paid $25K to Find Trad Wives for Rich Men](https://media.wired.com/photos/6a29f962c0fecd3f62f1da5b/16:9/w_640%2Cc_limit/undefined)](https://www.wired.com/story/matchmakers-are-being-paid-dollar25k-to-find-trad-wives-for-rich-men/#intcid=_wired-article-bottom-recirc-bkt-a_38350522-44e6-4e67-8ae7-10cec47065ee_closr_fallback_cral-top2-2).
+--------------------------------------------------------------------------------
+[2026-06-14 15:38:42.711] [Thread:3ea809e2-3f4a-47f3-9513-3e3ffc63ea87] [Step:search_fable_controversy] [REASONER_START]
+Analyzing step: Search for any controversies or criticisms associated with the Anthropic Fable model launch.
+--------------------------------------------------------------------------------
+[2026-06-14 15:38:43.664] [Thread:3ea809e2-3f4a-47f3-9513-3e3ffc63ea87] [Step:synthesize_findings] [REASONER_START]
+Analyzing step: Synthesize the gathered information to provide a summary of the Fable model launch and its controversy.
+--------------------------------------------------------------------------------

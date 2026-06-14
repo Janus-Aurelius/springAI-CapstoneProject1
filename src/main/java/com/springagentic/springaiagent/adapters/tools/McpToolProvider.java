@@ -65,22 +65,16 @@ public class McpToolProvider implements ApplicationListener<ApplicationReadyEven
             }
         }
 
+        // Explicit Tool Metadata Mapping
         SandboxProfile profile = SandboxProfile.COMPUTE;
-        
         boolean isMutating = false;
         boolean requiresApproval = false;
-        
-        String lowerName = name.toLowerCase();
-        String lowerDesc = description != null ? description.toLowerCase() : "";
-        
-        if (matchesMutationVerb(lowerName) || matchesMutationVerb(lowerDesc)) {
+
+        if (isFetchTool(name)) {
+            profile = SandboxProfile.FETCH;
+        } else if (isMutatingTool(name)) {
             isMutating = true;
             requiresApproval = true;
-        }
-
-        if (lowerName.contains("fetch") || lowerName.contains("search") || lowerName.contains("network") || lowerName.contains("web") ||
-            lowerDesc.contains("fetch") || lowerDesc.contains("search") || lowerDesc.contains("network") || lowerDesc.contains("web")) {
-            profile = SandboxProfile.FETCH;
         }
 
         log.info("Registering MCP Tool: {} [Profile: {}, Mutating: {}, Approval: {}]", 
@@ -88,9 +82,16 @@ public class McpToolProvider implements ApplicationListener<ApplicationReadyEven
         toolRegistry.registerTool(name, description, jsonSchema, isMutating, requiresApproval, profile);
     }
 
-    private boolean matchesMutationVerb(String text) {
-        return text.contains("write") || text.contains("delete") || text.contains("update") || 
-               text.contains("run") || text.contains("execute") || text.contains("send") || 
-               text.contains("post") || text.contains("modify") || text.contains("create");
+    private boolean isFetchTool(String name) {
+        return name.contains("search") || name.contains("fetch") || name.contains("list") || 
+               name.contains("get") || name.contains("read") || name.contains("navigate") || 
+               name.contains("screenshot") || name.contains("query");
+    }
+
+    private boolean isMutatingTool(String name) {
+        return name.contains("write") || name.contains("delete") || name.contains("update") || 
+               name.contains("create") || name.contains("push") || name.contains("merge") || 
+               name.contains("execute") || name.contains("fill") || name.contains("click") ||
+               name.contains("hover") || name.contains("evaluate");
     }
 }

@@ -32,6 +32,14 @@ public class Planner {
             Distilled Step Summaries of Completed Steps so far:
             {summaries}
             
+            Available contextual tools for information gathering:
+            - tavily_search: Perform a web search to gather up-to-date information.
+            - get_file_contents: Read the contents of a file from a repository.
+            - list_issues: List issues in a GitHub repository.
+            - query: Execute a SQL query on the isolated database.
+            
+            You may schedule steps that utilize these tools to gather context before performing actions.
+            
             IMPORTANT: Output ONLY the final Plan JSON structure. Do NOT write any discussion, commentary, preamble, or conversational debate. Keep your step descriptions and plan simple.
             """;
 

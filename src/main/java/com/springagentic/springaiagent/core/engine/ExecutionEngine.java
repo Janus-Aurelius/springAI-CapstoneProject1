@@ -27,6 +27,7 @@ import java.util.concurrent.Future;
 public class ExecutionEngine {
 
     private static final Logger log = LoggerFactory.getLogger(ExecutionEngine.class);
+    private static final Logger reasoningLog = LoggerFactory.getLogger("ReasoningTrace");
 
     private final Planner planner;
     private final Reasoner reasoner;
@@ -421,12 +422,13 @@ public class ExecutionEngine {
                             // 1. Scrub arguments through DLP before any dispatch
                             secretRedactor.assertClean(action.toolName(), action.jsonArgs());
 
-                            ReasoningTraceLogger.logTrace(sharedContext.getThreadId(), step.stepId(), "TOOL_EXECUTION_START", 
-                                String.format("Tool: %s\nArgs: %s", action.toolName(), action.jsonArgs()));
+                            reasoningLog.info("[{}] [{}] [TOOL_EXECUTION_START] Tool: {}\nArgs: {}", 
+                                sharedContext.getThreadId(), step.stepId(), action.toolName(), action.jsonArgs());
 
                             if (toolExecutor.supports(action.toolName())) {
                                 String toolResult = toolExecutor.execute(action.toolName(), action.jsonArgs());
-                                ReasoningTraceLogger.logTrace(sharedContext.getThreadId(), step.stepId(), "TOOL_EXECUTION_RESULT", toolResult);
+                                reasoningLog.info("[{}] [{}] [TOOL_EXECUTION_RESULT] {}", 
+                                    sharedContext.getThreadId(), step.stepId(), toolResult);
                                 String truncatedResult = observationTruncator.truncate(toolResult, llmProperties.guardrails().maxObservationTokens());
                                 obs = "Action [" + action.toolName() + "] Result: " + truncatedResult;
                             } else {
@@ -434,7 +436,8 @@ public class ExecutionEngine {
                                 SandboxProfile profile = toolRegistry.getSandboxProfile(action.toolName());
                                 try (ManagedSandbox sandbox = containerFactory.lease(profile)) {
                                     String toolResult = executeToolInSandbox(action.toolName(), action.jsonArgs(), sandbox);
-                                    ReasoningTraceLogger.logTrace(sharedContext.getThreadId(), step.stepId(), "TOOL_EXECUTION_RESULT_SANDBOX", toolResult);
+                                    reasoningLog.info("[{}] [{}] [TOOL_EXECUTION_RESULT_SANDBOX] {}", 
+                                        sharedContext.getThreadId(), step.stepId(), toolResult);
                                     String truncatedResult = observationTruncator.truncate(toolResult, llmProperties.guardrails().maxObservationTokens());
                                     obs = "Action [" + action.toolName() + "] Result: " + truncatedResult;
                                 } catch (ResourceUnavailableException e) {

@@ -1,5 +1,7 @@
 package com.springagentic.springaiagent.adapters.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.springagentic.springaiagent.core.engine.TaskRouter;
 import com.springagentic.springaiagent.framework.registry.AgentDefinition;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +20,7 @@ import io.modelcontextprotocol.client.McpSyncClient;
 @RequestMapping("/api/v1/agent")
 public class AgentController {
 
+    private static final Logger log = LoggerFactory.getLogger(AgentController.class);
     private final TaskRouter taskRouter;
     private final ExecutionEngine executionEngine;
     private final MemoryStore memoryStore;
@@ -69,7 +72,7 @@ public class AgentController {
         // Generate a random threadId for this request
         String threadId = request.threadId() != null ? request.threadId() : UUID.randomUUID().toString();
 
-        System.out.println("STARTING REQUEST for Thread: " + threadId);
+        log.info("STARTING REQUEST for Thread: {}", threadId);
 
         // The magic happens here!
         com.springagentic.springaiagent.core.domain.AgentContext context = 
