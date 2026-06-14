@@ -126,6 +126,7 @@ public class McpContainerFactory {
         CreateContainerResponse response = dockerClient.createContainerCmd(imageToUse)
                 .withHostConfig(hostConfig)
                 .withEnv(env)
+                .withLabels(Map.of("com.springagentic.sandbox", "true", "profile", profile.name()))
                 .withCmd("sleep", "3600")
                 .exec();
 

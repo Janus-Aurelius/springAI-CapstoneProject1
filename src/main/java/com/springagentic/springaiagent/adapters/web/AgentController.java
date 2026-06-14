@@ -22,17 +22,23 @@ public class AgentController {
     private final ExecutionEngine executionEngine;
     private final MemoryStore memoryStore;
     private final org.springframework.context.ApplicationContext applicationContext;
+    private final org.springframework.ai.chat.memory.ChatMemory chatMemory;
 
     public AgentController(TaskRouter taskRouter, ExecutionEngine executionEngine, MemoryStore memoryStore,
-                           org.springframework.context.ApplicationContext applicationContext) {
+                           org.springframework.context.ApplicationContext applicationContext,
+                           org.springframework.ai.chat.memory.ChatMemory chatMemory) {
         this.taskRouter = taskRouter;
         this.executionEngine = executionEngine;
         this.memoryStore = memoryStore;
         this.applicationContext = applicationContext;
+        this.chatMemory = chatMemory;
     }
 
     private List<String> getAllAllowedTools() {
-        List<String> allowedTools = new java.util.ArrayList<>(List.of("search_database", "calculate_metrics", "write_database", "search_archive", "web_search"));
+        List<String> allowedTools = new java.util.ArrayList<>(List.of(
+            "search_database", "calculate_metrics", "write_database", "search_archive", "web_search",
+            "save_memory", "search_memory"
+        ));
         java.util.Map<String, McpSyncClient> clientsMap = applicationContext.getBeansOfType(McpSyncClient.class);
         for (io.modelcontextprotocol.client.McpSyncClient client : clientsMap.values()) {
             try {
@@ -123,6 +129,38 @@ public class AgentController {
                 context.getSuspendedToolName(),
                 context.getSuspendedToolArgs()
         );
+    }
+
+    @PostMapping("/memory/test")
+    public java.util.Map<String, Object> testMemory(@RequestBody java.util.Map<String, String> body) {
+        String sessionId = body.getOrDefault("sessionId", "test-session-" + UUID.randomUUID().toString());
+        String userMessage = body.getOrDefault("message", "Hello Redis Agent Memory!");
+
+        if (chatMemory == null) {
+            return java.util.Map.of("status", "ERROR", "message", "ChatMemory bean not found.");
+        }
+
+        try {
+            // 1. Add message to Redis memory
+            org.springframework.ai.chat.messages.UserMessage msg = new org.springframework.ai.chat.messages.UserMessage(userMessage);
+            chatMemory.add(sessionId, List.of(msg));
+
+            // 2. Retrieve history from Redis memory
+            List<org.springframework.ai.chat.messages.Message> history = chatMemory.get(sessionId);
+            List<String> contents = history.stream().map(org.springframework.ai.chat.messages.Message::getText).toList();
+
+            return java.util.Map.of(
+                "status", "SUCCESS",
+                "sessionId", sessionId,
+                "sentMessage", userMessage,
+                "retrievedHistory", contents
+            );
+        } catch (Exception e) {
+            return java.util.Map.of(
+                "status", "FAILED",
+                "error", e.getMessage()
+            );
+        }
     }
 
     // Records for incoming HTTP JSON

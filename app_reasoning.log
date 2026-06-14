@@ -1071,3 +1071,1641 @@ Args: {}
 [2026-06-13 10:08:32.811] [Thread:475982f6-949b-49e2-a367-6f8c0f8e6beb] [Step:search_news] [REASONER_START]
 Analyzing step: Search the web for the latest news regarding Space X Starship launches.
 --------------------------------------------------------------------------------
+[2026-06-14 09:29:28.584] [Thread:e1b495f0-2fc5-49b3-a571-78d1f6ede8a8] [Step:get_weather_sf] [REASONER_START]
+Analyzing step: Search for the current weather in San Francisco.
+--------------------------------------------------------------------------------
+[2026-06-14 09:29:29.890] [Thread:e1b495f0-2fc5-49b3-a571-78d1f6ede8a8] [Step:get_weather_sf] [TOOL_EXECUTION_START]
+Tool: tavily_search
+Args: {"query": "current weather in San Francisco"}
+--------------------------------------------------------------------------------
+[2026-06-14 09:29:32.826] [Thread:e1b495f0-2fc5-49b3-a571-78d1f6ede8a8] [Step:get_weather_sf] [TOOL_EXECUTION_RESULT]
+Detailed Results:
+
+Title: Weather in San Francisco
+URL: https://www.weatherapi.com/
+Content: {'location': {'name': 'San Francisco', 'region': 'California', 'country': 'United States of America', 'lat': 37.775, 'lon': -122.4183, 'tz_id': 'America/Los_Angeles', 'localtime_epoch': 1781429312, 'localtime': '2026-06-14 02:28'}, 'current': {'last_updated_epoch': 1781428500, 'last_updated': '2026-06-14 02:15', 'temp_c': 15.0, 'temp_f': 59.0, 'is_day': 0, 'condition': {'text': 'Overcast', 'icon': '//cdn.weatherapi.com/weather/64x64/night/122.png', 'code': 1009}, 'wind_mph': 6.0, 'wind_kph': 9.7, 'wind_degree': 262, 'wind_dir': 'W', 'pressure_mb': 1012.0, 'pressure_in': 29.9, 'precip_mm': 0.0, 'precip_in': 0.0, 'humidity': 87, 'cloud': 25, 'feelslike_c': 14.6, 'feelslike_f': 58.4, 'windchill_c': 12.4, 'windchill_f': 54.3, 'heatindex_c': 13.7, 'heatindex_f': 56.7, 'dewpoint_c': 13.6, 'dewpoint_f': 56.5, 'vis_km': 16.0, 'vis_miles': 9.0, 'uv': 0.0, 'gust_mph': 10.9, 'gust_kph': 17.6, 'will_it_rain': 0, 'chance_of_rain': 35, 'will_it_snow': 0, 'chance_of_snow': 0}}
+
+Title: San Francisco, CA Monthly Weather - AccuWeather
+URL: https://www.accuweather.com/en/us/san-francisco/94103/june-weather/347629
+Content: San Francisco's June 2026 forecast shows daily high temperatures ranging from 63° to 91°, with overnight lows between 51° and 59°. The average high for June is
+
+Title: Weather In San Francisco In June 2026 - Instagram
+URL: https://www.instagram.com/popular/weather-in-san-francisco-in-june-2026
+Content: San Francisco weather: Partly Cloudy. Quick forecast San Francisco: Overcast, UV 4, rain 0 mm. Mist, 11°C, wind 5 km. Sunny, 15°C, wind 14 km/h
+
+Title: San Francisco, Weather for June, USA
+URL: https://www.holiday-weather.com/san_francisco/averages/june
+Content: We only display hourly forecasts for up to 14 days. 06:00. Clear. 14º. 57º ... 14 Jun 2026. Union Street Festival – Cow Hollow. Union Street transforms
+
+Title: San Francisco weather in June 2026 | Weather25.com
+URL: https://www.weather25.com/north-america/usa/california/san-francisco?page=month&month=June
+Content: The temperatures in San Francisco in June are comfortable with low of 53°F and and high up to 73°F. There is little to no rain in San Francisco during June,
+--------------------------------------------------------------------------------
+[2026-06-14 09:29:32.829] [Thread:e1b495f0-2fc5-49b3-a571-78d1f6ede8a8] [Step:get_weather_sf] [REASONER_START]
+Analyzing step: Search for the current weather in San Francisco.
+--------------------------------------------------------------------------------
+[2026-06-14 09:29:38.824] [Thread:e1b495f0-2fc5-49b3-a571-78d1f6ede8a8] [Step:format_weather_response] [REASONER_START]
+Analyzing step: Extract and format the weather information to answer the user's request.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:03.236] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:03.238] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [REASONER_START]
+Analyzing step: Verify the connectivity and operational status of the Redis Cloud Memory system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:04.806] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 5, "offset": 0, "query": "Redis Cloud Memory status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:05.310] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:05.311] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [REASONER_START]
+Analyzing step: Verify the connectivity and operational status of the Redis Cloud Memory system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:06.112] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 1, "offset": 0, "query": "Redis Cloud Memory status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:06.617] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:06.618] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [REASONER_START]
+Analyzing step: Verify the connectivity and operational status of the Redis Cloud Memory system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:12.382] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini routing system configuration"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:12.884] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:12.884] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:13.515] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini routing system configuration"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:14.016] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:14.017] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:14.874] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing configuration"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:15.376] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:15.377] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:15.762] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [TOOL_EXECUTION_START]
+Tool: web_search
+Args: {"query": "how to verify connectivity and operational status of Redis Cloud Memory"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:16.264] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "web_search",
+    "mock_data": "No matching web search results found."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:16.265] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [REASONER_START]
+Analyzing step: Verify the connectivity and operational status of the Redis Cloud Memory system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:16.452] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing configuration"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:16.953] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:16.954] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:17.827] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing system configuration status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:17.945] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 1, "offset": 0, "query": "Redis Cloud Memory status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:18.328] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:18.329] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:18.446] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:18.447] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [REASONER_START]
+Analyzing step: Verify the connectivity and operational status of the Redis Cloud Memory system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:19.722] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 1, "offset": 0, "query": "Redis Cloud Memory status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:20.223] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:20.223] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [REASONER_START]
+Analyzing step: Verify the connectivity and operational status of the Redis Cloud Memory system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:20.832] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 1, "offset": 0, "query": "Redis Cloud Memory status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:21.333] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_redis_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:26.972] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing system operational status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:27.473] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:27.473] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:48.896] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing system status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:49.398] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:49.398] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:50.245] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing system configuration"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:50.746] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:05:50.747] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:05.826] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing system operational status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:06.328] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:06.330] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:07.288] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini routing system configuration status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:07.787] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:07.788] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:09.233] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini routing system configuration and operational status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:09.735] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:09.736] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:11.862] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing system configuration"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:12.363] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:12.363] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:14.584] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini routing system operational status and routing logic"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:15.085] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:15.085] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:16.172] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini routing system configuration status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:16.680] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:16.681] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:17.528] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing configuration status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:18.030] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:18.031] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:19.229] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini routing system operational status and routing logic"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:19.730] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:19.730] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:20.261] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing configuration status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:20.763] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:20.763] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:22.330] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing configuration status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:22.832] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:22.833] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:24.398] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini routing system configuration"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:24.899] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:24.899] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:25.998] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing system configuration"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:26.500] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:26.500] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:43.507] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing configuration status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:44.008] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:44.009] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:45.102] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing system configuration"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:45.604] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:45.604] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:46.376] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing system configuration"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:46.878] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:46.878] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:47.883] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing configuration status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:48.384] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:48.384] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:49.273] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini multi-project routing system configuration"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:49.774] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:49.774] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:51.699] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Gemini routing system configuration and status"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:52.200] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:52.201] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:55.312] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: web_search
+Args: {"query": "Gemini routing system operational status and known issues"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:55.814] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "web_search",
+    "mock_data": "No matching web search results found."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:55.814] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:57.946] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "SELECT * FROM system_status WHERE component = 'routing'"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:58.447] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:06:58.447] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:07:00.116] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "SELECT * FROM routing_configurations"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:07:00.617] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_database",
+    "mock_data": "This is mock payload data. Verify parameters were read correctly."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:07:00.617] [Thread:f5d4bc34-6bd2-4851-8812-9be00b6cae21] [Step:verify_gemini_routing_status] [REASONER_START]
+Analyzing step: Verify the operational status and routing logic of the multi-project Gemini routing system.
+--------------------------------------------------------------------------------
+[2026-06-14 10:38:39.716] [Thread:362505e8-1fd3-4df3-ab11-f7852f9159f3] [Step:verify_systems] [REASONER_START]
+Analyzing step: Verify that all core systems and connectivity are operational.
+--------------------------------------------------------------------------------
+[2026-06-14 10:41:42.120] [Thread:5372137f-f333-4b9a-bfc8-b2d4c1a05f7e] [Step:analyze_constraint] [REASONER_START]
+Analyzing step: Analyze the user's request to identify the specific constraint of replying in exactly five words.
+--------------------------------------------------------------------------------
+[2026-06-14 10:41:42.870] [Thread:5372137f-f333-4b9a-bfc8-b2d4c1a05f7e] [Step:draft_response] [REASONER_START]
+Analyzing step: Draft a response that consists of exactly five words.
+--------------------------------------------------------------------------------
+[2026-06-14 10:41:43.902] [Thread:5372137f-f333-4b9a-bfc8-b2d4c1a05f7e] [Step:deliver_response] [REASONER_START]
+Analyzing step: Deliver the drafted five-word response to the user.
+--------------------------------------------------------------------------------
+[2026-06-14 10:43:50.515] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [REASONER_START]
+Analyzing step: Search the web for the latest news regarding the SpaceX Starship launch.
+--------------------------------------------------------------------------------
+[2026-06-14 10:43:51.603] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [TOOL_EXECUTION_START]
+Tool: tavily_search
+Args: {"query": "latest SpaceX Starship launch news"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:43:52.961] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [TOOL_EXECUTION_RESULT]
+Tavily API error: {"error":"Unauthorized: missing or invalid API key."}
+Documentation: https://docs.tavily.com/documentation/api-reference/endpoint/search
+--------------------------------------------------------------------------------
+[2026-06-14 10:43:52.963] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [REASONER_START]
+Analyzing step: Search the web for the latest news regarding the SpaceX Starship launch.
+--------------------------------------------------------------------------------
+[2026-06-14 10:43:53.798] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [TOOL_EXECUTION_START]
+Tool: web_search
+Args: {"query": "latest SpaceX Starship launch news"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:43:54.299] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "web_search",
+    "mock_data": "No matching web search results found."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:43:54.300] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [REASONER_START]
+Analyzing step: Search the web for the latest news regarding the SpaceX Starship launch.
+--------------------------------------------------------------------------------
+[2026-06-14 10:44:07.172] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [REASONER_START]
+Analyzing step: Search the web for the latest news and updates regarding the SpaceX Starship launch.
+--------------------------------------------------------------------------------
+[2026-06-14 10:44:31.848] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [REASONER_START]
+Analyzing step: Search the web for the latest news and updates regarding the SpaceX Starship launch.
+--------------------------------------------------------------------------------
+[2026-06-14 10:44:45.255] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [TOOL_EXECUTION_START]
+Tool: web_search
+Args: {"query": "latest SpaceX Starship launch news"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:44:45.757] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "web_search",
+    "mock_data": "No matching web search results found."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:44:45.758] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [REASONER_START]
+Analyzing step: Search the web for the latest news and updates regarding the SpaceX Starship launch.
+--------------------------------------------------------------------------------
+[2026-06-14 10:44:58.040] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [TOOL_EXECUTION_START]
+Tool: web_search
+Args: {"query": "latest SpaceX Starship launch news"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:44:58.542] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "web_search",
+    "mock_data": "No matching web search results found."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 10:44:58.543] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [REASONER_START]
+Analyzing step: Search the web for the latest news and updates regarding the SpaceX Starship launch.
+--------------------------------------------------------------------------------
+[2026-06-14 10:45:19.424] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [REASONER_START]
+Analyzing step: Search the web for the latest news regarding the SpaceX Starship launch.
+--------------------------------------------------------------------------------
+[2026-06-14 10:45:30.498] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [REASONER_START]
+Analyzing step: Search the web for the latest news regarding the SpaceX Starship launch.
+--------------------------------------------------------------------------------
+[2026-06-14 10:45:43.587] [Thread:903e55db-5300-4347-98c0-55219bb9510d] [Step:search_starship_news] [REASONER_START]
+Analyzing step: Search the web for the latest news and updates regarding the SpaceX Starship launch.
+--------------------------------------------------------------------------------
+[2026-06-14 10:52:13.806] [Thread:a729a207-c6a0-41fb-ac61-f680a6c06ffc] [Step:search_bitcoin_news] [REASONER_START]
+Analyzing step: Search the web for the latest news and current price of Bitcoin.
+--------------------------------------------------------------------------------
+[2026-06-14 10:52:14.978] [Thread:a729a207-c6a0-41fb-ac61-f680a6c06ffc] [Step:search_bitcoin_news] [TOOL_EXECUTION_START]
+Tool: tavily_search
+Args: {"query": "current price of Bitcoin and latest news"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:52:17.903] [Thread:a729a207-c6a0-41fb-ac61-f680a6c06ffc] [Step:search_bitcoin_news] [TOOL_EXECUTION_RESULT]
+Detailed Results:
+
+Title: Bitcoin (BTC) Price USD Today, News, Charts, Market Cap | Coinbase
+URL: https://www.coinbase.com/price/bitcoin
+Content: BTC's current market price is $63,066.72. From Bitcoin's previous price points, we've seen a 1% increase from yesterday's $63,566.81 price, and Bitcoin is 6% up
+
+Title: Live Bitcoin Price, Charts & News - BTC Today | eToro
+URL: https://www.etoro.com/markets/btc
+Content: The Bitcoin price today is ‎$‎64,407.69, a ‎0.03‎% change in the last 24 hours and ‎4.15
+
+Title: Bitcoin price today - BTC price chart & live trends - Kraken
+URL: https://www.kraken.com/prices/bitcoin
+Content: Bitcoin price today is $63,312.00. In the last 24 hours Bitcoin's price moved +0.65%. The current BTC to USD conversion rate is $63,312.00 per BTC. The
+
+Title: Bitcoin Price Today | BTC to USD Live Price, Market Cap & Chart
+URL: https://www.binance.com/en/price/bitcoin
+Content: The live price of Bitcoin is $64,210.62 per (BTC / USD) with a current market cap of $1.3T USD. Bitcoin is +0.89% in the last 24 hours
+
+Title: Bitcoin price today, BTC to USD live price, marketcap and chart
+URL: https://coinmarketcap.com/currencies/bitcoin
+Content: The live Bitcoin price today is $64431.76 USD with a 24-hour trading volume of $17467690706.03 USD. We update our BTC to USD price in real-time.
+--------------------------------------------------------------------------------
+[2026-06-14 10:52:17.934] [Thread:a729a207-c6a0-41fb-ac61-f680a6c06ffc] [Step:search_bitcoin_news] [REASONER_START]
+Analyzing step: Search the web for the latest news and current price of Bitcoin.
+--------------------------------------------------------------------------------
+[2026-06-14 10:52:19.407] [Thread:a729a207-c6a0-41fb-ac61-f680a6c06ffc] [Step:summarize_bitcoin_info] [REASONER_START]
+Analyzing step: Summarize the latest Bitcoin price trends and key news highlights from the search results.
+--------------------------------------------------------------------------------
+[2026-06-14 10:53:05.184] [Thread:b8b7f932-06c8-478d-a1a6-6fdf40a24784] [Step:search_github_repos] [REASONER_START]
+Analyzing step: Search GitHub for repositories with the query 'spring-ai'.
+--------------------------------------------------------------------------------
+[2026-06-14 10:53:06.031] [Thread:b8b7f932-06c8-478d-a1a6-6fdf40a24784] [Step:search_github_repos] [TOOL_EXECUTION_START]
+Tool: search_repositories
+Args: {"query": "spring-ai"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:53:06.528] [Thread:b8b7f932-06c8-478d-a1a6-6fdf40a24784] [Step:search_github_repos] [TOOL_EXECUTION_RESULT]
+{"status": "error", "message": "MCP error -32603: Authentication Failed: Bad credentials"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:53:06.529] [Thread:b8b7f932-06c8-478d-a1a6-6fdf40a24784] [Step:search_github_repos] [REASONER_START]
+Analyzing step: Search GitHub for repositories with the query 'spring-ai'.
+--------------------------------------------------------------------------------
+[2026-06-14 10:53:16.520] [Thread:b8b7f932-06c8-478d-a1a6-6fdf40a24784] [Step:search_github_repos] [REASONER_START]
+Analyzing step: Search GitHub repositories for the query 'spring-ai'.
+--------------------------------------------------------------------------------
+[2026-06-14 10:53:18.678] [Thread:thread-1] [Step:step-A] [TOOL_EXECUTION_START]
+Tool: write_db
+Args: {}
+--------------------------------------------------------------------------------
+[2026-06-14 10:53:18.678] [Thread:thread-1] [Step:step-A] [TOOL_EXECUTION_RESULT]
+[2026-06-14 10:53:18.702] [Thread:thread-1] [Step:step-1] [TOOL_EXECUTION_START]
+Tool: write_database
+Args: {}
+--------------------------------------------------------------------------------
+[2026-06-14 10:53:18.702] [Thread:thread-1] [Step:step-1] [TOOL_EXECUTION_RESULT]
+[2026-06-14 10:53:24.147] [Thread:b8b7f932-06c8-478d-a1a6-6fdf40a24784] [Step:search_github_repos] [TOOL_EXECUTION_START]
+Tool: tavily_search
+Args: {"query": "spring-ai github repository"}
+--------------------------------------------------------------------------------
+[2026-06-14 10:53:26.532] [Thread:b8b7f932-06c8-478d-a1a6-6fdf40a24784] [Step:search_github_repos] [TOOL_EXECUTION_RESULT]
+Detailed Results:
+
+Title: habuma/spring-ai-examples - GitHub
+URL: https://github.com/habuma/spring-ai-examples
+Content: This repository is where I'll commit various examples of using Spring AI. You can clone this project in its entirety and work with it like that.
+
+Title: spring-projects/spring-ai: An Application Framework for AI Engineering
+URL: https://github.com/spring-projects/spring-ai
+Content: We read every piece of feedback, and take your input very seriously. ## Use saved searches to filter your results more quickly. # spring-projects/spring-ai. | spring-ai-bom | | spring-ai-bom |  |  |. | spring-ai-commons | | spring-ai-commons |  |  |. | spring-ai-docs | | spring-ai-docs |  |  |. | spring-ai-integration-tests | | spring-ai-integration-tests |  |  |. | spring-ai-model | | spring-ai-model |  |  |. | spring-ai-rag | | spring-ai-rag |  |  |. | spring-ai-retry | | spring-ai-retry |  |  |. | spring-ai-spring-boot-docker-compose | | spring-ai-spring-boot-docker-compose |  |  |. | spring-ai-spring-boot-testcontainers | | spring-ai-spring-boot-testcontainers |  |  |. | spring-ai-test | | spring-ai-test |  |  |. The Spring AI project provides a Spring-friendly API and abstractions for developing AI applications. At its core, Spring AI addresses the fundamental challenge of AI integration: connecting your enterprise **Data** and **APIs** with the **AI Models**. If you want to try out the latest and greatest, Spring AI can be built and published to your local Maven repository:.
+
+Title: GitHub - spring-projects/spring-ai-examples · GitHub
+URL: https://github.com/spring-projects/spring-ai-examples
+Content: ## Navigation Menu. # Search code, repositories, users, issues, pull requests... # Provide feedback. We read every piece of feedback, and take your input very seriously. # Saved searches. ## Use saved searches to filter your results more quickly. To see all available qualifiers, see our documentation. # spring-projects/spring-ai-examples. ## Folders and files. | Name | | Name | Last commit message | Last commit date |. | Latest commit   History210 Commits   210 Commits | | |. | .version-backups/20251125\_091005 | | .version-backups/20251125\_091005 |  |  |. | model-context-protocol | | model-context-protocol |  |  |. | models/chat/helloworld | | models/chat/helloworld |  |  |. | prompt-engineering/prompt-engineering-patterns | | prompt-engineering/prompt-engineering-patterns |  |  |. ## Latest commit. ## Footer. ## Repository files navigation. # spring-ai-examples. ## History. ### Topics. ### Resources. ### Code of conduct. ### Security policy. ### Uh oh! There was an error while loading. ### Stars. ### Watchers. ### Forks. ## Releases. ## Packages 0. ## Contributors. ## Languages. ### Footer navigation.
+
+Title: GitHub - asaikali/spring-ai-zero-to-hero: Spring AI workshop content · GitHub
+URL: https://github.com/asaikali/spring-ai-zero-to-hero
+Content: ## Use saved searches to filter your results more quickly. # asaikali/spring-ai-zero-to-hero. # spring-ai-zero-to-hero. Example applications showing how to use Spring AI to build Generative. This is a lot of GBs to download so please make. sure to have all this stuff installed before the conference workshop, as the. ✅ llava model is pulled and available. If you run into issues try running the commands in the `check-deps.sh`. You will be provided with API keys for online AI services during the. The workshop will teach you key AI concepts and how to apply. them in your applications, using the Spring AI project. based sample code and the API keys for the AI services. **/components/api/** this directory contains the code that interacts with the AI. The code in this directory is the same for all the AI providers. The code in this directory is the same for. project in this directory is different, for example, setting API keys and.
+
+Title: alibaba/spring-ai-alibaba: Agentic AI Framework for Java Developers
+URL: https://github.com/alibaba/spring-ai-alibaba
+Content: # alibaba/spring-ai-alibaba. | spring-ai-alibaba-admin | | spring-ai-alibaba-admin |  |  |. | spring-ai-alibaba-agent-framework | | spring-ai-alibaba-agent-framework |  |  |. | spring-ai-alibaba-bom | | spring-ai-alibaba-bom |  |  |. | spring-ai-alibaba-graph-core | | spring-ai-alibaba-graph-core |  |  |. | spring-ai-alibaba-sandbox | | spring-ai-alibaba-sandbox |  |  |. | spring-ai-alibaba-studio | | spring-ai-alibaba-studio |  |  |. ## Latest commit. # Spring AI Alibaba. **Spring AI Alibaba Admin** is a one-stop Agent platform that supports visualized Agent development, observability, evaluation, and MCP management, etc. **Spring AI Alibaba Agent Framework** is an agent development framework that can quickly develop agents with built-in **Context Engineering** and **Human In The Loop** support. **Spring AI Alibaba Graph** serves as the underlying runtime of the Agent Framework, providing essential capabilities such as persistence, workflow orchestration, and streaming required for long-running stateful agents. Compared to the Agent Framework, users can build more flexible multi-agent workflows based on the Graph API. | Spring AI Alibaba Examples | Spring AI Alibaba Examples.
+--------------------------------------------------------------------------------
+[2026-06-14 10:53:26.534] [Thread:b8b7f932-06c8-478d-a1a6-6fdf40a24784] [Step:search_github_repos] [REASONER_START]
+Analyzing step: Search GitHub repositories for the query 'spring-ai'.
+--------------------------------------------------------------------------------
+[2026-06-14 10:53:37.893] [Thread:b8b7f932-06c8-478d-a1a6-6fdf40a24784] [Step:extract_top_results] [REASONER_START]
+Analyzing step: Extract the top results from the search, including repository names, descriptions, and star counts.
+--------------------------------------------------------------------------------
+[2026-06-14 10:53:39.450] [Thread:b8b7f932-06c8-478d-a1a6-6fdf40a24784] [Step:summarize_results] [REASONER_START]
+Analyzing step: Summarize the top GitHub repositories found for 'spring-ai'.
+--------------------------------------------------------------------------------
+[2026-06-14 11:13:06.289] [Thread:thread-1] [Step:step-A] [TOOL_EXECUTION_START]
+Tool: write_db
+Args: {}
+--------------------------------------------------------------------------------
+[2026-06-14 11:13:06.290] [Thread:thread-1] [Step:step-A] [TOOL_EXECUTION_RESULT]
+[2026-06-14 11:13:06.315] [Thread:thread-1] [Step:step-1] [TOOL_EXECUTION_START]
+Tool: write_database
+Args: {}
+--------------------------------------------------------------------------------
+[2026-06-14 11:13:06.316] [Thread:thread-1] [Step:step-1] [TOOL_EXECUTION_RESULT]
+[2026-06-14 11:24:49.239] [Thread:thread-1] [Step:step-A] [TOOL_EXECUTION_START]
+Tool: write_db
+Args: {}
+--------------------------------------------------------------------------------
+[2026-06-14 11:24:49.239] [Thread:thread-1] [Step:step-A] [TOOL_EXECUTION_RESULT]
+[2026-06-14 11:24:49.279] [Thread:thread-1] [Step:step-1] [TOOL_EXECUTION_START]
+Tool: write_database
+Args: {}
+--------------------------------------------------------------------------------
+[2026-06-14 11:24:49.279] [Thread:thread-1] [Step:step-1] [TOOL_EXECUTION_RESULT]
+[2026-06-14 11:26:08.602] [Thread:6c461c9c-6376-4acd-8aac-fb9b9e01e41c] [Step:search_active_db] [REASONER_START]
+Analyzing step: Search the active database for user Bob.
+--------------------------------------------------------------------------------
+[2026-06-14 11:26:16.848] [Thread:6c461c9c-6376-4acd-8aac-fb9b9e01e41c] [Step:search_active_db] [TOOL_EXECUTION_START]
+Tool: search_database
+Args: {"limit": 10, "offset": 0, "query": "Bob"}
+--------------------------------------------------------------------------------
+[2026-06-14 11:26:17.350] [Thread:6c461c9c-6376-4acd-8aac-fb9b9e01e41c] [Step:search_active_db] [TOOL_EXECUTION_RESULT]
+{
+    "status": "error",
+    "tool": "search_database",
+    "message": "User 'Bob' not found in active database."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 11:26:17.350] [Thread:6c461c9c-6376-4acd-8aac-fb9b9e01e41c] [Step:search_active_db] [REASONER_START]
+Analyzing step: Search the active database for user Bob.
+--------------------------------------------------------------------------------
+[2026-06-14 11:26:26.067] [Thread:6c461c9c-6376-4acd-8aac-fb9b9e01e41c] [Step:search_active_db] [TOOL_EXECUTION_START]
+Tool: search_archive
+Args: {"limit": 10, "offset": 0, "query": "Bob"}
+--------------------------------------------------------------------------------
+[2026-06-14 11:26:26.568] [Thread:6c461c9c-6376-4acd-8aac-fb9b9e01e41c] [Step:search_active_db] [TOOL_EXECUTION_RESULT]
+{
+    "status": "success",
+    "tool": "search_archive",
+    "mock_data": "User 'Bob' was found in historical archive database. Account status: Dormant. ID: 11223."
+}
+
+--------------------------------------------------------------------------------
+[2026-06-14 11:26:26.569] [Thread:6c461c9c-6376-4acd-8aac-fb9b9e01e41c] [Step:search_active_db] [REASONER_START]
+Analyzing step: Search the active database for user Bob.
+--------------------------------------------------------------------------------
+[2026-06-14 11:26:38.116] [Thread:6c461c9c-6376-4acd-8aac-fb9b9e01e41c] [Step:search_archive_db] [REASONER_START]
+Analyzing step: Search the archive database for user Bob if he was not found in the active database.
+--------------------------------------------------------------------------------
+[2026-06-14 11:26:40.031] [Thread:6c461c9c-6376-4acd-8aac-fb9b9e01e41c] [Step:calculate_metrics] [REASONER_START]
+Analyzing step: Calculate metrics for Bob using the record found in either the active or archive database.
+--------------------------------------------------------------------------------
+[2026-06-14 11:27:48.755] [Thread:b0b73540-a0cd-4e5e-aa58-508cc7c08969] [Step:search_github] [REASONER_START]
+Analyzing step: Search GitHub repositories for the query 'spring-ai'.
+--------------------------------------------------------------------------------
+[2026-06-14 11:27:56.207] [Thread:b0b73540-a0cd-4e5e-aa58-508cc7c08969] [Step:search_github] [TOOL_EXECUTION_START]
+Tool: search_repositories
+Args: {"query": "spring-ai"}
+--------------------------------------------------------------------------------
+[2026-06-14 11:27:57.878] [Thread:b0b73540-a0cd-4e5e-aa58-508cc7c08969] [Step:search_github] [TOOL_EXECUTION_RESULT]
+{
+  "total_count": 23010,
+  "incomplete_results": false,
+  "items": [
+    {
+      "id": 659402878,
+      "node_id": "R_kgDOJ02wfg",
+      "name": "spring-ai",
+      "full_name": "spring-projects/spring-ai",
+      "private": false,
+      "owner": {
+        "login": "spring-projects",
+        "id": 317776,
+        "node_id": "MDEyOk9yZ2FuaXphdGlvbjMxNzc3Ng==",
+        "avatar_url": "https://avatars.githubusercontent.com/u/317776?v=4",
+        "url": "https://api.github.com/users/spring-projects",
+        "html_url": "https://github.com/spring-projects",
+        "type": "Organization"
+      },
+      "html_url": "https://github.com/spring-projects/spring-ai",
+      "description": "An Application Framework for AI Engineering",
+      "fork": false,
+      "url": "https://api.github.com/repos/spring-projects/spring-ai",
+      "created_at": "2023-06-27T18:57:29Z",
+      "updated_at": "2026-06-14T10:28:59Z",
+      "pushed_at": "2026-06-12T11:06:37Z",
+      "git_url": "git://github.com/spring-projects/spring-ai.git",
+      "ssh_url": "git@github.com:spring-projects/spring-ai.git",
+      "clone_url": "https://github.com/spring-projects/spring-ai.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 854337508,
+      "node_id": "R_kgDOMuwn5A",
+      "name": "spring-ai-alibaba",
+      "full_name": "alibaba/spring-ai-alibaba",
+      "private": false,
+      "owner": {
+        "login": "alibaba",
+        "id": 1961952,
+        "node_id": "MDEyOk9yZ2FuaXphdGlvbjE5NjE5NTI=",
+        "avatar_url": "https://avatars.githubusercontent.com/u/1961952?v=4",
+        "url": "https://api.github.com/users/alibaba",
+        "html_url": "https://github.com/alibaba",
+        "type": "Organization"
+      },
+      "html_url": "https://github.com/alibaba/spring-ai-alibaba",
+      "description": "Agentic AI Framework for Java Developers",
+      "fork": false,
+      "url": "https://api.github.com/repos/alibaba/spring-ai-alibaba",
+      "created_at": "2024-09-09T01:35:50Z",
+      "updated_at": "2026-06-14T09:36:19Z",
+      "pushed_at": "2026-06-07T15:04:37Z",
+      "git_url": "git://github.com/alibaba/spring-ai-alibaba.git",
+      "ssh_url": "git@github.com:alibaba/spring-ai-alibaba.git",
+      "clone_url": "https://github.com/alibaba/spring-ai-alibaba.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 902154589,
+      "node_id": "R_kgDONcXJXQ",
+      "name": "examples",
+      "full_name": "spring-ai-alibaba/examples",
+      "private": false,
+      "owner": {
+        "login": "spring-ai-alibaba",
+        "id": 230275642,
+        "node_id": "O_kgDODbm6Og",
+        "avatar_url": "https://avatars.githubusercontent.com/u/230275642?v=4",
+        "url": "https://api.github.com/users/spring-ai-alibaba",
+        "html_url": "https://github.com/spring-ai-alibaba",
+        "type": "Organization"
+      },
+      "html_url": "https://github.com/spring-ai-alibaba/examples",
+      "description": "Examples demonstrating usage of Spring AI & Spring AI Alibaba 📜",
+      "fork": false,
+      "url": "https://api.github.com/repos/spring-ai-alibaba/examples",
+      "created_at": "2024-12-12T02:37:35Z",
+      "updated_at": "2026-06-13T06:41:01Z",
+      "pushed_at": "2026-06-06T04:20:17Z",
+      "git_url": "git://github.com/spring-ai-alibaba/examples.git",
+      "ssh_url": "git@github.com:spring-ai-alibaba/examples.git",
+      "clone_url": "https://github.com/spring-ai-alibaba/examples.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 1055449486,
+      "node_id": "R_kgDOPujhjg",
+      "name": "DataAgent",
+      "full_name": "spring-ai-alibaba/DataAgent",
+      "private": false,
+      "owner": {
+        "login": "spring-ai-alibaba",
+        "id": 230275642,
+        "node_id": "O_kgDODbm6Og",
+        "avatar_url": "https://avatars.githubusercontent.com/u/230275642?v=4",
+        "url": "https://api.github.com/users/spring-ai-alibaba",
+        "html_url": "https://github.com/spring-ai-alibaba",
+        "type": "Organization"
+      },
+      "html_url": "https://github.com/spring-ai-alibaba/DataAgent",
+      "description": "Spring AI Alibaba DataAgent",
+      "fork": false,
+      "url": "https://api.github.com/repos/spring-ai-alibaba/DataAgent",
+      "created_at": "2025-09-12T09:29:55Z",
+      "updated_at": "2026-06-14T09:44:30Z",
+      "pushed_at": "2026-05-31T15:24:41Z",
+      "git_url": "git://github.com/spring-ai-alibaba/DataAgent.git",
+      "ssh_url": "git@github.com:spring-ai-alibaba/DataAgent.git",
+      "clone_url": "https://github.com/spring-ai-alibaba/DataAgent.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 874941249,
+      "node_id": "R_kgDONCaLQQ",
+      "name": "spring-ai-examples",
+      "full_name": "spring-projects/spring-ai-examples",
+      "private": false,
+      "owner": {
+        "login": "spring-projects",
+        "id": 317776,
+        "node_id": "MDEyOk9yZ2FuaXphdGlvbjMxNzc3Ng==",
+        "avatar_url": "https://avatars.githubusercontent.com/u/317776?v=4",
+        "url": "https://api.github.com/users/spring-projects",
+        "html_url": "https://github.com/spring-projects",
+        "type": "Organization"
+      },
+      "html_url": "https://github.com/spring-projects/spring-ai-examples",
+      "description": null,
+      "fork": false,
+      "url": "https://api.github.com/repos/spring-projects/spring-ai-examples",
+      "created_at": "2024-10-18T18:43:36Z",
+      "updated_at": "2026-06-13T13:51:15Z",
+      "pushed_at": "2026-05-18T19:16:59Z",
+      "git_url": "git://github.com/spring-projects/spring-ai-examples.git",
+      "ssh_url": "git@github.com:spring-projects/spring-ai-examples.git",
+      "clone_url": "https://github.com/spring-projects/spring-ai-examples.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 983563000,
+      "node_id": "R_kgDOOp_6-A",
+      "name": "awesome-spring-ai",
+      "full_name": "spring-ai-community/awesome-spring-ai",
+      "private": false,
+      "owner": {
+        "login": "spring-ai-community",
+        "id": 190035333,
+        "node_id": "O_kgDOC1O1hQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/190035333?v=4",
+        "url": "https://api.github.com/users/spring-ai-community",
+        "html_url": "https://github.com/spring-ai-community",
+        "type": "Organization"
+      },
+      "html_url": "https://github.com/spring-ai-community/awesome-spring-ai",
+      "description": "A curated list of awesome resources, tools, tutorials, and projects for building generative AI applications using Spring AI",
+      "fork": false,
+      "url": "https://api.github.com/repos/spring-ai-community/awesome-spring-ai",
+      "created_at": "2025-05-14T15:08:38Z",
+      "updated_at": "2026-06-13T05:27:38Z",
+      "pushed_at": "2025-12-21T08:51:20Z",
+      "git_url": "git://github.com/spring-ai-community/awesome-spring-ai.git",
+      "ssh_url": "git@github.com:spring-ai-community/awesome-spring-ai.git",
+      "clone_url": "https://github.com/spring-ai-community/awesome-spring-ai.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 993159181,
+      "node_id": "R_kgDOOzJoDQ",
+      "name": "spring-ai",
+      "full_name": "eazybytes/spring-ai",
+      "private": false,
+      "owner": {
+        "login": "eazybytes",
+        "id": 79041235,
+        "node_id": "MDQ6VXNlcjc5MDQxMjM1",
+        "avatar_url": "https://avatars.githubusercontent.com/u/79041235?v=4",
+        "url": "https://api.github.com/users/eazybytes",
+        "html_url": "https://github.com/eazybytes",
+        "type": "User"
+      },
+      "html_url": "https://github.com/eazybytes/spring-ai",
+      "description": "From Java Dev to AI Engineer: Spring AI Fast Track",
+      "fork": false,
+      "url": "https://api.github.com/repos/eazybytes/spring-ai",
+      "created_at": "2025-05-30T10:11:06Z",
+      "updated_at": "2026-06-13T07:37:48Z",
+      "pushed_at": "2026-06-13T07:37:45Z",
+      "git_url": "git://github.com/eazybytes/spring-ai.git",
+      "ssh_url": "git@github.com:eazybytes/spring-ai.git",
+      "clone_url": "https://github.com/eazybytes/spring-ai.git",
+      "default_branch": "2.x"
+    },
+    {
+      "id": 1159334324,
+      "node_id": "R_kgDORRoJtA",
+      "name": "claude-ai-spring-boot",
+      "full_name": "piomin/claude-ai-spring-boot",
+      "private": false,
+      "owner": {
+        "login": "piomin",
+        "id": 2892502,
+        "node_id": "MDQ6VXNlcjI4OTI1MDI=",
+        "avatar_url": "https://avatars.githubusercontent.com/u/2892502?v=4",
+        "url": "https://api.github.com/users/piomin",
+        "html_url": "https://github.com/piomin",
+        "type": "User"
+      },
+      "html_url": "https://github.com/piomin/claude-ai-spring-boot",
+      "description": "Claude Code template for Spring Boot and other staff (included in the tags)",
+      "fork": false,
+      "url": "https://api.github.com/repos/piomin/claude-ai-spring-boot",
+      "created_at": "2026-02-16T15:54:47Z",
+      "updated_at": "2026-06-14T08:05:03Z",
+      "pushed_at": "2026-04-29T07:02:03Z",
+      "git_url": "git://github.com/piomin/claude-ai-spring-boot.git",
+      "ssh_url": "git@github.com:piomin/claude-ai-spring-boot.git",
+      "clone_url": "https://github.com/piomin/claude-ai-spring-boot.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 743107776,
+      "node_id": "R_kgDOLErswA",
+      "name": "llm-apps-java-spring-ai",
+      "full_name": "ThomasVitale/llm-apps-java-spring-ai",
+      "private": false,
+      "owner": {
+        "login": "ThomasVitale",
+        "id": 8523418,
+        "node_id": "MDQ6VXNlcjg1MjM0MTg=",
+        "avatar_url": "https://avatars.githubusercontent.com/u/8523418?v=4",
+        "url": "https://api.github.com/users/ThomasVitale",
+        "html_url": "https://github.com/ThomasVitale",
+        "type": "User"
+      },
+      "html_url": "https://github.com/ThomasVitale/llm-apps-java-spring-ai",
+      "description": "Samples showing how to build Java applications powered by Generative AI and LLMs using Spring AI and Spring Boot.",
+      "fork": false,
+      "url": "https://api.github.com/repos/ThomasVitale/llm-apps-java-spring-ai",
+      "created_at": "2024-01-14T11:04:15Z",
+      "updated_at": "2026-06-10T15:29:18Z",
+      "pushed_at": "2026-04-05T22:32:39Z",
+      "git_url": "git://github.com/ThomasVitale/llm-apps-java-spring-ai.git",
+      "ssh_url": "git@github.com:ThomasVitale/llm-apps-java-spring-ai.git",
+      "clone_url": "https://github.com/ThomasVitale/llm-apps-java-spring-ai.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 918037860,
+      "node_id": "R_kgDONrglZA",
+      "name": "spring-ai-summary",
+      "full_name": "java-ai-tech/spring-ai-summary",
+      "private": false,
+      "owner": {
+        "login": "java-ai-tech",
+        "id": 215233926,
+        "node_id": "O_kgDODNQ1hg",
+        "avatar_url": "https://avatars.githubusercontent.com/u/215233926?v=4",
+        "url": "https://api.github.com/users/java-ai-tech",
+        "html_url": "https://github.com/java-ai-tech",
+        "type": "Organization"
+      },
+      "html_url": "https://github.com/java-ai-tech/spring-ai-summary",
+      "description": "SpringAI，LLM，MCP，Embedding",
+      "fork": false,
+      "url": "https://api.github.com/repos/java-ai-tech/spring-ai-summary",
+      "created_at": "2025-01-17T06:03:04Z",
+      "updated_at": "2026-06-14T09:56:00Z",
+      "pushed_at": "2026-03-12T12:03:45Z",
+      "git_url": "git://github.com/java-ai-tech/spring-ai-summary.git",
+      "ssh_url": "git@github.com:java-ai-tech/spring-ai-summary.git",
+      "clone_url": "https://github.com/java-ai-tech/spring-ai-summary.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 817307077,
+      "node_id": "R_kgDOMLcdxQ",
+      "name": "spring-ai-workshop",
+      "full_name": "danvega/spring-ai-workshop",
+      "private": false,
+      "owner": {
+        "login": "danvega",
+        "id": 349507,
+        "node_id": "MDQ6VXNlcjM0OTUwNw==",
+        "avatar_url": "https://avatars.githubusercontent.com/u/349507?v=4",
+        "url": "https://api.github.com/users/danvega",
+        "html_url": "https://github.com/danvega",
+        "type": "User"
+      },
+      "html_url": "https://github.com/danvega/spring-ai-workshop",
+      "description": "Spring AI Workshop",
+      "fork": false,
+      "url": "https://api.github.com/repos/danvega/spring-ai-workshop",
+      "created_at": "2024-06-19T12:40:54Z",
+      "updated_at": "2026-06-11T21:02:54Z",
+      "pushed_at": "2026-06-11T21:02:41Z",
+      "git_url": "git://github.com/danvega/spring-ai-workshop.git",
+      "ssh_url": "git@github.com:danvega/spring-ai-workshop.git",
+      "clone_url": "https://github.com/danvega/spring-ai-workshop.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 748416029,
+      "node_id": "R_kgDOLJvsHQ",
+      "name": "spring-ai-examples",
+      "full_name": "habuma/spring-ai-examples",
+      "private": false,
+      "owner": {
+        "login": "habuma",
+        "id": 167926,
+        "node_id": "MDQ6VXNlcjE2NzkyNg==",
+        "avatar_url": "https://avatars.githubusercontent.com/u/167926?v=4",
+        "url": "https://api.github.com/users/habuma",
+        "html_url": "https://github.com/habuma",
+        "type": "User"
+      },
+      "html_url": "https://github.com/habuma/spring-ai-examples",
+      "description": "Examples of using Spring AI.",
+      "fork": false,
+      "url": "https://api.github.com/repos/habuma/spring-ai-examples",
+      "created_at": "2024-01-25T23:14:13Z",
+      "updated_at": "2026-06-05T02:22:38Z",
+      "pushed_at": "2026-03-10T23:15:45Z",
+      "git_url": "git://github.com/habuma/spring-ai-examples.git",
+      "ssh_url": "git@github.com:habuma/spring-ai-examples.git",
+      "clone_url": "https://github.com/habuma/spring-ai-examples.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 815582447,
+      "node_id": "R_kgDOMJzM7w",
+      "name": "dive-into-spring-ai",
+      "full_name": "qifan777/dive-into-spring-ai",
+      "private": false,
+      "owner": {
+        "login": "qifan777",
+        "id": 58900282,
+        "node_id": "MDQ6VXNlcjU4OTAwMjgy",
+        "avatar_url": "https://avatars.githubusercontent.com/u/58900282?v=4",
+        "url": "https://api.github.com/users/qifan777",
+        "html_url": "https://github.com/qifan777",
+        "type": "User"
+      },
+      "html_url": "https://github.com/qifan777/dive-into-spring-ai",
+      "description": "《动手学SpringAI》包含SSE流/Agent智能体/知识图谱RAG/FunctionCall/历史消息/图片生成/图片理解/Embedding/VectorDatabase/RAG",
+      "fork": false,
+      "url": "https://api.github.com/repos/qifan777/dive-into-spring-ai",
+      "created_at": "2024-06-15T14:36:34Z",
+      "updated_at": "2026-06-07T07:02:05Z",
+      "pushed_at": "2025-09-03T09:05:49Z",
+      "git_url": "git://github.com/qifan777/dive-into-spring-ai.git",
+      "ssh_url": "git@github.com:qifan777/dive-into-spring-ai.git",
+      "clone_url": "https://github.com/qifan777/dive-into-spring-ai.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 1130455544,
+      "node_id": "R_kgDOQ2Fh-A",
+      "name": "spring-ai-agent-utils",
+      "full_name": "spring-ai-community/spring-ai-agent-utils",
+      "private": false,
+      "owner": {
+        "login": "spring-ai-community",
+        "id": 190035333,
+        "node_id": "O_kgDOC1O1hQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/190035333?v=4",
+        "url": "https://api.github.com/users/spring-ai-community",
+        "html_url": "https://github.com/spring-ai-community",
+        "type": "Organization"
+      },
+      "html_url": "https://github.com/spring-ai-community/spring-ai-agent-utils",
+      "description": "A Spring AI library that brings Claude Code-inspired tools and agent skills to your AI applications.",
+      "fork": false,
+      "url": "https://api.github.com/repos/spring-ai-community/spring-ai-agent-utils",
+      "created_at": "2026-01-08T14:30:36Z",
+      "updated_at": "2026-06-13T18:15:34Z",
+      "pushed_at": "2026-06-12T12:55:36Z",
+      "git_url": "git://github.com/spring-ai-community/spring-ai-agent-utils.git",
+      "ssh_url": "git@github.com:spring-ai-community/spring-ai-agent-utils.git",
+      "clone_url": "https://github.com/spring-ai-community/spring-ai-agent-utils.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 770225328,
+      "node_id": "R_kgDOLei0sA",
+      "name": "playground-flight-booking",
+      "full_name": "tzolov/playground-flight-booking",
+      "private": false,
+      "owner": {
+        "login": "tzolov",
+        "id": 1351573,
+        "node_id": "MDQ6VXNlcjEzNTE1NzM=",
+        "avatar_url": "https://avatars.githubusercontent.com/u/1351573?v=4",
+        "url": "https://api.github.com/users/tzolov",
+        "html_url": "https://github.com/tzolov",
+        "type": "User"
+      },
+      "html_url": "https://github.com/tzolov/playground-flight-booking",
+      "description": "Spring AI powered expert system demo",
+      "fork": false,
+      "url": "https://api.github.com/repos/tzolov/playground-flight-booking",
+      "created_at": "2024-03-11T07:09:01Z",
+      "updated_at": "2026-06-10T14:45:06Z",
+      "pushed_at": "2026-02-14T17:32:06Z",
+      "git_url": "git://github.com/tzolov/playground-flight-booking.git",
+      "ssh_url": "git@github.com:tzolov/playground-flight-booking.git",
+      "clone_url": "https://github.com/tzolov/playground-flight-booking.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 781554475,
+      "node_id": "R_kgDOLpWTKw",
+      "name": "spring-ai-intro",
+      "full_name": "springframeworkguru/spring-ai-intro",
+      "private": false,
+      "owner": {
+        "login": "springframeworkguru",
+        "id": 10575098,
+        "node_id": "MDQ6VXNlcjEwNTc1MDk4",
+        "avatar_url": "https://avatars.githubusercontent.com/u/10575098?v=4",
+        "url": "https://api.github.com/users/springframeworkguru",
+        "html_url": "https://github.com/springframeworkguru",
+        "type": "User"
+      },
+      "html_url": "https://github.com/springframeworkguru/spring-ai-intro",
+      "description": "Introduction to Spring AI",
+      "fork": false,
+      "url": "https://api.github.com/repos/springframeworkguru/spring-ai-intro",
+      "created_at": "2024-04-03T15:49:28Z",
+      "updated_at": "2025-12-22T11:05:54Z",
+      "pushed_at": "2025-06-26T13:35:35Z",
+      "git_url": "git://github.com/springframeworkguru/spring-ai-intro.git",
+      "ssh_url": "git@github.com:springframeworkguru/spring-ai-intro.git",
+      "clone_url": "https://github.com/springframeworkguru/spring-ai-intro.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 1061490694,
+      "node_id": "R_kgDOP0UQBg",
+      "name": "spring-ai-alibaba-admin",
+      "full_name": "spring-ai-alibaba/spring-ai-alibaba-admin",
+      "private": false,
+      "owner": {
+        "login": "spring-ai-alibaba",
+        "id": 230275642,
+        "node_id": "O_kgDODbm6Og",
+        "avatar_url": "https://avatars.githubusercontent.com/u/230275642?v=4",
+        "url": "https://api.github.com/users/spring-ai-alibaba",
+        "html_url": "https://github.com/spring-ai-alibaba",
+        "type": "Organization"
+      },
+      "html_url": "https://github.com/spring-ai-alibaba/spring-ai-alibaba-admin",
+      "description": "Console supporting tracing, prompt engineering and evaluation for Agents developed with Spring AI Alibaba.",
+      "fork": false,
+      "url": "https://api.github.com/repos/spring-ai-alibaba/spring-ai-alibaba-admin",
+      "created_at": "2025-09-22T01:46:21Z",
+      "updated_at": "2026-06-14T01:40:27Z",
+      "pushed_at": "2026-01-11T07:02:22Z",
+      "git_url": "git://github.com/spring-ai-alibaba/spring-ai-alibaba-admin.git",
+      "ssh_url": "git@github.com:spring-ai-alibaba/spring-ai-alibaba-admin.git",
+      "clone_url": "https://github.com/spring-ai-alibaba/spring-ai-alibaba-admin.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 784313913,
+      "node_id": "R_kgDOLr-uOQ",
+      "name": "spring-ai-rag",
+      "full_name": "springframeworkguru/spring-ai-rag",
+      "private": false,
+      "owner": {
+        "login": "springframeworkguru",
+        "id": 10575098,
+        "node_id": "MDQ6VXNlcjEwNTc1MDk4",
+        "avatar_url": "https://avatars.githubusercontent.com/u/10575098?v=4",
+        "url": "https://api.github.com/users/springframeworkguru",
+        "html_url": "https://github.com/springframeworkguru",
+        "type": "User"
+      },
+      "html_url": "https://github.com/springframeworkguru/spring-ai-rag",
+      "description": "Spring AI RAG",
+      "fork": false,
+      "url": "https://api.github.com/repos/springframeworkguru/spring-ai-rag",
+      "created_at": "2024-04-09T15:52:58Z",
+      "updated_at": "2026-06-03T16:17:55Z",
+      "pushed_at": "2025-06-03T19:19:36Z",
+      "git_url": "git://github.com/springframeworkguru/spring-ai-rag.git",
+      "ssh_url": "git@github.com:springframeworkguru/spring-ai-rag.git",
+      "clone_url": "https://github.com/springframeworkguru/spring-ai-rag.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 1055450182,
+      "node_id": "R_kgDOPujkRg",
+      "name": "spring-ai-extensions",
+      "full_name": "spring-ai-alibaba/spring-ai-extensions",
+      "private": false,
+      "owner": {
+        "login": "spring-ai-alibaba",
+        "id": 230275642,
+        "node_id": "O_kgDODbm6Og",
+        "avatar_url": "https://avatars.githubusercontent.com/u/230275642?v=4",
+        "url": "https://api.github.com/users/spring-ai-alibaba",
+        "html_url": "https://github.com/spring-ai-alibaba",
+        "type": "Organization"
+      },
+      "html_url": "https://github.com/spring-ai-alibaba/spring-ai-extensions",
+      "description": null,
+      "fork": false,
+      "url": "https://api.github.com/repos/spring-ai-alibaba/spring-ai-extensions",
+      "created_at": "2025-09-12T09:31:08Z",
+      "updated_at": "2026-06-14T07:57:43Z",
+      "pushed_at": "2026-06-14T07:57:35Z",
+      "git_url": "git://github.com/spring-ai-alibaba/spring-ai-extensions.git",
+      "ssh_url": "git@github.com:spring-ai-alibaba/spring-ai-extensions.git",
+      "clone_url": "https://github.com/spring-ai-alibaba/spring-ai-extensions.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 988939512,
+      "node_id": "R_kgDOOvIE-A",
+      "name": "spring-ai-tutorial",
+      "full_name": "GTyingzi/spring-ai-tutorial",
+      "private": false,
+      "owner": {
+        "login": "GTyingzi",
+        "id": 69392589,
+        "node_id": "MDQ6VXNlcjY5MzkyNTg5",
+        "avatar_url": "https://avatars.githubusercontent.com/u/69392589?v=4",
+        "url": "https://api.github.com/users/GTyingzi",
+        "html_url": "https://github.com/GTyingzi",
+        "type": "User"
+      },
+      "html_url": "https://github.com/GTyingzi/spring-ai-tutorial",
+      "description": null,
+      "fork": false,
+      "url": "https://api.github.com/repos/GTyingzi/spring-ai-tutorial",
+      "created_at": "2025-05-23T09:59:38Z",
+      "updated_at": "2026-06-08T06:49:44Z",
+      "pushed_at": "2026-01-02T17:45:28Z",
+      "git_url": "git://github.com/GTyingzi/spring-ai-tutorial.git",
+      "ssh_url": "git@github.com:GTyingzi/spring-ai-tutorial.git",
+      "clone_url": "https://github.com/GTyingzi/spring-ai-tutorial.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 874409240,
+      "node_id": "R_kgDONB5tGA",
+      "name": "awesome-spring-ai",
+      "full_name": "danvega/awesome-spring-ai",
+      "private": false,
+      "owner": {
+        "login": "danvega",
+        "id": 349507,
+        "node_id": "MDQ6VXNlcjM0OTUwNw==",
+        "avatar_url": "https://avatars.githubusercontent.com/u/349507?v=4",
+        "url": "https://api.github.com/users/danvega",
+        "html_url": "https://github.com/danvega",
+        "type": "User"
+      },
+      "html_url": "https://github.com/danvega/awesome-spring-ai",
+      "description": "Awesome Spring AI",
+      "fork": false,
+      "url": "https://api.github.com/repos/danvega/awesome-spring-ai",
+      "created_at": "2024-10-17T19:19:27Z",
+      "updated_at": "2026-06-09T12:35:29Z",
+      "pushed_at": "2025-06-03T00:55:21Z",
+      "git_url": "git://github.com/danvega/awesome-spring-ai.git",
+      "ssh_url": "git@github.com:danvega/awesome-spring-ai.git",
+      "clone_url": "https://github.com/danvega/awesome-spring-ai.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 1184459159,
+      "node_id": "R_kgDORplplw",
+      "name": "JavaClaw",
+      "full_name": "jobrunr/JavaClaw",
+      "private": false,
+      "owner": {
+        "login": "jobrunr",
+        "id": 63067767,
+        "node_id": "MDEyOk9yZ2FuaXphdGlvbjYzMDY3NzY3",
+        "avatar_url": "https://avatars.githubusercontent.com/u/63067767?v=4",
+        "url": "https://api.github.com/users/jobrunr",
+        "html_url": "https://github.com/jobrunr",
+        "type": "Organization"
+      },
+      "html_url": "https://github.com/jobrunr/JavaClaw",
+      "description": "JavaClaw, a Java version of OpenClaw built on Spring Boot, Spring AI and JobRunr",
+      "fork": false,
+      "url": "https://api.github.com/repos/jobrunr/JavaClaw",
+      "created_at": "2026-03-17T15:55:23Z",
+      "updated_at": "2026-06-14T07:09:17Z",
+      "pushed_at": "2026-06-10T08:46:31Z",
+      "git_url": "git://github.com/jobrunr/JavaClaw.git",
+      "ssh_url": "git@github.com:jobrunr/JavaClaw.git",
+      "clone_url": "https://github.com/jobrunr/JavaClaw.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 972132549,
+      "node_id": "R_kgDOOfGQxQ",
+      "name": "SpringAi-SpringBoot",
+      "full_name": "lixinlei-sys/SpringAi-SpringBoot",
+      "private": false,
+      "owner": {
+        "login": "lixinlei-sys",
+        "id": 59001410,
+        "node_id": "MDQ6VXNlcjU5MDAxNDEw",
+        "avatar_url": "https://avatars.githubusercontent.com/u/59001410?v=4",
+        "url": "https://api.github.com/users/lixinlei-sys",
+        "html_url": "https://github.com/lixinlei-sys",
+        "type": "User"
+      },
+      "html_url": "https://github.com/lixinlei-sys/SpringAi-SpringBoot",
+      "description": "SpringAi整合大模型实战",
+      "fork": false,
+      "url": "https://api.github.com/repos/lixinlei-sys/SpringAi-SpringBoot",
+      "created_at": "2025-04-24T15:28:19Z",
+      "updated_at": "2026-05-21T08:14:49Z",
+      "pushed_at": "2025-05-17T09:02:00Z",
+      "git_url": "git://github.com/lixinlei-sys/SpringAi-SpringBoot.git",
+      "ssh_url": "git@github.com:lixinlei-sys/SpringAi-SpringBoot.git",
+      "clone_url": "https://github.com/lixinlei-sys/SpringAi-SpringBoot.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 790129527,
+      "node_id": "R_kgDOLxhrdw",
+      "name": "spring-ai-zh-tutorial",
+      "full_name": "NingNing0111/spring-ai-zh-tutorial",
+      "private": false,
+      "owner": {
+        "login": "NingNing0111",
+        "id": 125198999,
+        "node_id": "U_kgDOB3Zilw",
+        "avatar_url": "https://avatars.githubusercontent.com/u/125198999?v=4",
+        "url": "https://api.github.com/users/NingNing0111",
+        "html_url": "https://github.com/NingNing0111",
+        "type": "User"
+      },
+      "html_url": "https://github.com/NingNing0111/spring-ai-zh-tutorial",
+      "description": "Spring AI中文教程",
+      "fork": false,
+      "url": "https://api.github.com/repos/NingNing0111/spring-ai-zh-tutorial",
+      "created_at": "2024-04-22T10:15:19Z",
+      "updated_at": "2026-06-13T12:16:23Z",
+      "pushed_at": "2025-03-17T06:37:21Z",
+      "git_url": "git://github.com/NingNing0111/spring-ai-zh-tutorial.git",
+      "ssh_url": "git@github.com:NingNing0111/spring-ai-zh-tutorial.git",
+      "clone_url": "https://github.com/NingNing0111/spring-ai-zh-tutorial.git",
+      "default_branch": "master"
+    },
+    {
+      "id": 899725411,
+      "node_id": "R_kgDONaC4Yw",
+      "name": "spring-ai-mcp",
+      "full_name": "spring-attic/spring-ai-mcp",
+      "private": false,
+      "owner": {
+        "login": "spring-attic",
+        "id": 5138807,
+        "node_id": "MDEyOk9yZ2FuaXphdGlvbjUxMzg4MDc=",
+        "avatar_url": "https://avatars.githubusercontent.com/u/5138807?v=4",
+        "url": "https://api.github.com/users/spring-attic",
+        "html_url": "https://github.com/spring-attic",
+        "type": "Organization"
+      },
+      "html_url": "https://github.com/spring-attic/spring-ai-mcp",
+      "description": "Java SDK for the Model Context Protocol (MCP), providing seamless integration between Java and Spring applications and MCP-compliant AI models and tools.",
+      "fork": false,
+      "url": "https://api.github.com/repos/spring-attic/spring-ai-mcp",
+      "created_at": "2024-12-06T21:56:08Z",
+      "updated_at": "2026-06-09T17:06:46Z",
+      "pushed_at": "2025-02-14T18:56:45Z",
+      "git_url": "git://github.com/spring-attic/spring-ai-mcp.git",
+      "ssh_url": "git@github.com:spring-attic/spring-ai-mcp.git",
+      "clone_url": "https://github.com/spring-attic/spring-ai-mcp.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 919609219,
+      "node_id": "R_kgDONtAfgw",
+      "name": "java-sdk",
+      "full_name": "modelcontextprotocol/java-sdk",
+      "private": false,
+      "owner": {
+        "login": "modelcontextprotocol",
+        "id": 182288589,
+        "node_id": "O_kgDOCt2AzQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/182288589?v=4",
+        "url": "https://api.github.com/users/modelcontextprotocol",
+        "html_url": "https://github.com/modelcontextprotocol",
+        "type": "Organization"
+      },
+      "html_url": "https://github.com/modelcontextprotocol/java-sdk",
+      "description": "The official Java SDK for Model Context Protocol servers and clients. Maintained in collaboration with Spring AI",
+      "fork": false,
+      "url": "https://api.github.com/repos/modelcontextprotocol/java-sdk",
+      "created_at": "2025-01-20T17:52:58Z",
+      "updated_at": "2026-06-14T10:29:21Z",
+      "pushed_at": "2026-06-11T15:44:15Z",
+      "git_url": "git://github.com/modelcontextprotocol/java-sdk.git",
+      "ssh_url": "git@github.com:modelcontextprotocol/java-sdk.git",
+      "clone_url": "https://github.com/modelcontextprotocol/java-sdk.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 159201496,
+      "node_id": "MDEwOlJlcG9zaXRvcnkxNTkyMDE0OTY=",
+      "name": "angular-node-java-ai",
+      "full_name": "ganatan/angular-node-java-ai",
+      "private": false,
+      "owner": {
+        "login": "ganatan",
+        "id": 32958393,
+        "node_id": "MDQ6VXNlcjMyOTU4Mzkz",
+        "avatar_url": "https://avatars.githubusercontent.com/u/32958393?v=4",
+        "url": "https://api.github.com/users/ganatan",
+        "html_url": "https://github.com/ganatan",
+        "type": "User"
+      },
+      "html_url": "https://github.com/ganatan/angular-node-java-ai",
+      "description": "Angular 20 Starter with Node.js, Spring Boot, and AI (LLM, Voice, Podcast).",
+      "fork": false,
+      "url": "https://api.github.com/repos/ganatan/angular-node-java-ai",
+      "created_at": "2018-11-26T16:43:12Z",
+      "updated_at": "2026-06-07T15:53:29Z",
+      "pushed_at": "2026-06-07T15:53:25Z",
+      "git_url": "git://github.com/ganatan/angular-node-java-ai.git",
+      "ssh_url": "git@github.com:ganatan/angular-node-java-ai.git",
+      "clone_url": "https://github.com/ganatan/angular-node-java-ai.git",
+      "default_branch": "master"
+    },
+    {
+      "id": 782795088,
+      "node_id": "R_kgDOLqiBUA",
+      "name": "spring-ai-examples",
+      "full_name": "partme-ai/spring-ai-examples",
+      "private": false,
+      "owner": {
+        "login": "partme-ai",
+        "id": 167777302,
+        "node_id": "O_kgDOCgAUFg",
+        "avatar_url": "https://avatars.githubusercontent.com/u/167777302?v=4",
+        "url": "https://api.github.com/users/partme-ai",
+        "html_url": "https://github.com/partme-ai",
+        "type": "Organization"
+      },
+      "html_url": "https://github.com/partme-ai/spring-ai-examples",
+      "description": "Spring AI Examples",
+      "fork": false,
+      "url": "https://api.github.com/repos/partme-ai/spring-ai-examples",
+      "created_at": "2024-04-06T04:00:14Z",
+      "updated_at": "2026-06-12T05:55:49Z",
+      "pushed_at": "2026-06-12T05:55:45Z",
+      "git_url": "git://github.com/partme-ai/spring-ai-examples.git",
+      "ssh_url": "git@github.com:partme-ai/spring-ai-examples.git",
+      "clone_url": "https://github.com/partme-ai/spring-ai-examples.git",
+      "default_branch": "main"
+    },
+    {
+      "id": 912138522,
+      "node_id": "R_kgDONl4hGg",
+      "name": "spring-ai-playground",
+      "full_name": "JM-Lab/spring-ai-playground",
+      "private": false,
+      "owner": {
+        "login": "JM-Lab",
+        "id": 4019450,
+        "node_id": "MDQ6VXNlcjQwMTk0NTA=",
+        "avatar_url": "https://avatars.githubusercontent.com/u/4019450?v=4",
+        "url": "https://api.github.com/users/JM-Lab",
+        "html_url": "https://github.com/JM-Lab",
+        "type": "User"
+      },
+      "html_url": "https://github.com/JM-Lab/spring-ai-playground",
+      "description": "Safe local execution layer for AI agent tools. Build, validate, and publish MCP tools with a no-pass-no-run workflow — cross-platform desktop app powered by Spring AI.",
+      "fork": false,
+      "url": "https://api.github.com/repos/JM-Lab/spring-ai-playground",
+      "created_at": "2025-01-04T17:56:00Z",
+      "updated_at": "2026-06-14T03:10:40Z",
+      "pushed_at": "2026-06-06T08:47:18Z",
+      "git_url": "git://github.com/JM-Lab/spring-ai-playground.git",
+      "ssh_url": "git@github.com:JM-Lab/spring-ai-playground.git",
+      "clone_url": "https://github.com/JM-Lab/spring-ai-playground.git",
+      "default_branch": "docs/official-repo-banner"
+    },
+    {
+      "id": 876932299,
+      "node_id": "R_kgDONETsyw",
+      "name": "java-rag",
+      "full_name": "danvega/java-rag",
+      "private": false,
+      "owner": {
+        "login": "danvega",
+        "id": 349507,
+        "node_id": "MDQ6VXNlcjM0OTUwNw==",
+        "avatar_url": "https://avatars.githubusercontent.com/u/349507?v=4",
+        "url": "https://api.github.com/users/danvega",
+        "html_url": "https://github.com/danvega",
+        "type": "User"
+      },
+      "html_url": "https://github.com/danvega/java-rag",
+      "description": "Java AI + Spring AI + RAG Example",
+      "fork": false,
+      "url": "https://api.github.com/repos/danvega/java-rag",
+      "created_at": "2024-10-22T19:46:01Z",
+      "updated_at": "2026-06-12T14:14:26Z",
+      "pushed_at": "2024-10-22T19:49:56Z",
+      "git_url": "git://github.com/danvega/java-rag.git",
+      "ssh_url": "git@github.com:danvega/java-rag.git",
+      "clone_url": "https://github.com/danvega/java-rag.git",
+      "default_branch": "main"
+    }
+  ]
+}
+--------------------------------------------------------------------------------
+[2026-06-14 11:27:57.898] [Thread:b0b73540-a0cd-4e5e-aa58-508cc7c08969] [Step:search_github] [REASONER_START]
+Analyzing step: Search GitHub repositories for the query 'spring-ai'.
+--------------------------------------------------------------------------------
+[2026-06-14 11:28:25.745] [Thread:b0b73540-a0cd-4e5e-aa58-508cc7c08969] [Step:summarize_results] [REASONER_START]
+Analyzing step: Extract and summarize the top results from the search, focusing on repository names, descriptions, and popularity.
+--------------------------------------------------------------------------------

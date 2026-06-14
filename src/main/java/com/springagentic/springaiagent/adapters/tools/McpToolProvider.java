@@ -34,6 +34,9 @@ public class McpToolProvider implements ApplicationListener<ApplicationReadyEven
                 clientsMap.size(), clientsMap.keySet());
         
         for (McpSyncClient client : clientsMap.values()) {
+            if (client == null) {
+                continue;
+            }
             try {
                 var toolsResult = client.listTools();
                 if (toolsResult != null && toolsResult.tools() != null) {

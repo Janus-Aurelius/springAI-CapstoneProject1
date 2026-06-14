@@ -4,31 +4,26 @@ spring:
   threads:
     virtual:
       enabled: true
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-  ai:
-    openai:
-      api-key: ${OPENAI_API_KEY:dummy-key}
-    chat:
-      memory:
-        redis:
-          host: ${REDIS_HOST:localhost}
-          port: ${REDIS_PORT:6379}
-        repository:
-          jdbc:
-            initialize-schema: always
-    vectorstore:
-      redis:
-        uri: redis://${REDIS_HOST:localhost}:${REDIS_PORT:6379}
   datasource:
     url: jdbc:postgresql://${DB_HOST:postgres}:5432/${DB_NAME:postgres}
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
   autoconfigure:
-    exclude: org.springframework.ai.model.chat.memory.repository.jdbc.autoconfigure.JdbcChatMemoryRepositoryAutoConfiguration
+    exclude: 
+      - org.springframework.ai.model.chat.memory.repository.jdbc.autoconfigure.JdbcChatMemoryRepositoryAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiChatAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiAudioTranscriptionAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiImageAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiModerationAutoConfiguration
+
+redis:
+  agent-memory:
+    base-url: "${REDIS_AGENT_MEMORY_URL:your-agent-memory-url}"
+    api-key: "${REDIS_AGENT_MEMORY_KEY:your-cloud-key}"
+    store-id: "${REDIS_AGENT_MEMORY_STORE_ID:your-store-id}"
 
 management:
   otlp:
@@ -46,22 +41,75 @@ app:
       max-token-budget: 100000
       max-observation-tokens: 2000
     providers:
-      - id: "primary-gemini"
-        base-url: "${OPENAI_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
-        api-key: "${OPENAI_API_KEY:dummy-key}"
+      # --- PROJECT A (PLANNING CHAIN) ---
+      - id: "project-a-level-1"
+        base-url: "${GEMINI_PROJECT_A_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_A_API_KEY:your-key-a}"
         is-primary: true
         max-context-window: 1000000
         models:
-          planner: "${PLANNING_MODEL:gemini-1.5-pro}"
-          reasoner: "${REASONING_MODEL:gemini-2.0-flash-lite-preview-02-05}"
-      - id: "fallback-groq"
-        base-url: "${FALLBACK_OPENAI_BASE_URL:https://api.groq.com/openai/v1}"
-        api-key: "${FALLBACK_OPENAI_API_KEY:dummy-key}"
+          planner: "${PROJECT_A_LEVEL_1_MODEL:gemini-1.5-pro}"
+      - id: "project-a-level-2"
+        base-url: "${GEMINI_PROJECT_A_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_A_API_KEY:your-key-a}"
         is-primary: false
-        max-context-window: 32768
+        max-context-window: 1000000
         models:
-          planner: "${FALLBACK_PLANNING_MODEL:llama-3.3-70b-versatile}"
-          reasoner: "${FALLBACK_REASONING_MODEL:llama-3.1-8b-instant}"
+          planner: "${PROJECT_A_LEVEL_2_MODEL:gemini-1.5-flash}"
+      - id: "project-a-level-3"
+        base-url: "${GEMINI_PROJECT_A_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_A_API_KEY:your-key-a}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          planner: "${PROJECT_A_LEVEL_3_MODEL:gemini-1.5-flash-8b}"
+      - id: "project-a-level-4"
+        base-url: "${GEMINI_PROJECT_A_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_A_API_KEY:your-key-a}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          planner: "${PROJECT_A_LEVEL_4_MODEL:gemma-2-9b-it}"
+
+      # --- PROJECT B (REASONING CHAIN) ---
+      - id: "project-b-level-1"
+        base-url: "${GEMINI_PROJECT_B_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_B_API_KEY:your-key-b}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          reasoner: "${PROJECT_B_LEVEL_1_MODEL:gemini-1.5-flash}"
+      - id: "project-b-level-2"
+        base-url: "${GEMINI_PROJECT_B_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_B_API_KEY:your-key-b}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          reasoner: "${PROJECT_B_LEVEL_2_MODEL:gemini-1.5-pro}"
+      - id: "project-b-level-3"
+        base-url: "${GEMINI_PROJECT_B_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_B_API_KEY:your-key-b}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          reasoner: "${PROJECT_B_LEVEL_3_MODEL:gemini-1.5-flash-8b}"
+      - id: "project-b-level-4"
+        base-url: "${GEMINI_PROJECT_B_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_B_API_KEY:your-key-b}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          reasoner: "${PROJECT_B_LEVEL_4_MODEL:gemma-2-9b-it}"
+
+      # --- GLOBAL FALLBACK ---
+      - id: "global-fallback-openrouter"
+        base-url: "${OPENROUTER_BASE_URL:https://openrouter.ai/api/v1}"
+        api-key: "${OPENROUTER_API_KEY:your-openrouter-key}"
+        is-primary: false
+        max-context-window: 128000
+        models:
+          planner: "${GLOBAL_FALLBACK_MODEL:openrouter/auto}"
+          reasoner: "${GLOBAL_FALLBACK_MODEL:openrouter/auto}"
 
 sandbox:
   core-pool-size: 2
@@ -71,5 +119,16 @@ sandbox:
 
 mcp:
   server:
+    postgres:
+      url: ${MCP_POSTGRES_URL:http://mcp-postgres:8081/sse}
+    github:
+      url: ${MCP_GITHUB_URL:http://mcp-github:8082/sse}
+    puppeteer:
+      url: ${MCP_PUPPETEER_URL:http://mcp-puppeteer:8083/sse}
     tavily-search:
-      url: ${MCP_TAVILY_SEARCH_URL:http://localhost:8084/sse}
+      url: ${MCP_TAVILY_SEARCH_URL:http://mcp-tavily-search:8084/sse}
+    slack:
+      url: ${MCP_SLACK_URL:http://mcp-slack:8085/sse}
+    notion:
+      url: ${MCP_NOTION_URL:http://mcp-notion:8086/sse}
+

@@ -30,12 +30,16 @@ services:
       - ./app.log:/app/app.log
     stop_grace_period: 30s
     depends_on:
-      - squid
-      - mcp-postgres
-      - redis
-      - mcp-github
-      - mcp-puppeteer
-      - mcp-tavily-search
+      squid:
+        condition: service_started
+      mcp-postgres:
+        condition: service_started
+      mcp-github:
+        condition: service_started
+      mcp-puppeteer:
+        condition: service_healthy
+      mcp-tavily-search:
+        condition: service_started
     networks:
       - sandbox_net
       - external_net
@@ -66,15 +70,6 @@ services:
       - external_net
     restart: unless-stopped
 
-  redis:
-    image: redis:alpine
-    container_name: redis
-    ports:
-      - "6379:6379"
-    networks:
-      - external_net
-    restart: unless-stopped
-
   mcp-github:
     image: node:22-alpine
     container_name: mcp-github
@@ -95,6 +90,12 @@ services:
       - "8083:8083"
     networks:
       - external_net
+    healthcheck:
+      test: ["CMD", "node", "-e", "const net = require('net'); const client = net.createConnection({ port: 8083 }, () => { client.end(); process.exit(0); }); client.on('error', () => process.exit(1));"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 10s
     restart: unless-stopped
 
   mcp-tavily-search:
@@ -108,30 +109,6 @@ services:
     networks:
       - external_net
     restart: unless-stopped
-
-  # mcp-slack:
-  #   image: node:20-alpine
-  #   container_name: mcp-slack
-  #   command: npx -y mcp-proxy --debug --shell --port 8085 -- npx -y @modelcontextprotocol/server-slack
-  #   environment:
-  #     - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
-  #   ports:
-  #     - "8085:8085"
-  #   networks:
-  #     - external_net
-  #   restart: unless-stopped
-
-  # mcp-notion:
-  #   image: node:20-alpine
-  #   container_name: mcp-notion
-  #   command: npx -y mcp-proxy --debug --shell --port 8086 -- npx -y @modelcontextprotocol/server-notion
-  #   environment:
-  #     - NOTION_API_KEY=${NOTION_API_KEY}
-  #   ports:
-  #     - "8086:8086"
-  #   networks:
-  #     - external_net
-  #   restart: unless-stopped
 
 networks:
   sandbox_net:

@@ -37,6 +37,11 @@ public class ResilientLlmRouter implements LlmRouter {
     @Override
     public ChatResponse generate(List<Message> messages, TaskType taskType) {
         List<LlmProperties.ProviderConfig> providers = registry.getAllConfigs();
+        if (taskType == TaskType.REASONER) {
+            providers = providers.stream()
+                    .filter(config -> !config.id().startsWith("project-a"))
+                    .collect(Collectors.toList());
+        }
         
         Exception lastException = null;
 

@@ -93,4 +93,41 @@ public class LlmFailoverIntegrationTest {
         // Verify primary client stream was only called once
         verify(primaryClient, times(1)).stream(any(Prompt.class));
     }
+
+    @Test
+    public void testReasonerTaskSkipsProjectAProviders() {
+        // 1. Setup providers: project-a, project-b, and global-fallback
+        LlmProperties.ProviderConfig projectA = new LlmProperties.ProviderConfig(
+                "project-a-level-1", "url-a", "key-a", true, 1000000, Map.of("planner", "gemini-1.5-pro")
+        );
+        LlmProperties.ProviderConfig projectB = new LlmProperties.ProviderConfig(
+                "project-b-level-1", "url-b", "key-b", false, 1000000, Map.of("reasoner", "gemini-1.5-flash")
+        );
+        LlmProperties.ProviderConfig fallback = new LlmProperties.ProviderConfig(
+                "global-fallback-openrouter", "url-c", "key-c", false, 128000, Map.of("reasoner", "openrouter/auto")
+        );
+        when(mockRegistry.getAllConfigs()).thenReturn(List.of(projectA, projectB, fallback));
+
+        // 2. Mock project-b client to succeed
+        OpenAiChatModel projectBClient = mock(OpenAiChatModel.class);
+        when(mockRegistry.getClient("project-b-level-1")).thenReturn(projectBClient);
+
+        ChatResponse successResponse = mock(ChatResponse.class);
+        Generation gen = new Generation(new AssistantMessage("Reasoner Success"));
+        when(successResponse.getResult()).thenReturn(gen);
+        when(successResponse.getMetadata()).thenReturn(mock(org.springframework.ai.chat.metadata.ChatResponseMetadata.class));
+
+        when(projectBClient.stream(any(Prompt.class))).thenReturn(Flux.just(successResponse));
+
+        // 3. Execute with REASONER task type
+        ChatResponse response = router.generate(List.of(), TaskType.REASONER);
+
+        // 4. Verify
+        assertNotNull(response);
+        assertEquals("Reasoner Success", response.getResult().getOutput().getText());
+
+        // Verify that project-a client was NEVER retrieved/used
+        verify(mockRegistry, never()).getClient("project-a-level-1");
+        verify(mockRegistry).getClient("project-b-level-1");
+    }
 }

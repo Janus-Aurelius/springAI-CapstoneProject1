@@ -39,6 +39,9 @@ public class McpToolExecutor implements ToolExecutor {
             return true;
         }
         for (McpSyncClient client : getMcpSyncClients()) {
+            if (client == null) {
+                continue;
+            }
             try {
                 var toolsResult = client.listTools();
                 if (toolsResult != null && toolsResult.tools() != null) {
