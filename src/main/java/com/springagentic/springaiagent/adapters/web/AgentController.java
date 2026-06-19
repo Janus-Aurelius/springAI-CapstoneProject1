@@ -40,7 +40,8 @@ public class AgentController {
     private List<String> getAllAllowedTools() {
         List<String> allowedTools = new java.util.ArrayList<>(List.of(
             "search_database", "calculate_metrics", "write_database", "search_archive", "web_search",
-            "save_memory", "search_memory"
+            "save_memory", "search_memory",
+            "execute_python_sandbox", "network_fetch_proxy", "query_isolated_database"
         ));
         java.util.Map<String, McpSyncClient> clientsMap = applicationContext.getBeansOfType(McpSyncClient.class);
         for (io.modelcontextprotocol.client.McpSyncClient client : clientsMap.values()) {

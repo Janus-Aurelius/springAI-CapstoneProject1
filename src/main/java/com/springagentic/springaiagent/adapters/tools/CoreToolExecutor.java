@@ -1,6 +1,7 @@
 package com.springagentic.springaiagent.adapters.tools;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.springagentic.springaiagent.core.sandbox.SandboxProfile;
 import com.springagentic.springaiagent.core.spi.ToolExecutor;
 import com.springagentic.springaiagent.core.spi.ToolRegistry;
 import org.slf4j.Logger;
@@ -8,9 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DummyToolExecutor implements ToolExecutor {
+public class CoreToolExecutor implements ToolExecutor {
 
-    private static final Logger log = LoggerFactory.getLogger(DummyToolExecutor.class);
+    private static final Logger log = LoggerFactory.getLogger(CoreToolExecutor.class);
 
     // Dynamic Parameter Schemas using Java Records and descriptions
     public record DatabaseQueryParams(
@@ -40,7 +41,22 @@ public class DummyToolExecutor implements ToolExecutor {
         String query
     ) {}
 
-    public DummyToolExecutor(ToolRegistry toolRegistry) {
+    public record PythonSandboxParams(
+        @JsonPropertyDescription("The python code script to run in the sandbox")
+        String code
+    ) {}
+
+    public record NetworkFetchParams(
+        @JsonPropertyDescription("The URL to fetch")
+        String url
+    ) {}
+
+    public record IsolatedDatabaseParams(
+        @JsonPropertyDescription("The SQL query to run against the isolated database")
+        String query
+    ) {}
+
+    public CoreToolExecutor(ToolRegistry toolRegistry) {
         // Register schemas at runtime
         toolRegistry.registerTool(
             "search_database",
@@ -69,11 +85,43 @@ public class DummyToolExecutor implements ToolExecutor {
             "Searches the web for up-to-date information.",
             WebSearchParams.class
         );
+
+        // Register sandbox tools
+        toolRegistry.registerTool(
+            "execute_python_sandbox",
+            "Executes Python code in a safe sandbox. Use this for math, computations, and data manipulation.",
+            PythonSandboxParams.class,
+            false,
+            false,
+            SandboxProfile.COMPUTE
+        );
+        toolRegistry.registerTool(
+            "network_fetch_proxy",
+            "Fetches content from a URL via a proxy.",
+            NetworkFetchParams.class,
+            false,
+            false,
+            SandboxProfile.FETCH
+        );
+        toolRegistry.registerTool(
+            "query_isolated_database",
+            "Queries the isolated PostgreSQL database.",
+            IsolatedDatabaseParams.class,
+            false,
+            false,
+            SandboxProfile.COMPUTE
+        );
     }
 
     @Override
     public boolean supports(String toolName) {
-        return "search_database".equals(toolName) || "calculate_metrics".equals(toolName) || "write_database".equals(toolName) || "search_archive".equals(toolName) || "web_search".equals(toolName);
+        // Only return true for tools we execute locally in this class.
+        // Sandbox tools return false so they fall through to the ExecutionEngine's Docker-managed execution.
+        return "search_database".equals(toolName) || 
+               "calculate_metrics".equals(toolName) || 
+               "write_database".equals(toolName) || 
+               "search_archive".equals(toolName) || 
+               "web_search".equals(toolName);
     }
 
     @Override
