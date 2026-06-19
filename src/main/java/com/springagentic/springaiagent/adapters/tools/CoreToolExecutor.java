@@ -1,6 +1,8 @@
 package com.springagentic.springaiagent.adapters.tools;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springagentic.springaiagent.adapters.web.MockRestController;
 import com.springagentic.springaiagent.core.sandbox.SandboxProfile;
 import com.springagentic.springaiagent.core.spi.ToolExecutor;
 import com.springagentic.springaiagent.core.spi.ToolRegistry;
@@ -12,6 +14,9 @@ import org.springframework.stereotype.Component;
 public class CoreToolExecutor implements ToolExecutor {
 
     private static final Logger log = LoggerFactory.getLogger(CoreToolExecutor.class);
+
+    private final MockRestController mockRestController;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     // Dynamic Parameter Schemas using Java Records and descriptions
     public record DatabaseQueryParams(
@@ -56,7 +61,21 @@ public class CoreToolExecutor implements ToolExecutor {
         String query
     ) {}
 
-    public CoreToolExecutor(ToolRegistry toolRegistry) {
+    // Parameters for custom tools
+    public record ListResourcesParams() {}
+
+    public record ManageResourceParams(
+        @JsonPropertyDescription("The ID of the target resource (e.g. 1, 2, 3, 4)")
+        Integer resourceId,
+        @JsonPropertyDescription("The action to perform on the resource (stop, restart, maintain, update)")
+        String action
+    ) {}
+
+    public record SystemHealthParams() {}
+
+    public CoreToolExecutor(ToolRegistry toolRegistry, MockRestController mockRestController) {
+        this.mockRestController = mockRestController;
+
         // Register schemas at runtime
         toolRegistry.registerTool(
             "search_database",
@@ -111,6 +130,25 @@ public class CoreToolExecutor implements ToolExecutor {
             false,
             SandboxProfile.COMPUTE
         );
+
+        // Register custom system management tools
+        toolRegistry.registerTool(
+            "list_system_resources",
+            "Retrieves a list of all mock system resources and their current statuses.",
+            ListResourcesParams.class
+        );
+        toolRegistry.registerTool(
+            "manage_system_resource",
+            "Executes an operational action on a mock system resource by ID. Mutating. Requires human approval.",
+            ManageResourceParams.class,
+            true,  // isMutating
+            true   // requiresApproval
+        );
+        toolRegistry.registerTool(
+            "get_system_health",
+            "Checks the overall health status of the mock system.",
+            SystemHealthParams.class
+        );
     }
 
     @Override
@@ -121,7 +159,10 @@ public class CoreToolExecutor implements ToolExecutor {
                "calculate_metrics".equals(toolName) || 
                "write_database".equals(toolName) || 
                "search_archive".equals(toolName) || 
-               "web_search".equals(toolName);
+               "web_search".equals(toolName) ||
+               "list_system_resources".equals(toolName) ||
+               "manage_system_resource".equals(toolName) ||
+               "get_system_health".equals(toolName);
     }
 
     @Override
@@ -133,6 +174,34 @@ public class CoreToolExecutor implements ToolExecutor {
             Thread.sleep(500); 
         } catch (InterruptedException e) { 
             Thread.currentThread().interrupt(); 
+        }
+
+        if ("list_system_resources".equals(toolName)) {
+            try {
+                var resources = mockRestController.getResources();
+                return objectMapper.writeValueAsString(resources);
+            } catch (Exception e) {
+                return "{\"status\": \"error\", \"message\": \"" + e.getMessage() + "\"}";
+            }
+        }
+
+        if ("manage_system_resource".equals(toolName)) {
+            try {
+                ManageResourceParams params = objectMapper.readValue(jsonArgs, ManageResourceParams.class);
+                var response = mockRestController.performAction(new MockRestController.ActionRequest(params.resourceId(), params.action()));
+                return objectMapper.writeValueAsString(response);
+            } catch (Exception e) {
+                return "{\"status\": \"error\", \"message\": \"" + e.getMessage() + "\"}";
+            }
+        }
+
+        if ("get_system_health".equals(toolName)) {
+            try {
+                var health = mockRestController.checkHealth();
+                return objectMapper.writeValueAsString(health);
+            } catch (Exception e) {
+                return "{\"status\": \"error\", \"message\": \"" + e.getMessage() + "\"}";
+            }
         }
 
         if ("search_database".equals(toolName)) {
