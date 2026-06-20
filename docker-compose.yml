@@ -24,6 +24,9 @@ services:
       - .env
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
+      - LANGFUSE_OTEL_ENDPOINT=http://langfuse:3000/api/public/otel/v1/traces
+      - LANGFUSE_OTEL_AUTH=Basic cGstbGYtZGVmYXVsdDpzay1sZi1kZWZhdWx0
+      - OTEL_SDK_DISABLED=false
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./app_reasoning.log:/app/app_reasoning.log
@@ -31,6 +34,8 @@ services:
     stop_grace_period: 30s
     depends_on:
       squid:
+        condition: service_started
+      postgres:
         condition: service_started
       mcp-postgres:
         condition: service_started
@@ -40,8 +45,32 @@ services:
         condition: service_healthy
       mcp-tavily-search:
         condition: service_started
+      langfuse:
+        condition: service_started
     networks:
       - sandbox_net
+      - external_net
+    restart: unless-stopped
+
+  langfuse:
+    image: langfuse/langfuse:3
+    container_name: langfuse
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-postgres}?schema=langfuse
+      - NEXTAUTH_SECRET=my-nextauth-secret-for-langfuse-dev
+      - NEXTAUTH_URL=http://localhost:3000
+      - PORT=3000
+      - LANGFUSE_INIT_ORG_ID=org_default
+      - LANGFUSE_INIT_PROJECT_ID=proj_default
+      - LANGFUSE_INIT_PROJECT_PUBLIC_KEY=pk-lf-default
+      - LANGFUSE_INIT_PROJECT_SECRET_KEY=sk-lf-default
+      - LANGFUSE_INIT_USER_EMAIL=admin@example.com
+      - LANGFUSE_INIT_USER_PASSWORD=admin-password
+    depends_on:
+      - postgres
+    networks:
       - external_net
     restart: unless-stopped
 

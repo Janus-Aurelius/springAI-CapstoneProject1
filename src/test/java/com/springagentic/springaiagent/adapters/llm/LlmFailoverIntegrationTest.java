@@ -36,7 +36,11 @@ public class LlmFailoverIntegrationTest {
         Retry realRetry = Retry.ofDefaults("llmProvider");
         when(mockRetryRegistry.retry("llmProvider")).thenReturn(realRetry);
 
-        router = new ResilientLlmRouter(mockRegistry, mockContextManager, mockRetryRegistry);
+        LlmProperties mockProperties = mock(LlmProperties.class);
+        when(mockProperties.pricing()).thenReturn(java.util.Collections.emptyMap());
+
+        router = new ResilientLlmRouter(mockRegistry, mockContextManager, mockRetryRegistry, 
+                new io.micrometer.core.instrument.simple.SimpleMeterRegistry(), mockProperties);
 
         // Mock context manager to return messages as is
         when(mockContextManager.truncate(any(), anyInt())).thenAnswer(inv -> inv.getArgument(0));
@@ -70,7 +74,7 @@ public class LlmFailoverIntegrationTest {
         when(fallbackClient.stream(any(Prompt.class))).thenReturn(Flux.just(successResponse));
 
         // 4. Execute
-        ChatResponse response = router.generate(List.of(), TaskType.PLANNER);
+        ChatResponse response = router.generate(List.of(), TaskType.PLANNER, null);
 
         // 5. Verify
         assertNotNull(response);
@@ -93,7 +97,7 @@ public class LlmFailoverIntegrationTest {
         when(primaryClient.stream(any(Prompt.class))).thenReturn(Flux.error(new RuntimeException("Empty response stream from provider primary")));
 
         // 2. Execute - should retry and then throw
-        assertThrows(RuntimeException.class, () -> router.generate(List.of(), TaskType.PLANNER));
+        assertThrows(RuntimeException.class, () -> router.generate(List.of(), TaskType.PLANNER, null));
         
         // Verify primary client stream was called multiple times (3 attempts default)
         verify(primaryClient, times(3)).stream(any(Prompt.class));
@@ -125,7 +129,7 @@ public class LlmFailoverIntegrationTest {
         when(projectBClient.stream(any(Prompt.class))).thenReturn(Flux.just(successResponse));
 
         // 3. Execute with REASONER task type
-        ChatResponse response = router.generate(List.of(), TaskType.REASONER);
+        ChatResponse response = router.generate(List.of(), TaskType.REASONER, null);
 
         // 4. Verify
         assertNotNull(response);

@@ -55,7 +55,7 @@ public class Planner {
         try {
             org.slf4j.MDC.put("threadId", context.getThreadId());
             log.info("PLANNER: Generating execution plan...");
-            Plan plan = llmProvider.structuredRequest(systemPrompt, userPrompt, Plan.class);
+            Plan plan = llmProvider.structuredRequest(context, systemPrompt, userPrompt, Plan.class);
 
             if (plan == null || plan.steps() == null || plan.steps().isEmpty()) {
                 log.warn("PLANNER: Received null or empty plan from LLM!");

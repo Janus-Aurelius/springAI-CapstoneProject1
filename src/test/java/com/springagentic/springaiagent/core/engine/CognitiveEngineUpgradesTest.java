@@ -13,6 +13,7 @@ import com.springagentic.springaiagent.framework.registry.AgentDefinition;
 import com.springagentic.springaiagent.core.sandbox.McpContainerFactory;
 import com.springagentic.springaiagent.core.security.SecretRedactor;
 import com.springagentic.springaiagent.framework.config.LlmProperties;
+import io.opentelemetry.api.OpenTelemetry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -45,12 +46,16 @@ public class CognitiveEngineUpgradesTest {
         
         // Mock LlmProperties
         llmProperties = mock(LlmProperties.class);
-        LlmProperties.GuardrailProperties guardrails = new LlmProperties.GuardrailProperties(20, 5, 3, 100000L, 2000);
+        LlmProperties.GuardrailProperties guardrails = new LlmProperties.GuardrailProperties(20, 5, 3, 100000L, 2000, new ArrayList<>(), true);
         when(llmProperties.guardrails()).thenReturn(guardrails);
 
         McpContainerFactory containerFactory = mock(McpContainerFactory.class);
         SecretRedactor secretRedactor = mock(SecretRedactor.class);
-        engine = new ExecutionEngine(planner, reasoner, toolExecutor, memoryStore, truncator, toolRegistry, containerFactory, secretRedactor, llmProperties);
+        AgentEvaluator agentEvaluator = mock(AgentEvaluator.class);
+        when(agentEvaluator.evaluate(anyString(), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(new AgentEvaluator.EvaluationResult(true, "Goal met", 1.0, 1.0));
+
+        engine = new ExecutionEngine(planner, reasoner, toolExecutor, memoryStore, truncator, toolRegistry, containerFactory, secretRedactor, llmProperties, OpenTelemetry.noop().getTracer("noop"), agentEvaluator);
 
         // Configure default truncator mock behavior
         when(truncator.truncate(anyString(), anyInt())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -388,5 +393,69 @@ public class CognitiveEngineUpgradesTest {
         assertEquals("FATAL_ERROR", context.getStatus());
         assertEquals("FATAL_ERROR", context.getTerminationReason());
         assertTrue(context.getFinalConclusion().contains("failed"), "Should terminate with step failure error");
+    }
+
+    @Test
+    public void testSelfCorrectionLoopOnEvaluationFailure() {
+        AgentEvaluator mockEvaluator = mock(AgentEvaluator.class);
+        // First call returns failure, second call returns success
+        when(mockEvaluator.evaluate(anyString(), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(new AgentEvaluator.EvaluationResult(false, "Conclusion lacks credential scrubber", 0.7, 0.5))
+                .thenReturn(new AgentEvaluator.EvaluationResult(true, "Goal met fully", 1.0, 1.0));
+
+        // Re-inject execution engine with the custom mock evaluator
+        ExecutionEngine testEngine = new ExecutionEngine(planner, reasoner, toolExecutor, memoryStore, truncator, toolRegistry, mock(McpContainerFactory.class), mock(SecretRedactor.class), llmProperties, OpenTelemetry.noop().getTracer("noop"), mockEvaluator);
+
+        Step stepA = new Step("step-A", "Task A", "Outcome A", Collections.emptyList());
+        Plan initialPlan = new Plan(List.of(stepA));
+        Plan recoveryPlan = new Plan(List.of(stepA));
+
+        when(planner.createPlan(any(), any())).thenReturn(initialPlan).thenReturn(recoveryPlan);
+        when(memoryStore.getThreadHistory(any())).thenReturn(new ArrayList<>());
+        when(reasoner.think(any(), eq(stepA), any())).thenReturn(new ReasoningResult.FinalAnswer("Result A"));
+
+        AgentDefinition agentDef = new AgentDefinition("agent-01", "system", new ArrayList<>(), 0.5);
+
+        AgentContext context = testEngine.runComplexTask("thread-1", "Verify self-correction", agentDef);
+
+        assertEquals("SUCCESS", context.getStatus());
+        assertEquals(1, context.getReplanCount());
+        assertTrue(context.getObservationsList().stream()
+                .anyMatch(obs -> obs.contains("[SYSTEM EVALUATION CRITIQUE]")));
+        verify(mockEvaluator, times(2)).evaluate(anyString(), anyString(), anyString(), anyString(), anyString());
+    }
+
+    @Test
+    public void testAsyncAuditingOnEvaluation() throws InterruptedException {
+        AgentEvaluator mockEvaluator = mock(AgentEvaluator.class);
+        when(mockEvaluator.evaluate(anyString(), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(new AgentEvaluator.EvaluationResult(true, "Goal met fully", 1.0, 1.0));
+
+        // Configure properties to have selfCorrectionEnabled = false
+        LlmProperties testLlmProperties = mock(LlmProperties.class);
+        LlmProperties.GuardrailProperties guardrails = new LlmProperties.GuardrailProperties(20, 5, 3, 100000L, 2000, new ArrayList<>(), false);
+        when(testLlmProperties.guardrails()).thenReturn(guardrails);
+
+        ExecutionEngine testEngine = new ExecutionEngine(planner, reasoner, toolExecutor, memoryStore, truncator, toolRegistry, mock(McpContainerFactory.class), mock(SecretRedactor.class), testLlmProperties, OpenTelemetry.noop().getTracer("noop"), mockEvaluator);
+
+        Step stepA = new Step("step-A", "Task A", "Outcome A", Collections.emptyList());
+        Plan plan = new Plan(List.of(stepA));
+
+        when(planner.createPlan(any(), any())).thenReturn(plan);
+        when(memoryStore.getThreadHistory(any())).thenReturn(new ArrayList<>());
+        when(reasoner.think(any(), eq(stepA), any())).thenReturn(new ReasoningResult.FinalAnswer("Result A"));
+
+        AgentDefinition agentDef = new AgentDefinition("agent-01", "system", new ArrayList<>(), 0.5);
+
+        AgentContext context = testEngine.runComplexTask("thread-1", "Verify async auditing", agentDef);
+
+        // Should complete successfully immediately
+        assertEquals("SUCCESS", context.getStatus());
+        assertEquals(0, context.getReplanCount());
+
+        // Wait brief moment to allow CompletableFuture to run the mock evaluator
+        Thread.sleep(100);
+
+        verify(mockEvaluator, times(1)).evaluate(anyString(), anyString(), anyString(), anyString(), anyString());
     }
 }

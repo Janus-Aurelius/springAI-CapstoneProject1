@@ -8,15 +8,34 @@ import java.util.Map;
 public record LlmProperties(
     GuardrailProperties guardrails,
     List<ProviderConfig> providers,
-    boolean stripReasoning
+    boolean stripReasoning,
+    Map<String, ModelPriceConfig> pricing
 ) {
+    public LlmProperties {
+        if (pricing == null) {
+            pricing = java.util.Collections.emptyMap();
+        }
+    }
+
+    public record ModelPriceConfig(
+        double inputCostPerMillion,
+        double outputCostPerMillion
+    ) {}
     public record GuardrailProperties(
         int maxActions,
         int maxReplans,
         int stagnationThreshold,
         long maxTokenBudget,
-        int maxObservationTokens
-    ) {}
+        int maxObservationTokens,
+        List<String> customRules,
+        boolean selfCorrectionEnabled
+    ) {
+        public GuardrailProperties {
+            if (customRules == null) {
+                customRules = java.util.Collections.emptyList();
+            }
+        }
+    }
 
     public record ProviderConfig(
         String id,

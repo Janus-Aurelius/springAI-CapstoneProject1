@@ -28,7 +28,22 @@ public class EngineConfig {
         return new Reasoner(llmProvider);
     }
 
-    // 3. Create Execution Engine (The Core Loop)
+    // 3. Create Agent Evaluator
+    @Bean
+    public com.springagentic.springaiagent.core.engine.AgentEvaluator agentEvaluator(
+            LlmProvider llmProvider,
+            io.opentelemetry.api.OpenTelemetry openTelemetry,
+            com.springagentic.springaiagent.adapters.memory.AgentEvaluationRepository repository,
+            LlmProperties llmProperties) {
+        return new com.springagentic.springaiagent.core.engine.AgentEvaluator(
+                llmProvider,
+                openTelemetry.getTracer("spring-ai-agent"),
+                repository,
+                llmProperties
+        );
+    }
+
+    // 4. Create Execution Engine (The Core Loop)
     @Bean
     public ExecutionEngine executionEngine(Planner planner, Reasoner reasoner,
                                            ToolExecutor toolExecutor, MemoryStore memoryStore,
@@ -36,8 +51,10 @@ public class EngineConfig {
                                            ToolRegistry toolRegistry,
                                            com.springagentic.springaiagent.core.sandbox.McpContainerFactory containerFactory,
                                            com.springagentic.springaiagent.core.security.SecretRedactor secretRedactor,
-                                           LlmProperties llmProperties) {
-        return new ExecutionEngine(planner, reasoner, toolExecutor, memoryStore, observationTruncator, toolRegistry, containerFactory, secretRedactor, llmProperties);
+                                           LlmProperties llmProperties,
+                                           io.opentelemetry.api.OpenTelemetry openTelemetry,
+                                           com.springagentic.springaiagent.core.engine.AgentEvaluator agentEvaluator) {
+        return new ExecutionEngine(planner, reasoner, toolExecutor, memoryStore, observationTruncator, toolRegistry, containerFactory, secretRedactor, llmProperties, openTelemetry.getTracer("spring-ai-agent"), agentEvaluator);
     }
 
     // 4. Create the Task Router (The Front Door)

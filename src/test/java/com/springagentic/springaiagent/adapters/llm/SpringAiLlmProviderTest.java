@@ -60,11 +60,11 @@ public class SpringAiLlmProviderTest {
             when(gen2.getOutput()).thenReturn(msg2);
             when(res2.getMetadata()).thenReturn(metadata);
 
-            when(mockLlmRouter.generate(any(), any()))
+            when(mockLlmRouter.generate(any(), any(), any()))
                 .thenReturn(res1)
                 .thenReturn(res2);
         } else {
-            when(mockLlmRouter.generate(any(), any())).thenReturn(res1);
+            when(mockLlmRouter.generate(any(), any(), any())).thenReturn(res1);
         }
     }
 
@@ -86,7 +86,7 @@ public class SpringAiLlmProviderTest {
         assertEquals("Deduction successful after retry", ((ReasoningResult.FinalAnswer) result).text());
 
         // Verify router was called twice
-        verify(mockLlmRouter, times(2)).generate(any(), any());
+        verify(mockLlmRouter, times(2)).generate(any(), any(), any());
     }
 
     private static class AssistantMessage extends org.springframework.ai.chat.messages.AssistantMessage {

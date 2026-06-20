@@ -34,13 +34,19 @@ public class SpringAiLlmProvider implements LlmProvider {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> T structuredRequest(String systemPrompt, String userPrompt, Class<T> returnType) {
+        return structuredRequest(null, systemPrompt, userPrompt, returnType);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T structuredRequest(AgentContext context, String systemPrompt, String userPrompt, Class<T> returnType) {
         try {
             if (returnType == String.class) {
                 ChatResponse response = llmRouter.generate(
                     List.of(new SystemMessage(systemPrompt), new UserMessage(userPrompt)),
-                    TaskType.PLANNER
+                    TaskType.PLANNER,
+                    context
                 );
                 String content = response.getResult().getOutput().getText();
                 
@@ -59,7 +65,8 @@ public class SpringAiLlmProvider implements LlmProvider {
 
             ChatResponse response = llmRouter.generate(
                 List.of(new SystemMessage(systemPrompt + "\n" + converter.getFormat()), new UserMessage(fullUserPrompt)),
-                TaskType.PLANNER
+                TaskType.PLANNER,
+                context
             );
 
             String rawContent = response.getResult().getOutput().getText();
@@ -80,7 +87,7 @@ public class SpringAiLlmProvider implements LlmProvider {
     public ReasoningResult think(AgentContext context, Step currentStep, List<String> allowedTools) {
 
         // We define a DTO specifically for parsing the LLM's raw JSON output
-        record LlmDecision(String type, String toolName, String jsonArgs, String reason, String text) {}
+        record LlmDecision(String type, String toolName, String jsonArgs, String reason, String text, String thought) {}
 
         // 1. Resolve full JSON schemas for the allowed tools
         Collection<ToolSchema> schemas = toolRegistry.getSchemas(allowedTools);
@@ -102,7 +109,7 @@ public class SpringAiLlmProvider implements LlmProvider {
             {observations}
             
             You must decide what to do next. Output JSON matching exactly ONE of these types:
-            1. ACTION: {"type": "ACTION", "toolName": "name_of_tool", "jsonArgs": "{\\"arg\\": \\"val\\"}"}
+            1. ACTION: {"type": "ACTION", "thought": "explain why you are taking this action and your plan", "toolName": "name_of_tool", "jsonArgs": "{\\"arg\\": \\"val\\"}"}
             2. REPLAN: {"type": "REPLAN", "reason": "why we need a new plan"}
             3. FINAL_ANSWER: {"type": "FINAL_ANSWER", "text": "the final deduction"}
             """;
@@ -133,11 +140,9 @@ public class SpringAiLlmProvider implements LlmProvider {
 
                 ChatResponse response = llmRouter.generate(
                     List.of(new SystemMessage(systemPrompt), new UserMessage(userPrompt)),
-                    TaskType.REASONER
+                    TaskType.REASONER,
+                    context
                 );
-                
-                // Track tokens
-                context.addTokens(response.getMetadata().getUsage().getTotalTokens());
 
                 rawContent = response.getResult().getOutput().getText();
                 String cleanJson = cleanAndExtractJson(rawContent);
@@ -147,12 +152,21 @@ public class SpringAiLlmProvider implements LlmProvider {
                     throw new RuntimeException("Parsed decision or decision type is null.");
                 }
 
+                // Extract reasoning/thought inside `<think>` tags if present
+                String extractedThought = extractReasoning(rawContent);
+
                 return switch (decision.type().toUpperCase()) {
                     case "ACTION" -> {
                         if (decision.toolName() == null) {
                             throw new RuntimeException("ACTION decision but toolName was null.");
                         }
-                        yield new ReasoningResult.Action(decision.toolName(), decision.jsonArgs() != null ? decision.jsonArgs() : "{}");
+                        String thought = decision.thought();
+                        if (thought == null || thought.isBlank()) {
+                            thought = extractedThought;
+                        } else if (extractedThought != null && !extractedThought.isBlank()) {
+                            thought = extractedThought + " | JSON Thought: " + thought;
+                        }
+                        yield new ReasoningResult.Action(decision.toolName(), decision.jsonArgs() != null ? decision.jsonArgs() : "{}", thought);
                     }
                     case "REPLAN" -> new ReasoningResult.Replan(decision.reason() != null ? decision.reason() : "No reason provided.");
                     case "FINAL_ANSWER" -> new ReasoningResult.FinalAnswer(decision.text() != null ? decision.text() : "");
@@ -181,6 +195,20 @@ public class SpringAiLlmProvider implements LlmProvider {
             }
         }
         return content;
+    }
+
+    private String extractReasoning(String content) {
+        if (content == null) return null;
+        if (content.contains("<think>")) {
+            int startThink = content.indexOf("<think>");
+            int endThink = content.indexOf("</think>");
+            if (endThink != -1 && endThink > startThink) {
+                return content.substring(startThink + 7, endThink).trim();
+            } else {
+                return content.substring(startThink + 7).trim();
+            }
+        }
+        return null;
     }
 
     private String cleanAndExtractJson(String input) {

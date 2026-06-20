@@ -10,19 +10,30 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class AgentContext {
-    private final String threadId;  // Grouping for persistent history (The Conversation)
-    private final String runId;     // Unique ID for THIS specific concurrent execution
-    private final String userGoal;
+    private String threadId;  // Grouping for persistent history (The Conversation)
+    private String runId;     // Unique ID for THIS specific concurrent execution
+    private String userGoal;
 
     private Plan plan;
     private final List<String> observations = new ArrayList<>();
     private final Map<String, String> stepSummaries = new ConcurrentHashMap<>();
+    
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private final Deque<AgentContextMemento> mementoStack = new ArrayDeque<>();
+
+    // Private constructor for Jackson deserialization
+    private AgentContext() {}
 
     // Guardrails / Termination tracking
     private int totalReplanCount = 0;
     private int totalActionCount = 0;
-    private long totalTokensConsumed = 0;
+    
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private final java.util.concurrent.atomic.AtomicLong totalTokensConsumed = new java.util.concurrent.atomic.AtomicLong(0);
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private final java.util.concurrent.atomic.DoubleAdder totalCostUsd = new java.util.concurrent.atomic.DoubleAdder();
+
     private String finalConclusion;
     private String terminationReason; // e.g., "SUCCESS", "MAX_LOOPS_REACHED", "FATAL_ERROR"
 
@@ -115,7 +126,32 @@ public class AgentContext {
     }
 
     public void addTokens(long tokens) {
-        this.totalTokensConsumed += tokens;
+        this.totalTokensConsumed.addAndGet(tokens);
+    }
+
+    public void addCost(double cost) {
+        this.totalCostUsd.add(cost);
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("totalCostUsd")
+    public double getTotalCostUsd() {
+        return totalCostUsd.sum();
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("totalCostUsd")
+    public void setTotalCostUsd(double val) {
+        totalCostUsd.reset();
+        totalCostUsd.add(val);
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("totalTokensConsumed")
+    public long getTotalTokensConsumed() {
+        return totalTokensConsumed.get();
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("totalTokensConsumed")
+    public void setTotalTokensConsumed(long val) {
+        totalTokensConsumed.set(val);
     }
 
     public List<String> getObservationsList() {
@@ -136,7 +172,7 @@ public class AgentContext {
 
     // --- Guardrail Checks ---
     public boolean hasExceededLimits(int maxActions, int maxReplans, long maxTokenBudget) {
-        return totalActionCount > maxActions || totalReplanCount > maxReplans || totalTokensConsumed > maxTokenBudget;
+        return totalActionCount > maxActions || totalReplanCount > maxReplans || totalTokensConsumed.get() > maxTokenBudget;
     }
 
     public void terminate(String reason, String conclusion) {
@@ -150,6 +186,8 @@ public class AgentContext {
     }
 
     public String getFinalConclusion() { return finalConclusion; }
+
+    public int getReplanCount() { return totalReplanCount; }
 
     public String getTerminationReason() { return terminationReason; }
 

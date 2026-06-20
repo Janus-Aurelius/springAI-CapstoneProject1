@@ -15,12 +15,18 @@ import com.springagentic.springaiagent.core.sandbox.ResourceUnavailableException
 import com.springagentic.springaiagent.core.security.SecretRedactor;
 import com.springagentic.springaiagent.framework.registry.AgentDefinition;
 import com.springagentic.springaiagent.framework.config.LlmProperties;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Context;
+import io.opentelemetry.context.Scope;
 import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -38,11 +44,14 @@ public class ExecutionEngine {
     private final McpContainerFactory containerFactory;
     private final SecretRedactor secretRedactor;
     private final LlmProperties llmProperties;
+    private final Tracer tracer;
+    private final AgentEvaluator agentEvaluator;
 
     public ExecutionEngine(Planner planner, Reasoner reasoner, ToolExecutor toolExecutor, 
                            MemoryStore memoryStore, ObservationTruncator observationTruncator,
                            ToolRegistry toolRegistry, McpContainerFactory containerFactory,
-                           SecretRedactor secretRedactor, LlmProperties llmProperties) {
+                           SecretRedactor secretRedactor, LlmProperties llmProperties,
+                           Tracer tracer, AgentEvaluator agentEvaluator) {
         this.planner = planner;
         this.reasoner = reasoner;
         this.toolExecutor = toolExecutor;
@@ -52,19 +61,52 @@ public class ExecutionEngine {
         this.containerFactory = containerFactory;
         this.secretRedactor = secretRedactor;
         this.llmProperties = llmProperties;
+        this.tracer = tracer;
+        this.agentEvaluator = agentEvaluator;
     }
 
     public AgentContext runComplexTask(String threadId, String userGoal, AgentDefinition agentDef) {
-        // 1. Initialize Context & save to persistent memory
         AgentContext context = new AgentContext(threadId, userGoal);
         memoryStore.saveRun(context);
-        executeLoop(context, agentDef);
-        return context;
+
+        Span runSpan = tracer.spanBuilder("Agent run")
+                .setAttribute("threadId", threadId)
+                .setAttribute("runId", context.getRunId())
+                .setAttribute("userGoal", userGoal)
+                .setAttribute("agentType", agentDef.agentId())
+                .startSpan();
+        try (Scope scope = runSpan.makeCurrent()) {
+            executeLoop(context, agentDef);
+            runSpan.setStatus(StatusCode.OK);
+            return context;
+        } catch (Throwable t) {
+            runSpan.recordException(t);
+            runSpan.setStatus(StatusCode.ERROR, t.getMessage());
+            throw t;
+        } finally {
+            runSpan.end();
+        }
     }
 
     public AgentContext resumeComplexTask(AgentContext context, AgentDefinition agentDef) {
-        executeLoop(context, agentDef);
-        return context;
+        Span runSpan = tracer.spanBuilder("Agent run")
+                .setAttribute("threadId", context.getThreadId())
+                .setAttribute("runId", context.getRunId())
+                .setAttribute("userGoal", context.getUserGoal())
+                .setAttribute("agentType", agentDef.agentId())
+                .setAttribute("isResume", true)
+                .startSpan();
+        try (Scope scope = runSpan.makeCurrent()) {
+            executeLoop(context, agentDef);
+            runSpan.setStatus(StatusCode.OK);
+            return context;
+        } catch (Throwable t) {
+            runSpan.recordException(t);
+            runSpan.setStatus(StatusCode.ERROR, t.getMessage());
+            throw t;
+        } finally {
+            runSpan.end();
+        }
     }
 
     private String executeLoop(AgentContext context, AgentDefinition agentDef) {
@@ -89,6 +131,54 @@ public class ExecutionEngine {
 
             // Remove steps that are already completed (already have a summary in context)
             remainingSteps.removeIf(step -> context.getStepSummaries().containsKey(step.stepId()));
+
+            // Evaluate if all steps in the plan are completed
+            if (remainingSteps.isEmpty()) {
+                String lastStepId = currentPlan.steps().isEmpty() ? null : currentPlan.steps().get(currentPlan.steps().size() - 1).stepId();
+                String finalSummary = lastStepId != null ? context.getStepSummaries().get(lastStepId) : null;
+                String conclusion = "All planned steps were completed successfully.";
+                if (finalSummary != null && !finalSummary.trim().isEmpty()) {
+                    conclusion += " Result: " + finalSummary;
+                }
+
+                if (llmProperties.guardrails().selfCorrectionEnabled()) {
+                    AgentEvaluator.EvaluationResult eval = agentEvaluator.evaluate(
+                            context.getThreadId(),
+                            context.getRunId(),
+                            context.getUserGoal(),
+                            context.getStepSummaries().toString(),
+                            conclusion
+                    );
+
+                    if (eval.isGoalMet()) {
+                        context.terminate("SUCCESS", conclusion);
+                        break;
+                    } else {
+                        if (context.getReplanCount() < llmProperties.guardrails().maxReplans()) {
+                            log.warn("EVALUATION CRITIQUE: Goal validation failed. Triggering recovery replan...");
+                            context.addObservationRaw("Observation: [SYSTEM EVALUATION CRITIQUE] Goal was not fully met. Issues: " + eval.explanation() + ". Please perform further actions to address these points.");
+                            context.incrementReplanCount();
+                            context.setPlan(planner.createPlan(context, history));
+                            continue; // Restart loop to execute recovery steps
+                        } else {
+                            context.terminate("EVALUATION_FAILED", "Evaluation critique: " + eval.explanation());
+                            break;
+                        }
+                    }
+                } else {
+                    // Asynchronous Auditing Mode: Non-blocking evaluation run
+                    final String finalConclusion = conclusion;
+                    CompletableFuture.runAsync(() -> agentEvaluator.evaluate(
+                            context.getThreadId(),
+                            context.getRunId(),
+                            context.getUserGoal(),
+                            context.getStepSummaries().toString(),
+                            finalConclusion
+                    ));
+                    context.terminate("SUCCESS", conclusion);
+                    break;
+                }
+            }
 
             List<Step> stepsToExecute;
 
@@ -146,11 +236,18 @@ public class ExecutionEngine {
 
             BatchTransactionCoordinator coordinator = new BatchTransactionCoordinator(context.getRunId() + "-" + System.currentTimeMillis());
 
+            // Capture parent OTel Context before submitting to the executor
+            Context parentContext = Context.current();
+
             // Execute ready steps in parallel using virtual threads
             try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
                 List<Future<StepResult>> futures = new ArrayList<>();
                 for (Step step : stepsToExecute) {
-                    Future<StepResult> future = executor.submit(() -> executeSingleStep(context, step, agentDef, coordinator));
+                    Future<StepResult> future = executor.submit(() -> {
+                        try (Scope scope = parentContext.makeCurrent()) {
+                            return executeSingleStep(context, step, agentDef, coordinator);
+                        }
+                    });
                     coordinator.registerFuture(future);
                     futures.add(future);
                 }
@@ -252,6 +349,36 @@ public class ExecutionEngine {
     }
 
     private StepResult executeSingleStep(AgentContext sharedContext, Step step, AgentDefinition agentDef, BatchTransactionCoordinator coordinator) {
+        Span stepSpan = tracer.spanBuilder("Step: " + step.stepId())
+                .setAttribute("stepId", step.stepId())
+                .setAttribute("threadId", sharedContext.getThreadId())
+                .setAttribute("runId", sharedContext.getRunId())
+                .startSpan();
+        try (Scope scope = stepSpan.makeCurrent()) {
+            StepResult result = executeSingleStepInternal(sharedContext, step, agentDef, coordinator);
+            if (result.success()) {
+                stepSpan.setStatus(StatusCode.OK);
+            } else {
+                stepSpan.setStatus(StatusCode.ERROR, result.errorMessage() != null ? result.errorMessage() : "Step failed");
+            }
+            if (result.summary() != null) {
+                stepSpan.setAttribute("step.summary", result.summary());
+            }
+            stepSpan.setAttribute("step.status", result.status());
+            stepSpan.setAttribute("step.action_count", result.actionCount());
+            stepSpan.setAttribute("step.replan_triggered", result.replanTriggered());
+            stepSpan.setAttribute("step.terminated", result.terminated());
+            return result;
+        } catch (Throwable t) {
+            stepSpan.recordException(t);
+            stepSpan.setStatus(StatusCode.ERROR, t.getMessage());
+            throw t;
+        } finally {
+            stepSpan.end();
+        }
+    }
+
+    private StepResult executeSingleStepInternal(AgentContext sharedContext, Step step, AgentDefinition agentDef, BatchTransactionCoordinator coordinator) {
         if (!coordinator.checkHealth()) {
             return new StepResult(step.stepId(), "Aborted: Sibling step failed.", false, new ArrayList<>(), 0);
         }
@@ -297,6 +424,11 @@ public class ExecutionEngine {
             log.info("RESUMING Step [{}]: Tool [{}] Decision [{}]", step.stepId(), resumedToolName, humanDecision);
             if ("APPROVED".equalsIgnoreCase(humanDecision)) {
                 String finalArgs = (modifiedToolArgs != null && !modifiedToolArgs.trim().isEmpty()) ? modifiedToolArgs : resumedToolArgs;
+                
+                String actionRecord = "Action: " + resumedToolName + " with args: " + finalArgs + " (Approved by User)";
+                localObservations.add(actionRecord);
+                accumulatedStepObservations.add(actionRecord);
+
                 if (toolRegistry.isMutating(resumedToolName)) {
                     log.info("MUTATING ACTION: Clearing memento checkpoints at side-effect boundary.");
                     coordinator.markMutated();
@@ -306,27 +438,27 @@ public class ExecutionEngine {
                 try {
                     secretRedactor.assertClean(resumedToolName, finalArgs);
                     if (toolExecutor.supports(resumedToolName)) {
-                        String toolResult = toolExecutor.execute(resumedToolName, finalArgs);
+                        String toolResult = executeLocalToolWithTrace(resumedToolName, finalArgs);
                         String truncatedResult = observationTruncator.truncate(toolResult, llmProperties.guardrails().maxObservationTokens());
-                        obs = "Action [" + resumedToolName + "] Result: " + truncatedResult;
+                        obs = "Observation: " + truncatedResult;
                     } else {
                         SandboxProfile profile = toolRegistry.getSandboxProfile(resumedToolName);
                         try (ManagedSandbox sandbox = containerFactory.lease(profile)) {
-                            String toolResult = executeToolInSandbox(resumedToolName, finalArgs, sandbox);
+                            String toolResult = executeSandboxToolWithTrace(resumedToolName, finalArgs, profile, sandbox);
                             String truncatedResult = observationTruncator.truncate(toolResult, llmProperties.guardrails().maxObservationTokens());
-                            obs = "Action [" + resumedToolName + "] Result: " + truncatedResult;
+                            obs = "Observation: " + truncatedResult;
                         } catch (ResourceUnavailableException e) {
                             log.error("Sandbox pool exhausted for {}", resumedToolName, e);
-                            obs = "Action [" + resumedToolName + "] Result: FAILED — sandbox pool exhausted.";
+                            obs = "Observation: FAILED — sandbox pool exhausted.";
                         }
                     }
                 } catch (SecurityException e) {
                     log.error("DLP BLOCK: Security violation for {}", resumedToolName, e);
-                    obs = "Action [" + resumedToolName + "] Result: SECURITY_VIOLATION — execution blocked.";
+                    obs = "Observation: SECURITY_VIOLATION — execution blocked.";
                 } catch (Exception e) {
                     String errorMsg = "FAILED: Tool execution encountered an error: " + e.getMessage();
                     log.error("Tool execution error inside step " + step.stepId(), e);
-                    obs = "Action [" + resumedToolName + "] Result: " + errorMsg;
+                    obs = "Observation: " + errorMsg;
                 }
                 localObservations.add(obs);
                 accumulatedStepObservations.add(obs);
@@ -334,7 +466,7 @@ public class ExecutionEngine {
                 // Continue to while-loop to let reasoner finalize the step
 
             } else if ("REJECTED".equalsIgnoreCase(humanDecision)) {
-                String obs = "Action [" + resumedToolName + "] Result: REJECTED BY USER" + (humanFeedback != null ? ": " + humanFeedback : "");
+                String obs = "Observation: REJECTED BY USER" + (humanFeedback != null ? ": " + humanFeedback : "");
                 log.info("STEP ABORTED (rejected) [Step {}]: {}", step.stepId(), obs);
                 localObservations.add(obs);
                 accumulatedStepObservations.add(obs);
@@ -342,7 +474,7 @@ public class ExecutionEngine {
                 // Continue to while-loop to let reasoner adapt
 
             } else { // FEEDBACK — human wants the agent to re-reason with their comments
-                String obs = "Action [" + resumedToolName + "] Result: SUSPENDED. Human feedback provided: " + (humanFeedback != null ? humanFeedback : "");
+                String obs = "Observation: SUSPENDED. Human feedback provided: " + (humanFeedback != null ? humanFeedback : "");
                 localObservations.add(obs);
                 accumulatedStepObservations.add(obs);
                 localActionCount++;
@@ -393,10 +525,15 @@ public class ExecutionEngine {
                     log.info("ACTION [Step {}]: Executing tool '{}'", step.stepId(), action.toolName());
                     localActionHistory.add(Integer.toHexString((action.toolName() + action.jsonArgs()).hashCode()));
 
+                    String thoughtStr = (action.thought() != null && !action.thought().isBlank()) ? action.thought() : "None";
+                    String actionRecord = "Thought: " + thoughtStr + "\nAction: " + action.toolName() + " with args: " + action.jsonArgs();
+                    localObservations.add(actionRecord);
+                    accumulatedStepObservations.add(actionRecord);
+
                     if (!agentDef.allowedToolNames().contains(action.toolName())) {
                         String errorMsg = "FAILED: Tool '" + action.toolName() + "' is not allowed for this agent. Allowed tools are: " + agentDef.allowedToolNames();
                         log.warn("Execution Escape Blocked: {}", errorMsg);
-                        String obs = "Action [" + action.toolName() + "] Result: " + errorMsg;
+                        String obs = "Observation: " + errorMsg;
                         localObservations.add(obs);
                         accumulatedStepObservations.add(obs);
                         localActionCount++;
@@ -426,32 +563,32 @@ public class ExecutionEngine {
                                 sharedContext.getThreadId(), step.stepId(), action.toolName(), action.jsonArgs());
 
                             if (toolExecutor.supports(action.toolName())) {
-                                String toolResult = toolExecutor.execute(action.toolName(), action.jsonArgs());
+                                String toolResult = executeLocalToolWithTrace(action.toolName(), action.jsonArgs());
                                 reasoningLog.info("[{}] [{}] [TOOL_EXECUTION_RESULT] {}", 
                                     sharedContext.getThreadId(), step.stepId(), toolResult);
                                 String truncatedResult = observationTruncator.truncate(toolResult, llmProperties.guardrails().maxObservationTokens());
-                                obs = "Action [" + action.toolName() + "] Result: " + truncatedResult;
+                                obs = "Observation: " + truncatedResult;
                             } else {
                                 // Run inside leased sandbox
                                 SandboxProfile profile = toolRegistry.getSandboxProfile(action.toolName());
                                 try (ManagedSandbox sandbox = containerFactory.lease(profile)) {
-                                    String toolResult = executeToolInSandbox(action.toolName(), action.jsonArgs(), sandbox);
+                                    String toolResult = executeSandboxToolWithTrace(action.toolName(), action.jsonArgs(), profile, sandbox);
                                     reasoningLog.info("[{}] [{}] [TOOL_EXECUTION_RESULT_SANDBOX] {}", 
                                         sharedContext.getThreadId(), step.stepId(), toolResult);
                                     String truncatedResult = observationTruncator.truncate(toolResult, llmProperties.guardrails().maxObservationTokens());
-                                    obs = "Action [" + action.toolName() + "] Result: " + truncatedResult;
+                                    obs = "Observation: " + truncatedResult;
                                 } catch (ResourceUnavailableException e) {
                                     log.error("Sandbox pool exhausted for {}", action.toolName(), e);
-                                    obs = "Action [" + action.toolName() + "] Result: FAILED — sandbox pool exhausted.";
+                                    obs = "Observation: FAILED — sandbox pool exhausted.";
                                 }
                             }
                         } catch (SecurityException e) {
                             log.error("DLP BLOCK: Security violation for {}", action.toolName(), e);
-                            obs = "Action [" + action.toolName() + "] Result: SECURITY_VIOLATION — execution blocked.";
+                            obs = "Observation: SECURITY_VIOLATION — execution blocked.";
                         } catch (Exception e) {
                             String errorMsg = "FAILED: Tool execution encountered an error: " + e.getMessage();
                             log.error("Tool execution error inside step " + step.stepId(), e);
-                            obs = "Action [" + action.toolName() + "] Result: " + errorMsg;
+                            obs = "Observation: " + errorMsg;
                         }
                         localObservations.add(obs);
                         accumulatedStepObservations.add(obs);
@@ -483,6 +620,43 @@ public class ExecutionEngine {
             return new StepResult(step.stepId(), "Exception: " + e.getMessage(), true, accumulatedStepObservations, localActionCount);
         } finally {
             org.slf4j.MDC.remove("threadId");
+        }
+    }
+
+    private String executeLocalToolWithTrace(String toolName, String jsonArgs) {
+        Span toolSpan = tracer.spanBuilder("Tool: " + toolName)
+                .setAttribute("tool.name", toolName)
+                .setAttribute("tool.args", jsonArgs)
+                .startSpan();
+        try (Scope scope = toolSpan.makeCurrent()) {
+            String result = toolExecutor.execute(toolName, jsonArgs);
+            toolSpan.setStatus(StatusCode.OK);
+            return result;
+        } catch (Throwable t) {
+            toolSpan.recordException(t);
+            toolSpan.setStatus(StatusCode.ERROR, t.getMessage());
+            throw t;
+        } finally {
+            toolSpan.end();
+        }
+    }
+
+    private String executeSandboxToolWithTrace(String toolName, String jsonArgs, SandboxProfile profile, ManagedSandbox sandbox) throws Exception {
+        Span sandboxSpan = tracer.spanBuilder("Sandbox Tool: " + toolName)
+                .setAttribute("tool.name", toolName)
+                .setAttribute("tool.args", jsonArgs)
+                .setAttribute("sandbox.profile", profile.name())
+                .startSpan();
+        try (Scope scope = sandboxSpan.makeCurrent()) {
+            String result = executeToolInSandbox(toolName, jsonArgs, sandbox);
+            sandboxSpan.setStatus(StatusCode.OK);
+            return result;
+        } catch (Throwable t) {
+            sandboxSpan.recordException(t);
+            sandboxSpan.setStatus(StatusCode.ERROR, t.getMessage());
+            throw t;
+        } finally {
+            sandboxSpan.end();
         }
     }
 

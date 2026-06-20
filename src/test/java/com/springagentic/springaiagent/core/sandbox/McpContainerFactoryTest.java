@@ -16,17 +16,15 @@ import static org.junit.jupiter.api.Assertions.*;
         "org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration," +
         "org.springframework.ai.model.chat.memory.redis.autoconfigure.RedisChatMemoryAutoConfiguration," +
         "org.springframework.ai.vectorstore.redis.autoconfigure.RedisVectorStoreAutoConfiguration," +
-        "org.springframework.ai.model.chat.memory.repository.jdbc.autoconfigure.JdbcChatMemoryRepositoryAutoConfiguration"
+        "org.springframework.ai.model.chat.memory.repository.jdbc.autoconfigure.JdbcChatMemoryRepositoryAutoConfiguration",
+    "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1",
+    "spring.datasource.driver-class-name=org.h2.Driver",
+    "spring.datasource.username=sa",
+    "spring.datasource.password=",
+    "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
+    "spring.jpa.hibernate.ddl-auto=update"
 })
 public class McpContainerFactoryTest {
-
-    @org.springframework.boot.test.context.TestConfiguration
-    static class TestConfig {
-        @org.springframework.context.annotation.Bean
-        public javax.sql.DataSource dataSource() {
-            return org.mockito.Mockito.mock(javax.sql.DataSource.class);
-        }
-    }
 
     @Autowired(required = false)
     private McpContainerFactory factory;
@@ -37,7 +35,8 @@ public class McpContainerFactoryTest {
         }
         try {
             factory.getDockerClient().pingCmd().exec();
-            return true;
+            return factory.getDockerClient().listNetworksCmd().exec().stream()
+                    .anyMatch(net -> "sandbox_net".equals(net.getName()));
         } catch (Exception e) {
             return false;
         }

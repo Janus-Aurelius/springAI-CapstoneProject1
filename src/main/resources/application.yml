@@ -26,10 +26,25 @@ redis:
     store-id: "${REDIS_AGENT_MEMORY_STORE_ID:your-store-id}"
 
 management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${LANGFUSE_OTEL_ENDPOINT:http://localhost:3000/api/public/otel/v1/traces}
+          headers:
+            Authorization: ${LANGFUSE_OTEL_AUTH:Basic cGstbGYtZGVmYXVsdDpzay1sZi1kZWZhdWx0}
+            x-langfuse-ingestion-version: "4"
   otlp:
     metrics:
       export:
         enabled: false
+  tracing:
+    sampling:
+      probability: 1.0
+
+otel:
+  sdk:
+    disabled: ${OTEL_SDK_DISABLED:true}
 
 app:
   llm:
@@ -40,6 +55,26 @@ app:
       stagnation-threshold: 3
       max-token-budget: 100000
       max-observation-tokens: 2000
+      self-correction-enabled: true
+      custom-rules:
+        - "Output must not contain any sensitive API keys or plain-text credentials."
+        - "The final conclusion must directly address the initial request goal."
+    pricing:
+      "gemini-1.5-pro":
+        input-cost-per-million: 1.25
+        output-cost-per-million: 5.00
+      "gemini-1.5-flash":
+        input-cost-per-million: 0.075
+        output-cost-per-million: 0.30
+      "gemini-1.5-flash-8b":
+        input-cost-per-million: 0.0375
+        output-cost-per-million: 0.15
+      "gemma-2-9b":
+        input-cost-per-million: 0.06
+        output-cost-per-million: 0.24
+      "default":
+        input-cost-per-million: 0.15
+        output-cost-per-million: 0.60
     providers:
       # --- PROJECT A (PLANNING CHAIN) ---
       - id: "project-a-level-1"
@@ -100,6 +135,15 @@ app:
         max-context-window: 1000000
         models:
           reasoner: "${PROJECT_B_LEVEL_4_MODEL:gemma-2-9b-it}"
+
+      # --- PROJECT C (JUDGING CHAIN) ---
+      - id: "project-c-level-1"
+        base-url: "${GEMINI_PROJECT_C_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_C_API_KEY:your-key-c}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          judge: "${PROJECT_C_LEVEL_1_MODEL:gemini-1.5-flash}"
 
       # --- GLOBAL FALLBACK ---
       - id: "global-fallback-openrouter"
