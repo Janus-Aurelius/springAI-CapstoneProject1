@@ -1,0 +1,268 @@
+server:
+  max-http-request-header-size: 65536
+
+spring:
+  ai:
+    openai:
+      client:
+        timeout: 90s
+    chat:
+      observations:
+        include-prompt: true
+        include-completion: true
+        log-prompt: true
+        log-completion: true
+    tools:
+      observations:
+        include-content: true
+  config:
+    import: optional:classpath:guardrails.yml
+  application:
+    name: springaiagent
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:postgres}:5432/${DB_NAME:postgres}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        hbm2ddl:
+          create_namespaces: true
+  autoconfigure:
+    exclude: 
+      - org.springframework.ai.model.chat.memory.repository.jdbc.autoconfigure.JdbcChatMemoryRepositoryAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiChatAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiAudioTranscriptionAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiImageAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiModerationAutoConfiguration
+
+redis:
+  agent-memory:
+    base-url: "${REDIS_AGENT_MEMORY_URL:your-agent-memory-url}"
+    api-key: "${REDIS_AGENT_MEMORY_KEY:your-cloud-key}"
+    store-id: "${REDIS_AGENT_MEMORY_STORE_ID:your-store-id}"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,info,metrics
+  endpoint:
+    prometheus:
+      enabled: true
+    metrics:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${LANGFUSE_OTEL_ENDPOINT:http://localhost:3000/api/public/otel/v1/traces}
+          headers:
+            Authorization: ${LANGFUSE_OTEL_AUTH:Basic cGstbGYtZGVmYXVsdDpzay1sZi1kZWZhdWx0}
+            x-langfuse-ingestion-version: "4"
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  tracing:
+    sampling:
+      probability: 1.0
+
+otel:
+  sdk:
+    disabled: ${OTEL_SDK_DISABLED:true}
+
+app:
+  llm:
+    strip-reasoning: true
+    guardrails:
+      max-actions: 20
+      max-replans: 5
+      stagnation-threshold: 3
+      max-token-budget: 100000
+      max-observation-tokens: 2000
+      self-correction-enabled: true
+    pricing:
+      "gemini-1.5-pro":
+        input-cost-per-million: 1.25
+        output-cost-per-million: 5.00
+      "gemini-1.5-flash":
+        input-cost-per-million: 0.075
+        output-cost-per-million: 0.30
+      "gemini-1.5-flash-8b":
+        input-cost-per-million: 0.0375
+        output-cost-per-million: 0.15
+      "gemma-2-9b":
+        input-cost-per-million: 0.06
+        output-cost-per-million: 0.24
+      "default":
+        input-cost-per-million: 0.15
+        output-cost-per-million: 0.60
+    providers:
+      # --- PROJECT A (PLANNING CHAIN) ---
+      - id: "project-a-level-1"
+        base-url: "${GEMINI_PROJECT_A_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_A_API_KEY:your-key-a}"
+        is-primary: true
+        max-context-window: 1000000
+        models:
+          planner: "${PROJECT_A_LEVEL_1_MODEL:gemini-1.5-pro}"
+      - id: "project-a-level-2"
+        base-url: "${GEMINI_PROJECT_A_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_A_API_KEY:your-key-a}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          planner: "${PROJECT_A_LEVEL_2_MODEL:gemini-1.5-flash}"
+      - id: "project-a-level-3"
+        base-url: "${GEMINI_PROJECT_A_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_A_API_KEY:your-key-a}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          planner: "${PROJECT_A_LEVEL_3_MODEL:gemini-1.5-flash-8b}"
+      - id: "project-a-level-4"
+        base-url: "${GEMINI_PROJECT_A_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_A_API_KEY:your-key-a}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          planner: "${PROJECT_A_LEVEL_4_MODEL:gemma-2-9b-it}"
+
+      # --- PROJECT B (REASONING CHAIN) ---
+      - id: "project-b-level-1"
+        base-url: "${GEMINI_PROJECT_B_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_B_API_KEY:your-key-b}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          reasoner: "${PROJECT_B_LEVEL_1_MODEL:gemini-1.5-flash}"
+      - id: "project-b-level-2"
+        base-url: "${GEMINI_PROJECT_B_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_B_API_KEY:your-key-b}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          reasoner: "${PROJECT_B_LEVEL_2_MODEL:gemini-1.5-pro}"
+      - id: "project-b-level-3"
+        base-url: "${GEMINI_PROJECT_B_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_B_API_KEY:your-key-b}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          reasoner: "${PROJECT_B_LEVEL_3_MODEL:gemini-1.5-flash-8b}"
+      - id: "project-b-level-4"
+        base-url: "${GEMINI_PROJECT_B_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_B_API_KEY:your-key-b}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          reasoner: "${PROJECT_B_LEVEL_4_MODEL:gemma-2-9b-it}"
+
+      # --- PROJECT C (JUDGING CHAIN) ---
+      - id: "project-c-level-1"
+        base-url: "${GEMINI_PROJECT_C_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_C_API_KEY:your-key-c}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          judge: "${PROJECT_C_LEVEL_1_MODEL:gemini-1.5-flash}"
+      - id: "project-c-level-2"
+        base-url: "${GEMINI_PROJECT_C_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_C_API_KEY:your-key-c}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          judge: "${PROJECT_C_LEVEL_2_MODEL:gemini-1.5-pro}"
+      - id: "project-c-level-3"
+        base-url: "${GEMINI_PROJECT_C_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_C_API_KEY:your-key-c}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          judge: "${PROJECT_C_LEVEL_3_MODEL:gemini-1.5-flash-8b}"
+      - id: "project-c-level-4"
+        base-url: "${GEMINI_PROJECT_C_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_C_API_KEY:your-key-c}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          judge: "${PROJECT_C_LEVEL_4_MODEL:gemma-2-9b-it}"
+
+
+      # --- GLOBAL FALLBACK ---
+      - id: "global-fallback-openrouter"
+        base-url: "${OPENROUTER_BASE_URL:https://openrouter.ai/api/v1}"
+        api-key: "${OPENROUTER_API_KEY:your-openrouter-key}"
+        is-primary: false
+        max-context-window: 128000
+        models:
+          planner: "${GLOBAL_FALLBACK_MODEL:openrouter/auto}"
+          reasoner: "${GLOBAL_FALLBACK_MODEL:openrouter/auto}"
+
+sandbox:
+  core-pool-size: 2
+  max-pool-size: 5
+  compute-image: python:3.12-alpine
+  fetch-image: alpine:latest
+
+mcp:
+  server:
+    postgres:
+      url: ${MCP_POSTGRES_URL:http://mcp-postgres:8081/sse}
+    github:
+      url: ${MCP_GITHUB_URL:http://mcp-github:8082/sse}
+    puppeteer:
+      url: ${MCP_PUPPETEER_URL:http://mcp-puppeteer:8083/sse}
+    tavily-search:
+      url: ${MCP_TAVILY_SEARCH_URL:http://mcp-tavily-search:8084/sse}
+
+resilience4j:
+  retry:
+    instances:
+      llmProvider:
+        max-attempts: 3
+        wait-duration: 2s
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - org.springframework.web.client.HttpClientErrorException.TooManyRequests
+          - java.util.concurrent.TimeoutException
+          - java.net.ConnectException
+
+# Tool metadata configuration
+agent:
+  tools:
+    mutating:
+      - create_or_update_file
+      - create_repository
+      - create_issue
+      - create_pull_request
+      - create_branch
+      - update_issue
+      - create_pull_request_review
+      - update_pull_request_branch
+      - puppeteer_evaluate
+    fetch:
+      - search_repositories
+      - search_code
+      - search_issues
+      - search_users
+      - tavily_search
+      - tavily_crawl
+      - tavily_map
+      - tavily_research
+

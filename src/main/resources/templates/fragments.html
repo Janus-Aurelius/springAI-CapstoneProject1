@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- Pending Task Row Fragment (self-polling placeholder until real run exists) -->
+    <div th:fragment="pending-task-row"
+         th:id="'pending-task-row-' + ${threadId}"
+         th:attr="hx-get=@{/dashboard/tasks/pending/{tid}(tid=${threadId}, prompt=${prompt})}"
+         hx-trigger="every 2s"
+         hx-swap="outerHTML"
+         class="group p-4 rounded-xl border border-indigo-500/40 bg-indigo-500/5 hover:bg-indigo-500/10 cursor-pointer transition-all duration-200 flex flex-col gap-2 relative overflow-hidden animate-pulse">
+
+        <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl -mr-6 -mt-6"></div>
+
+        <div class="flex items-start justify-between gap-3 z-10">
+            <div class="flex flex-col min-w-0">
+                <span class="text-xs font-mono font-semibold text-slate-400">Initializing...</span>
+                <span class="text-xs text-slate-500 font-mono mt-0.5" th:text="'Thread: ' + ${#strings.abbreviate(threadId, 12)}">thread-id</span>
+            </div>
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
+                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-ping"></span>
+                STARTING
+            </span>
+        </div>
+
+        <p class="text-sm text-slate-300 font-medium line-clamp-2 mt-1 z-10" th:text="${prompt}">
+            Goal prompt snippet goes here...
+        </p>
+
+        <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1 pt-2 border-t border-slate-800/40 z-10">
+            <span>$0.00</span>
+            <span>Waiting for engine...</span>
+        </div>
+    </div>
+
+    <!-- Task Row Fragment -->
+    <div th:fragment="task-row(run, eval)"
+         th:id="'task-row-' + ${run.runId}"
+         th:attr="hx-get=@{/dashboard/tasks/{id}(id=${run.runId})}, hx-trigger='click', hx-target='#task-details-pane'"
+         th:classappend="${run.status == 'RUNNING' ? 'border-indigo-500/40 bg-indigo-500/5 hover:bg-indigo-500/10' : 
+                          run.status == 'AWAITING_APPROVAL' ? 'border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10' : 
+                          (eval != null && eval.isGoalMet()) ? 'border-emerald-500/40 bg-emerald-500/5 hover:bg-emerald-500/10' : 
+                          (eval != null && !eval.isGoalMet()) ? 'border-rose-500/40 bg-rose-500/5 hover:bg-rose-500/10' :
+                          run.status == 'SUCCESS' ? 'border-emerald-500/40 bg-emerald-500/5 hover:bg-emerald-500/10' : 
+                          'border-slate-800 bg-slate-900/20 hover:bg-slate-900/40'}"
+         class="group p-4 rounded-xl border hover:border-slate-700 cursor-pointer transition-all hover:translate-x-1 duration-200 flex flex-col gap-2 relative overflow-hidden">
+        
+        <!-- Background Glow Accent for Active States -->
+        <div th:if="${run.status == 'RUNNING'}" class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl -mr-6 -mt-6"></div>
+        <div th:if="${run.status == 'AWAITING_APPROVAL'}" class="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl -mr-6 -mt-6"></div>
+
+        <!-- Dynamic Polling Trigger (hidden) -> updates this specific card element -->
+        <th:block th:if="${run.status == 'RUNNING'}">
+            <div th:attr="hx-get=@{/dashboard/tasks/{id}/row(id=${run.runId})}, hx-target='#task-row-' + ${run.runId}" 
+                 hx-trigger="every 2s" 
+                 hx-swap="outerHTML" 
+                 class="hidden"></div>
+        </th:block>
+
+        <div class="flex items-start justify-between gap-3 z-10">
+            <div class="flex flex-col min-w-0">
+                <span class="text-xs font-mono font-semibold text-slate-400 group-hover:text-indigo-400 transition" th:text="${#strings.abbreviate(run.runId, 18)}">run-id</span>
+                <span class="text-xs text-slate-500 font-mono mt-0.5" th:text="'Thread: ' + ${#strings.abbreviate(run.threadId, 12)}">thread-id</span>
+            </div>
+            
+            <!-- Dynamic Badges -->
+            <span th:if="${run.status == 'RUNNING'}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
+                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-ping"></span>
+                RUNNING
+            </span>
+            <span th:if="${run.status == 'AWAITING_APPROVAL'}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 animate-pulse">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                PENDING HUMAN
+            </span>
+            <span th:if="${run.status != 'RUNNING' && run.status != 'AWAITING_APPROVAL' && eval != null && eval.isGoalMet()}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                SUCCESS
+            </span>
+            <span th:if="${run.status != 'RUNNING' && run.status != 'AWAITING_APPROVAL' && eval != null && !eval.isGoalMet()}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30">
+                FAILED (ALIGNMENT)
+            </span>
+            <span th:if="${run.status != 'RUNNING' && run.status != 'AWAITING_APPROVAL' && eval == null && run.status == 'SUCCESS'}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                SUCCESS
+            </span>
+            <span th:if="${run.status != 'RUNNING' && run.status != 'AWAITING_APPROVAL' && eval == null && run.status != 'SUCCESS'}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30" th:text="${run.status}">
+                TERMINATED
+            </span>
+        </div>
+
+        <p class="text-sm text-slate-300 font-medium line-clamp-2 mt-1 z-10" th:text="${run.userGoal}">
+            Goal prompt snippet goes here...
+        </p>
+
+        <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1 pt-2 border-t border-slate-800/40 z-10">
+            <span th:text="${run.totalCostUsd > 0 ? '$' + #numbers.formatDecimal(run.totalCostUsd, 1, 4) : '$0.00'}">$0.00</span>
+            <span th:text="${run.updatedAt != null ? #temporals.format(run.updatedAt, 'yyyy-MM-dd HH:mm') : ''}">2026-06-21 08:30</span>
+        </div>
+    </div>
+
+
+    <!-- Task Details View Fragment -->
+    <div th:fragment="task-details" id="task-details-pane" class="flex-1 flex flex-col gap-6">
+        
+        <!-- Header -->
+        <div class="flex items-start justify-between gap-4 border-b border-slate-800 pb-5">
+            <div class="min-w-0">
+                <span class="text-xs font-mono font-semibold text-slate-500" th:text="'Run ID: ' + ${run.runId}">run-id</span>
+                <h2 class="text-xl font-bold tracking-tight text-slate-100 mt-1" th:text="${run.userGoal}">Goal prompt</h2>
+                <div class="flex flex-wrap items-center gap-3 mt-3">
+                    <span class="text-xs bg-slate-800 text-slate-400 px-2.5 py-1 rounded-lg border border-slate-700" th:text="'Thread ID: ' + ${run.threadId}">thread-id</span>
+                    <span class="text-xs bg-slate-800 text-slate-400 px-2.5 py-1 rounded-lg border border-slate-700" th:text="'Cost: $' + ${#numbers.formatDecimal(run.totalCostUsd, 1, 4)}">cost</span>
+                    <span th:if="${context != null}" class="text-xs bg-slate-800 text-slate-400 px-2.5 py-1 rounded-lg border border-slate-700" th:text="'Tokens: ' + ${context.totalTokensConsumed}">tokens</span>
+                </div>
+            </div>
+            
+            <div class="flex flex-col items-end gap-1">
+                <span th:if="${run.status == 'RUNNING'}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
+                    Running
+                </span>
+                <span th:if="${run.status == 'AWAITING_APPROVAL'}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse">
+                    <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                    Pending Human
+                </span>
+                <span th:if="${run.status == 'SUCCESS'}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    Completed
+                </span>
+                <span th:if="${run.status != 'RUNNING' && run.status != 'AWAITING_APPROVAL' && run.status != 'SUCCESS'}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20" th:text="${run.status}">
+                    Terminated
+                </span>
+                
+                <!-- Refresh Details Button -->
+                <button th:attr="hx-get=@{/dashboard/tasks/{id}(id=${run.runId})}"
+                        hx-target="#task-details-pane"
+                        class="text-[11px] text-slate-400 hover:text-indigo-400 mt-2 flex items-center gap-1 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                    </svg>
+                    Refresh Steps
+                </button>
+            </div>
+        </div>
+
+        <!-- Human-in-the-Loop Action Panel -->
+        <div th:if="${run.status == 'AWAITING_APPROVAL'}" 
+             class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 shadow-lg shadow-amber-500/5">
+            <h3 class="text-sm font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2 mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.05 4.575a1.5 1.5 0 0 0-1.93 2.17l1.09 1.09a2.25 2.25 0 0 1 0 3.18l-1.373 1.373a.75.75 0 0 0 .53 1.28h3.94a.75.75 0 0 0 .53-1.28l-1.372-1.372a2.25 2.25 0 0 1 0-3.18l1.09-1.09a1.5 1.5 0 0 0-1.93-2.17Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
+                </svg>
+                Human Approval Required
+            </h3>
+            
+            <form hx-post="/dashboard/resume" hx-target="#task-details-pane" class="flex flex-col gap-4">
+                <input type="hidden" name="threadId" th:value="${run.threadId}">
+                <input type="hidden" name="runId" th:value="${run.runId}">
+                
+                <!-- Proposed Action Details -->
+                <div class="bg-slate-950/60 rounded-lg p-3.5 border border-slate-800">
+                    <span class="text-[11px] font-bold text-slate-500 tracking-wider block uppercase mb-1">Proposed Tool Execution</span>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xs font-semibold px-2 py-0.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-md font-mono" th:text="${context.suspendedToolName}">tool_name</span>
+                        <span class="text-xs text-slate-400" th:text="'Step ID: ' + ${context.suspendedStepId}">step_id</span>
+                    </div>
+                    <label for="modifiedToolArgs" class="sr-only">Arguments</label>
+                    <textarea id="modifiedToolArgs" name="modifiedToolArgs" rows="3" 
+                              class="w-full rounded-md border border-slate-800 bg-slate-950 font-mono text-xs text-slate-300 p-2 focus:outline-none focus:ring-1 focus:ring-amber-500/50 resize-y" 
+                              th:text="${context.suspendedToolArgs}">{"arg": "val"}</textarea>
+                </div>
+                
+                <!-- Feedback Input -->
+                <div>
+                    <label for="feedback" class="block text-xs font-semibold text-slate-400 mb-1.5">Feedback / Rejection Instructions</label>
+                    <input type="text" id="feedback" name="feedback" 
+                           placeholder="Provide instructions if you want the agent to pivot or reject the current action..." 
+                           class="w-full rounded-lg border border-slate-700 bg-slate-950/80 px-3.5 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition">
+                </div>
+                
+                <!-- Actions -->
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <button type="submit" name="decision" value="REJECTED" 
+                            class="px-4 py-2 rounded-lg text-xs font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition-all active:scale-95">
+                        Reject Action
+                    </button>
+                    <button type="submit" name="decision" value="FEEDBACK" 
+                            class="px-4 py-2 rounded-lg text-xs font-semibold bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 transition-all active:scale-95">
+                        Send Feedback
+                    </button>
+                    <button type="submit" name="decision" value="APPROVED" 
+                            class="px-5 py-2 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-lg shadow-amber-500/10 transition-all active:scale-95">
+                        Approve & Resume
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Judge Evaluation Panel -->
+        <div th:if="${evaluation != null}" 
+             class="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-5 shadow-lg shadow-indigo-500/5">
+            <div class="flex items-center justify-between border-b border-indigo-500/10 pb-3 mb-4">
+                <h3 class="text-sm font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                    </svg>
+                    Judge Evaluation Critique
+                </h3>
+                
+                <span th:if="${evaluation.goalMet}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    GOAL MET
+                </span>
+                <span th:if="${!evaluation.goalMet}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                    GOAL NOT MET
+                </span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-slate-950/40 p-3 rounded-lg border border-slate-800">
+                    <span class="text-[10px] text-slate-500 block font-bold uppercase tracking-wider">Alignment Score</span>
+                    <span class="text-xl font-bold text-slate-200" th:text="${#numbers.formatPercent(evaluation.alignmentScore, 1, 0)}">90%</span>
+                </div>
+                <div class="bg-slate-950/40 p-3 rounded-lg border border-slate-800">
+                    <span class="text-[10px] text-slate-500 block font-bold uppercase tracking-wider">Safety Score</span>
+                    <span class="text-xl font-bold text-slate-200" th:text="${#numbers.formatPercent(evaluation.safetyScore, 1, 0)}">100%</span>
+                </div>
+            </div>
+            
+            <div class="bg-slate-950/60 rounded-lg p-3.5 border border-slate-800">
+                <span class="text-[11px] font-bold text-slate-500 tracking-wider block uppercase mb-1.5">Detailed Critique</span>
+                <p class="text-sm text-slate-300 leading-relaxed font-sans" th:text="${evaluation.explanation}">Judge evaluation details go here...</p>
+            </div>
+        </div>
+
+        <!-- Final Conclusion -->
+        <div th:if="${context != null && context.finalConclusion != null && !context.finalConclusion.isEmpty()}" 
+             class="rounded-xl border border-slate-800 bg-slate-900/20 p-5">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Final Conclusion</h3>
+            <p class="text-sm text-slate-200 leading-relaxed font-mono whitespace-pre-line" th:text="${context.finalConclusion}">Final response from the agent...</p>
+        </div>
+
+        <!-- Steps Timeline -->
+        <div class="flex-1 flex flex-col gap-4">
+            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider">Agent Execution Steps</h3>
+            
+            <!-- Steps List -->
+            <div th:if="${context != null && !context.observationsList.isEmpty()}" class="flex flex-col gap-3">
+                <div th:each="obs, iter : ${context.observationsList}" 
+                     class="relative pl-6 pb-2 border-l border-slate-800 last:border-0 last:pb-0">
+                    
+                    <!-- Bullet node -->
+                    <span class="absolute left-0 top-1.5 -translate-x-[5px] w-2.5 h-2.5 rounded-full bg-slate-700 border-2 border-slate-950 z-10"></span>
+                    
+                    <div class="bg-slate-900/30 border border-slate-800/80 rounded-xl p-3.5">
+                        <span class="text-[10px] text-slate-500 block font-semibold" th:text="'Step ' + ${iter.count}">Step 1</span>
+                        <p class="text-xs font-mono text-slate-300 mt-1 whitespace-pre-wrap leading-relaxed select-text" th:text="${obs}">Step log content</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Fallback empty state -->
+            <div th:if="${context == null || context.observationsList.isEmpty()}" class="py-8 text-center border border-dashed border-slate-800 rounded-xl">
+                <p class="text-xs text-slate-500 font-medium">No execution logs or steps recorded yet.</p>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

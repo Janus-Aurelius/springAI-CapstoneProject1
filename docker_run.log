@@ -1,0 +1,433 @@
+spring-ai-agent  | 
+spring-ai-agent  |   .   ____          _            __ _ _
+spring-ai-agent  |  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+spring-ai-agent  | ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+spring-ai-agent  |  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+spring-ai-agent  |   '  |____| .__|_| |_|_| |_\__, | / / / /
+spring-ai-agent  |  =========|_|==============|___/=/_/_/_/
+spring-ai-agent  | 
+spring-ai-agent  |  :: Spring Boot ::                (v4.0.6)
+spring-ai-agent  | 
+spring-ai-agent  | 2026-06-05T16:31:44.600Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.SpringaiagentApplication           : Starting SpringaiagentApplication v0.0.1-SNAPSHOT using Java 21.0.11 with PID 1 (/app/app.jar started by root in /app)
+spring-ai-agent  | 2026-06-05T16:31:44.606Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.SpringaiagentApplication           : No active profile set, falling back to 1 default profile: "default"
+spring-ai-agent  | 2026-06-05T16:31:47.506Z  INFO 1 --- [springaiagent] [           main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+spring-ai-agent  | 2026-06-05T16:31:47.510Z  INFO 1 --- [springaiagent] [           main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+spring-ai-agent  | 2026-06-05T16:31:47.574Z  INFO 1 --- [springaiagent] [           main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 28 ms. Found 0 Redis repository interfaces.
+spring-ai-agent  | 2026-06-05T16:31:49.138Z  WARN 1 --- [springaiagent] [           main] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerAutoConfiguration' of type [org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [serverAnnotatedMethodBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+spring-ai-agent  | 2026-06-05T16:31:49.365Z  WARN 1 --- [springaiagent] [           main] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'serverAnnotatedBeanRegistry' of type [org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerAutoConfiguration$ServerMcpAnnotatedBeans] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [serverAnnotatedMethodBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+spring-ai-agent  | 2026-06-05T16:31:49.395Z  WARN 1 --- [springaiagent] [           main] [                                                 ] trationDelegate$BeanPostProcessorChecker : Bean 'spring.ai.mcp.server.annotation-scanner-org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerProperties' of type [org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [serverAnnotatedMethodBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+spring-ai-agent  | 2026-06-05T16:31:49.808Z  INFO 1 --- [springaiagent] [           main] [                                                 ] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+spring-ai-agent  | 2026-06-05T16:31:49.833Z  INFO 1 --- [springaiagent] [           main] [                                                 ] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+spring-ai-agent  | 2026-06-05T16:31:49.834Z  INFO 1 --- [springaiagent] [           main] [                                                 ] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.21]
+spring-ai-agent  | 2026-06-05T16:31:49.896Z  INFO 1 --- [springaiagent] [           main] [                                                 ] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 5182 ms
+spring-ai-agent  | 2026-06-05T16:31:50.340Z  INFO 1 --- [springaiagent] [           main] [                                                 ] i.m.c.instrument.push.PushMeterRegistry  : Publishing metrics for OtlpMeterRegistry every 1m to http://localhost:4318/v1/metrics with resource attributes {service.name=springaiagent}
+spring-ai-agent  | 2026-06-05T16:31:52.093Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.core.sandbox.McpContainerFactory   : Initializing Docker client...
+spring-ai-agent  | 2026-06-05T16:31:52.111Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.core.sandbox.McpContainerFactory   : Docker host from config: unix:///var/run/docker.sock, scheme: unix, path: /var/run/docker.sock
+spring-ai-agent  | 2026-06-05T16:31:52.515Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.core.sandbox.McpContainerFactory   : Checking/pulling image: python:3.12-alpine
+spring-ai-agent  | 2026-06-05T16:31:53.228Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.core.sandbox.McpContainerFactory   : Checking/pulling image: alpine:latest
+spring-ai-agent  | 2026-06-05T16:31:53.311Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.core.sandbox.McpContainerFactory   : Warming up COMPUTE pool (size: 2)...
+spring-ai-agent  | 2026-06-05T16:31:54.457Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.core.sandbox.McpContainerFactory   : Warming up FETCH pool (size: 2)...
+spring-ai-agent  | 2026-06-05T16:31:55.875Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.f.registry.McpClientConfig         : Configuring MCP Client [postgres] at URL: http://mcp-postgres:8081/sse
+spring-ai-agent  | 2026-06-05T16:31:56.665Z  INFO 1 --- [springaiagent] [ient-1-Worker-2] [                                                 ] i.m.client.LifecycleInitializer          : Server response with Protocol: 2024-11-05, Capabilities: ServerCapabilities[completions=null, experimental=null, logging=null, prompts=null, resources=ResourceCapabilities[subscribe=null, listChanged=null], tools=ToolCapabilities[listChanged=null]], Info: Implementation[name=example-servers/postgres, title=null, version=0.1.0, description=null, icons=null, websiteUrl=null] and Instructions null
+spring-ai-agent  | 2026-06-05T16:31:56.692Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.f.registry.McpClientConfig         : Successfully initialized MCP Client [postgres]
+spring-ai-agent  | 2026-06-05T16:31:56.693Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.f.registry.McpClientConfig         : Configuring MCP Client [github] at URL: http://localhost:8082/sse
+spring-ai-agent  | 2026-06-05T16:31:56.708Z  WARN 1 --- [springaiagent] [onPool-worker-1] [                                                 ] i.m.c.t.HttpClientSseClientTransport     : SSE stream observed an error
+spring-ai-agent  | 
+spring-ai-agent  | java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.encodeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.completeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.postComplete(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.lang.Thread.run(Unknown Source) ~[na:na]
+spring-ai-agent  | Caused by: java.net.ConnectException
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.common.Utils.toConnectException(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.connectAsync(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.checkRetryConnect(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$2(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.uniHandle(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniHandle.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 5 common frames omitted
+spring-ai-agent  | Caused by: java.nio.channels.ClosedChannelException
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.ensureOpen(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.beginConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$1(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.security.AccessController.doPrivileged(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 10 common frames omitted
+spring-ai-agent  | 
+spring-ai-agent  | 2026-06-05T16:31:56.713Z ERROR 1 --- [springaiagent] [onPool-worker-1] [                                                 ] reactor.core.publisher.Operators         : Operator called default onErrorDropped
+spring-ai-agent  | 
+spring-ai-agent  | reactor.core.Exceptions$ErrorCallbackNotImplemented: java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | Caused by: java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.encodeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.completeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.postComplete(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.lang.Thread.run(Unknown Source) ~[na:na]
+spring-ai-agent  | Caused by: java.net.ConnectException
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.common.Utils.toConnectException(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.connectAsync(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.checkRetryConnect(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$2(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.uniHandle(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniHandle.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 5 common frames omitted
+spring-ai-agent  | Caused by: java.nio.channels.ClosedChannelException
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.ensureOpen(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.beginConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$1(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.security.AccessController.doPrivileged(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 10 common frames omitted
+spring-ai-agent  | 
+spring-ai-agent  | 2026-06-05T16:31:58.696Z  WARN 1 --- [springaiagent] [           main] [                                                 ] c.s.s.f.registry.McpClientConfig         : Failed to initialize MCP Client [github] at http://localhost:8082/sse: Client failed to initialize by explicit API call. Connection will be retried on usage.
+spring-ai-agent  | 2026-06-05T16:31:58.698Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.f.registry.McpClientConfig         : Configuring MCP Client [puppeteer] at URL: http://localhost:8083/sse
+spring-ai-agent  | 2026-06-05T16:31:58.703Z  WARN 1 --- [springaiagent] [onPool-worker-1] [                                                 ] i.m.c.t.HttpClientSseClientTransport     : SSE stream observed an error
+spring-ai-agent  | 
+spring-ai-agent  | java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.encodeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.completeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.postComplete(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.lang.Thread.run(Unknown Source) ~[na:na]
+spring-ai-agent  | Caused by: java.net.ConnectException
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.common.Utils.toConnectException(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.connectAsync(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.checkRetryConnect(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$2(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.uniHandle(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniHandle.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 5 common frames omitted
+spring-ai-agent  | Caused by: java.nio.channels.ClosedChannelException
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.ensureOpen(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.beginConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$1(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.security.AccessController.doPrivileged(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 10 common frames omitted
+spring-ai-agent  | 
+spring-ai-agent  | 2026-06-05T16:31:58.703Z ERROR 1 --- [springaiagent] [onPool-worker-1] [                                                 ] reactor.core.publisher.Operators         : Operator called default onErrorDropped
+spring-ai-agent  | 
+spring-ai-agent  | reactor.core.Exceptions$ErrorCallbackNotImplemented: java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | Caused by: java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.encodeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.completeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.postComplete(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.lang.Thread.run(Unknown Source) ~[na:na]
+spring-ai-agent  | Caused by: java.net.ConnectException
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.common.Utils.toConnectException(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.connectAsync(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.checkRetryConnect(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$2(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.uniHandle(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniHandle.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 5 common frames omitted
+spring-ai-agent  | Caused by: java.nio.channels.ClosedChannelException
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.ensureOpen(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.beginConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$1(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.security.AccessController.doPrivileged(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 10 common frames omitted
+spring-ai-agent  | 
+spring-ai-agent  | 2026-06-05T16:32:00.701Z  WARN 1 --- [springaiagent] [           main] [                                                 ] c.s.s.f.registry.McpClientConfig         : Failed to initialize MCP Client [puppeteer] at http://localhost:8083/sse: Client failed to initialize by explicit API call. Connection will be retried on usage.
+spring-ai-agent  | 2026-06-05T16:32:00.702Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.f.registry.McpClientConfig         : Configuring MCP Client [brave-search] at URL: http://localhost:8084/sse
+spring-ai-agent  | 2026-06-05T16:32:00.707Z  WARN 1 --- [springaiagent] [onPool-worker-1] [                                                 ] i.m.c.t.HttpClientSseClientTransport     : SSE stream observed an error
+spring-ai-agent  | 
+spring-ai-agent  | java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.encodeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.completeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.postComplete(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.lang.Thread.run(Unknown Source) ~[na:na]
+spring-ai-agent  | Caused by: java.net.ConnectException
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.common.Utils.toConnectException(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.connectAsync(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.checkRetryConnect(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$2(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.uniHandle(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniHandle.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 5 common frames omitted
+spring-ai-agent  | Caused by: java.nio.channels.ClosedChannelException
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.ensureOpen(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.beginConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$1(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.security.AccessController.doPrivileged(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 10 common frames omitted
+spring-ai-agent  | 
+spring-ai-agent  | 2026-06-05T16:32:00.708Z ERROR 1 --- [springaiagent] [onPool-worker-1] [                                                 ] reactor.core.publisher.Operators         : Operator called default onErrorDropped
+spring-ai-agent  | 
+spring-ai-agent  | reactor.core.Exceptions$ErrorCallbackNotImplemented: java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | Caused by: java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.encodeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.completeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.postComplete(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.lang.Thread.run(Unknown Source) ~[na:na]
+spring-ai-agent  | Caused by: java.net.ConnectException
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.common.Utils.toConnectException(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.connectAsync(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.checkRetryConnect(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$2(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.uniHandle(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniHandle.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 5 common frames omitted
+spring-ai-agent  | Caused by: java.nio.channels.ClosedChannelException
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.ensureOpen(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.beginConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$1(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.security.AccessController.doPrivileged(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 10 common frames omitted
+spring-ai-agent  | 
+spring-ai-agent  | 2026-06-05T16:32:02.705Z  WARN 1 --- [springaiagent] [           main] [                                                 ] c.s.s.f.registry.McpClientConfig         : Failed to initialize MCP Client [brave-search] at http://localhost:8084/sse: Client failed to initialize by explicit API call. Connection will be retried on usage.
+spring-ai-agent  | 2026-06-05T16:32:02.706Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.f.registry.McpClientConfig         : Configuring MCP Client [slack] at URL: http://localhost:8085/sse
+spring-ai-agent  | 2026-06-05T16:32:02.710Z  WARN 1 --- [springaiagent] [onPool-worker-1] [                                                 ] i.m.c.t.HttpClientSseClientTransport     : SSE stream observed an error
+spring-ai-agent  | 
+spring-ai-agent  | java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.encodeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.completeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.postComplete(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.lang.Thread.run(Unknown Source) ~[na:na]
+spring-ai-agent  | Caused by: java.net.ConnectException
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.common.Utils.toConnectException(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.connectAsync(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.checkRetryConnect(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$2(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.uniHandle(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniHandle.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 5 common frames omitted
+spring-ai-agent  | Caused by: java.nio.channels.ClosedChannelException
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.ensureOpen(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.beginConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$1(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.security.AccessController.doPrivileged(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 10 common frames omitted
+spring-ai-agent  | 
+spring-ai-agent  | 2026-06-05T16:32:02.711Z ERROR 1 --- [springaiagent] [onPool-worker-1] [                                                 ] reactor.core.publisher.Operators         : Operator called default onErrorDropped
+spring-ai-agent  | 
+spring-ai-agent  | reactor.core.Exceptions$ErrorCallbackNotImplemented: java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | Caused by: java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.encodeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.completeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.postComplete(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.lang.Thread.run(Unknown Source) ~[na:na]
+spring-ai-agent  | Caused by: java.net.ConnectException
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.common.Utils.toConnectException(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.connectAsync(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.checkRetryConnect(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$2(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.uniHandle(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniHandle.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 5 common frames omitted
+spring-ai-agent  | Caused by: java.nio.channels.ClosedChannelException
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.ensureOpen(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.beginConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$1(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.security.AccessController.doPrivileged(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 10 common frames omitted
+spring-ai-agent  | 
+spring-ai-agent  | 2026-06-05T16:32:04.709Z  WARN 1 --- [springaiagent] [           main] [                                                 ] c.s.s.f.registry.McpClientConfig         : Failed to initialize MCP Client [slack] at http://localhost:8085/sse: Client failed to initialize by explicit API call. Connection will be retried on usage.
+spring-ai-agent  | 2026-06-05T16:32:04.710Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.f.registry.McpClientConfig         : Configuring MCP Client [notion] at URL: http://localhost:8086/sse
+spring-ai-agent  | 2026-06-05T16:32:04.714Z  WARN 1 --- [springaiagent] [onPool-worker-1] [                                                 ] i.m.c.t.HttpClientSseClientTransport     : SSE stream observed an error
+spring-ai-agent  | 
+spring-ai-agent  | java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.encodeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.completeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.postComplete(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.lang.Thread.run(Unknown Source) ~[na:na]
+spring-ai-agent  | Caused by: java.net.ConnectException
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.common.Utils.toConnectException(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.connectAsync(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.checkRetryConnect(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$2(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.uniHandle(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniHandle.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 5 common frames omitted
+spring-ai-agent  | Caused by: java.nio.channels.ClosedChannelException
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.ensureOpen(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.beginConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$1(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.security.AccessController.doPrivileged(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 10 common frames omitted
+spring-ai-agent  | 
+spring-ai-agent  | 2026-06-05T16:32:04.714Z ERROR 1 --- [springaiagent] [onPool-worker-1] [                                                 ] reactor.core.publisher.Operators         : Operator called default onErrorDropped
+spring-ai-agent  | 
+spring-ai-agent  | reactor.core.Exceptions$ErrorCallbackNotImplemented: java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | Caused by: java.util.concurrent.CompletionException: java.net.ConnectException
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.encodeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.completeRelay(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.postComplete(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.lang.Thread.run(Unknown Source) ~[na:na]
+spring-ai-agent  | Caused by: java.net.ConnectException
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.common.Utils.toConnectException(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.connectAsync(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.checkRetryConnect(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$2(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture.uniHandle(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.CompletableFuture$UniHandle.tryFire(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 5 common frames omitted
+spring-ai-agent  | Caused by: java.nio.channels.ClosedChannelException
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.ensureOpen(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.beginConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.SocketChannelImpl.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.net.http/jdk.internal.net.http.PlainHttpConnection.lambda$connectAsync$1(Unknown Source) ~[java.net.http:na]
+spring-ai-agent  | 	at java.base/java.security.AccessController.doPrivileged(Unknown Source) ~[na:na]
+spring-ai-agent  | 	... 10 common frames omitted
+spring-ai-agent  | 
+spring-ai-agent  | 2026-06-05T16:32:06.713Z  WARN 1 --- [springaiagent] [           main] [                                                 ] c.s.s.f.registry.McpClientConfig         : Failed to initialize MCP Client [notion] at http://localhost:8086/sse: Client failed to initialize by explicit API call. Connection will be retried on usage.
+spring-ai-agent  | 2026-06-05T16:32:07.269Z  INFO 1 --- [springaiagent] [           main] [                                                 ] o.s.a.m.s.c.a.McpServerAutoConfiguration : Enable tools capabilities, notification: true
+spring-ai-agent  | 2026-06-05T16:32:07.277Z  WARN 1 --- [springaiagent] [           main] [                                                 ] o.s.a.m.s.c.a.ToolCallbackUtils          : Found MCP Clients. The MCP Client tools will not be exposed by the MCP Server. If you would like to expose the tools, set spring.ai.mcp.server.expose-mcp-client-tools=true.
+spring-ai-agent  | 2026-06-05T16:32:07.283Z  WARN 1 --- [springaiagent] [           main] [                                                 ] o.s.a.m.a.p.tool.SyncMcpToolProvider     : No tool methods found in the provided tool objects: []
+spring-ai-agent  | 2026-06-05T16:32:07.284Z  INFO 1 --- [springaiagent] [           main] [                                                 ] o.s.a.m.s.c.a.McpServerAutoConfiguration : Enable resources capabilities, notification: true
+spring-ai-agent  | 2026-06-05T16:32:07.288Z  INFO 1 --- [springaiagent] [           main] [                                                 ] o.s.a.m.s.c.a.McpServerAutoConfiguration : Enable resources templates capabilities, notification: true
+spring-ai-agent  | 2026-06-05T16:32:07.290Z  INFO 1 --- [springaiagent] [           main] [                                                 ] o.s.a.m.s.c.a.McpServerAutoConfiguration : Enable prompts capabilities, notification: true
+spring-ai-agent  | 2026-06-05T16:32:07.294Z  INFO 1 --- [springaiagent] [           main] [                                                 ] o.s.a.m.s.c.a.McpServerAutoConfiguration : Enable completions capabilities
+spring-ai-agent  | 2026-06-05T16:32:08.273Z  INFO 1 --- [springaiagent] [           main] [                                                 ] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+spring-ai-agent  | 2026-06-05T16:32:08.308Z  WARN 1 --- [springaiagent] [           main] [                                                 ] o.s.a.m.a.p.s.SyncMcpSamplingProvider    : No sampling methods found
+spring-ai-agent  | 2026-06-05T16:32:08.310Z  WARN 1 --- [springaiagent] [           main] [                                                 ] o.s.a.m.a.p.e.SyncMcpElicitationProvider : No elicitation methods found
+spring-ai-agent  | 2026-06-05T16:32:08.375Z  INFO 1 --- [springaiagent] [           main] [                                                 ] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+spring-ai-agent  | 2026-06-05T16:32:08.399Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.SpringaiagentApplication           : Started SpringaiagentApplication in 24.986 seconds (process running for 26.642)
+spring-ai-agent  | 2026-06-05T16:32:08.412Z  WARN 1 --- [springaiagent] [           main] [                                                 ] o.s.core.events.SpringDocAppInitializer  : SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+spring-ai-agent  | 2026-06-05T16:32:08.412Z  WARN 1 --- [springaiagent] [           main] [                                                 ] o.s.core.events.SpringDocAppInitializer  : SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+spring-ai-agent  | 2026-06-05T16:32:08.412Z  INFO 1 --- [springaiagent] [           main] [                                                 ] c.s.s.adapters.tools.McpToolProvider     : Bootstrapping MCP Tools. Found 0 MCP client(s).
+spring-ai-agent  | 2026-06-05T16:32:08.473Z  INFO 1 --- [springaiagent] [omcat-handler-0] [                                                 ] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+spring-ai-agent  | 2026-06-05T16:32:08.473Z  INFO 1 --- [springaiagent] [omcat-handler-0] [                                                 ] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+spring-ai-agent  | 2026-06-05T16:32:08.476Z  INFO 1 --- [springaiagent] [omcat-handler-0] [                                                 ] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+spring-ai-agent  | 2026-06-05T16:32:08.619Z  INFO 1 --- [springaiagent] [omcat-handler-0] [30cf4beb4a2157fcf4cd723bcb55e075-e70589cf82c0c694] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+spring-ai-agent  | 2026-06-05T16:32:08.927Z  INFO 1 --- [springaiagent] [omcat-handler-0] [30cf4beb4a2157fcf4cd723bcb55e075-e70589cf82c0c694] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@2556cfd3
+spring-ai-agent  | 2026-06-05T16:32:08.934Z  INFO 1 --- [springaiagent] [omcat-handler-0] [30cf4beb4a2157fcf4cd723bcb55e075-e70589cf82c0c694] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+spring-ai-agent  | 2026-06-05T16:32:09.431Z  WARN 1 --- [springaiagent] [eter-registry-0] [                                                 ] i.m.registry.otlp.OtlpMeterRegistry      : Failed to publish metrics to OTLP receiver (context: url=http://localhost:4318/v1/metrics, resource-attributes={service.name=springaiagent})
+spring-ai-agent  | 
+spring-ai-agent  | java.lang.Exception: java.net.ConnectException: Connection refused
+spring-ai-agent  | 	at io.micrometer.registry.otlp.OtlpHttpMetricsSender.send(OtlpHttpMetricsSender.java:61) ~[micrometer-registry-otlp-1.16.5.jar!/:1.16.5]
+spring-ai-agent  | 	at io.micrometer.registry.otlp.OtlpMeterRegistry.publish(OtlpMeterRegistry.java:190) ~[micrometer-registry-otlp-1.16.5.jar!/:1.16.5]
+spring-ai-agent  | 	at io.micrometer.core.instrument.push.PushMeterRegistry.publishSafelyOrSkipIfInProgress(PushMeterRegistry.java:63) ~[micrometer-core-1.16.5.jar!/:1.16.5]
+spring-ai-agent  | 	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.FutureTask.runAndReset(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.lang.VirtualThread.run(Unknown Source) ~[na:na]
+spring-ai-agent  | Caused by: java.net.ConnectException: Connection refused
+spring-ai-agent  | 	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.Net.pollConnectNow(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.NioSocketImpl.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.net.Socket.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.NetworkClient.doConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.http.HttpClient.openServer(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.http.HttpClient.openServer(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.http.HttpClient.<init>(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.http.HttpClient.New(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.http.HttpClient.New(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream0(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at io.micrometer.core.ipc.http.HttpUrlConnectionSender.send(HttpUrlConnectionSender.java:99) ~[micrometer-core-1.16.5.jar!/:1.16.5]
+spring-ai-agent  | 	at io.micrometer.core.ipc.http.HttpSender$Request$Builder.send(HttpSender.java:306) ~[micrometer-core-1.16.5.jar!/:1.16.5]
+spring-ai-agent  | 	at io.micrometer.registry.otlp.OtlpHttpMetricsSender.send(OtlpHttpMetricsSender.java:58) ~[micrometer-registry-otlp-1.16.5.jar!/:1.16.5]
+spring-ai-agent  | 	... 8 common frames omitted
+spring-ai-agent  | 
+spring-ai-agent  | STARTING REQUEST for Thread: e704a7cc-76ee-4e80-93a2-00e72f57aa75
+spring-ai-agent  | ROUTER: Booting up Execution Engine for complex task...
+spring-ai-agent  | MEMORY: Saved state for Run [ca768e06-3b96-4eed-a2ee-4fcaa17e31f3]
+spring-ai-agent  | 2026-06-05T16:32:28.266Z  INFO 1 --- [springaiagent] [omcat-handler-1] [78aa5ed3ffac7332c466a80b3514c7c7-c2977fc8b826996a] c.s.springaiagent.core.engine.Planner    : PLANNER: Generating execution plan...
+spring-ai-agent  | 2026-06-05T16:32:34.162Z  INFO 1 --- [springaiagent] [omcat-handler-1] [78aa5ed3ffac7332c466a80b3514c7c7-c2977fc8b826996a] c.s.s.core.engine.ExecutionEngine        : DAG SCHEDULER: Scheduling 1 steps in parallel: [search_active]
+spring-ai-agent  | REASONER: Analyzing step -> Search the active database for user Bob.
+spring-ai-agent  | 2026-06-05T16:32:34.817Z  INFO 1 --- [springaiagent] [    virtual-112] [                                                 ] c.s.s.core.engine.ExecutionEngine        : ACTION [Step search_active]: Executing tool 'search_database'
+spring-ai-agent  | 2026-06-05T16:32:34.819Z  INFO 1 --- [springaiagent] [    virtual-112] [                                                 ] c.s.s.adapters.tools.DummyToolExecutor   : EXECUTE: Running [search_database] with args: {"limit": 10, "offset": 0, "query": "Bob"}
+spring-ai-agent  | REASONER: Analyzing step -> Search the active database for user Bob.
+spring-ai-agent  | 2026-06-05T16:32:35.956Z  INFO 1 --- [springaiagent] [    virtual-112] [                                                 ] c.s.s.core.engine.ExecutionEngine        : ACTION [Step search_active]: Executing tool 'search_archive'
+spring-ai-agent  | 2026-06-05T16:32:35.956Z  INFO 1 --- [springaiagent] [    virtual-112] [                                                 ] c.s.s.adapters.tools.DummyToolExecutor   : EXECUTE: Running [search_archive] with args: {"limit": 10, "offset": 0, "query": "user:Bob"}
+spring-ai-agent  | REASONER: Analyzing step -> Search the active database for user Bob.
+spring-ai-agent  | 2026-06-05T16:32:38.242Z  INFO 1 --- [springaiagent] [    virtual-112] [                                                 ] c.s.s.core.engine.ExecutionEngine        : STEP COMPLETE [Step search_active]: User 'Bob' was found in the historical archive database with a status of 'Dormant' (ID: 11223). No further actionable tools are required unless reactivation or metric analysis is requested. Current tools would require additional parameters (e.g., date ranges, metrics) for next steps.
+spring-ai-agent  | MEMORY: Saved state for Run [ca768e06-3b96-4eed-a2ee-4fcaa17e31f3]
+spring-ai-agent  | 2026-06-05T16:32:38.244Z  INFO 1 --- [springaiagent] [omcat-handler-1] [78aa5ed3ffac7332c466a80b3514c7c7-c2977fc8b826996a] c.s.s.core.engine.ExecutionEngine        : DAG SCHEDULER: Scheduling 1 steps in parallel: [search_archive]
+spring-ai-agent  | REASONER: Analyzing step -> If Bob is not found in the active database, search the archive database for Bob.
+spring-ai-agent  | 2026-06-05T16:33:06.358Z  INFO 1 --- [springaiagent] [    virtual-113] [                                                 ] c.s.s.core.engine.ExecutionEngine        : STEP COMPLETE [Step search_archive]: Bob was found in the historical archive database with a status of 'Dormant' (ID: 11223). No further actions are required unless reactivation or additional analysis is requested.
+spring-ai-agent  | MEMORY: Saved state for Run [ca768e06-3b96-4eed-a2ee-4fcaa17e31f3]
+spring-ai-agent  | 2026-06-05T16:33:06.359Z  INFO 1 --- [springaiagent] [omcat-handler-1] [78aa5ed3ffac7332c466a80b3514c7c7-c2977fc8b826996a] c.s.s.core.engine.ExecutionEngine        : DAG SCHEDULER: Scheduling 1 steps in parallel: [calculate_metrics]
+spring-ai-agent  | REASONER: Analyzing step -> Calculate Bob's metrics based on the database where he was found.
+spring-ai-agent  | 2026-06-05T16:33:07.358Z  INFO 1 --- [springaiagent] [    virtual-114] [                                                 ] c.s.s.core.engine.ExecutionEngine        : PIVOT [Step calculate_metrics]: Replanning requested: To calculate Bob's metrics, we need specific parameters such as the metric type (e.g., daily_active_users, revenue) and the date range (startDate and endDate). These details were not provided in the initial query, so additional information is required to proceed with the calculate_metrics tool.
+spring-ai-agent  | 2026-06-05T16:33:07.358Z  INFO 1 --- [springaiagent] [omcat-handler-1] [78aa5ed3ffac7332c466a80b3514c7c7-c2977fc8b826996a] c.s.s.core.engine.ExecutionEngine        : PIVOT: Replanning triggered during step execution.
+spring-ai-agent  | 2026-06-05T16:33:07.360Z  INFO 1 --- [springaiagent] [omcat-handler-1] [78aa5ed3ffac7332c466a80b3514c7c7-c2977fc8b826996a] c.s.springaiagent.core.engine.Planner    : PLANNER: Generating execution plan...
+spring-ai-agent  | 2026-06-05T16:33:09.271Z  WARN 1 --- [springaiagent] [eter-registry-0] [                                                 ] i.m.registry.otlp.OtlpMeterRegistry      : Failed to publish metrics to OTLP receiver (context: url=http://localhost:4318/v1/metrics, resource-attributes={service.name=springaiagent})
+spring-ai-agent  | 
+spring-ai-agent  | java.lang.Exception: java.net.ConnectException: Connection refused
+spring-ai-agent  | 	at io.micrometer.registry.otlp.OtlpHttpMetricsSender.send(OtlpHttpMetricsSender.java:61) ~[micrometer-registry-otlp-1.16.5.jar!/:1.16.5]
+spring-ai-agent  | 	at io.micrometer.registry.otlp.OtlpMeterRegistry.publish(OtlpMeterRegistry.java:190) ~[micrometer-registry-otlp-1.16.5.jar!/:1.16.5]
+spring-ai-agent  | 	at io.micrometer.core.instrument.push.PushMeterRegistry.publishSafelyOrSkipIfInProgress(PushMeterRegistry.java:63) ~[micrometer-core-1.16.5.jar!/:1.16.5]
+spring-ai-agent  | 	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.FutureTask.runAndReset(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.lang.VirtualThread.run(Unknown Source) ~[na:na]
+spring-ai-agent  | Caused by: java.net.ConnectException: Connection refused
+spring-ai-agent  | 	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.Net.pollConnectNow(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.nio.ch.NioSocketImpl.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/java.net.Socket.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.NetworkClient.doConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.http.HttpClient.openServer(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.http.HttpClient.openServer(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.http.HttpClient.<init>(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.http.HttpClient.New(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.http.HttpClient.New(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream0(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream(Unknown Source) ~[na:na]
+spring-ai-agent  | 	at io.micrometer.core.ipc.http.HttpUrlConnectionSender.send(HttpUrlConnectionSender.java:99) ~[micrometer-core-1.16.5.jar!/:1.16.5]
+spring-ai-agent  | 	at io.micrometer.core.ipc.http.HttpSender$Request$Builder.send(HttpSender.java:306) ~[micrometer-core-1.16.5.jar!/:1.16.5]
+spring-ai-agent  | 	at io.micrometer.registry.otlp.OtlpHttpMetricsSender.send(OtlpHttpMetricsSender.java:58) ~[micrometer-registry-otlp-1.16.5.jar!/:1.16.5]
+spring-ai-agent  | 	... 8 common frames omitted
+spring-ai-agent  | 
+spring-ai-agent  | MEMORY: Saved state for Run [ca768e06-3b96-4eed-a2ee-4fcaa17e31f3]
+spring-ai-agent  | MEMORY: Saved state for Run [ca768e06-3b96-4eed-a2ee-4fcaa17e31f3]
