@@ -1,11 +1,20 @@
 server:
-  max-http-header-size: 65536
+  max-http-request-header-size: 65536
 
 spring:
   ai:
     openai:
       client:
         timeout: 90s
+    chat:
+      observations:
+        include-prompt: true
+        include-completion: true
+        log-prompt: true
+        log-completion: true
+    tools:
+      observations:
+        include-content: true
   config:
     import: optional:classpath:guardrails.yml
   application:

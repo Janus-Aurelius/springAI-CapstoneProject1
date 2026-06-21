@@ -24,12 +24,16 @@ public class LlmProviderRegistry {
     private static final Logger log = LoggerFactory.getLogger(LlmProviderRegistry.class);
     private final LlmProperties properties;
     private final ObservationRegistry observationRegistry;
+    private final org.springframework.beans.factory.ObjectProvider<org.springframework.ai.chat.observation.ChatModelObservationConvention> chatModelObservationConventionProvider;
     private final Map<String, OpenAiChatModel> materializedClients = new ConcurrentHashMap<>();
     private final Map<String, LlmProperties.ProviderConfig> configs = new ConcurrentHashMap<>();
 
-    public LlmProviderRegistry(LlmProperties properties, ObservationRegistry observationRegistry) {
+    public LlmProviderRegistry(LlmProperties properties, 
+                               ObservationRegistry observationRegistry,
+                               org.springframework.beans.factory.ObjectProvider<org.springframework.ai.chat.observation.ChatModelObservationConvention> chatModelObservationConventionProvider) {
         this.properties = properties;
         this.observationRegistry = observationRegistry;
+        this.chatModelObservationConventionProvider = chatModelObservationConventionProvider;
         if (properties.providers() != null) {
             for (LlmProperties.ProviderConfig config : properties.providers()) {
                 log.info("Registering LLM Provider: {} with base URL: {}", config.id(), config.baseUrl());
@@ -75,12 +79,16 @@ public class LlmProviderRegistry {
                 .apiKey(config.apiKey())
                 .build();
 
-        return OpenAiChatModel.builder()
+        OpenAiChatModel chatModel = OpenAiChatModel.builder()
                 .openAiClient(openAiClient)
                 .openAiClientAsync(openAiClientAsync)
                 .options(options)
                 .observationRegistry(observationRegistry)
                 .build();
+        
+        chatModelObservationConventionProvider.ifAvailable(chatModel::setObservationConvention);
+        
+        return chatModel;
     }
 
     public List<LlmProperties.ProviderConfig> getAllConfigs() {
