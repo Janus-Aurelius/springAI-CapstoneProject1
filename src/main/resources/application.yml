@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:classpath:guardrails.yml
   application:
     name: springaiagent
   threads:
@@ -9,6 +11,13 @@ spring:
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        hbm2ddl:
+          create_namespaces: true
   autoconfigure:
     exclude: 
       - org.springframework.ai.model.chat.memory.repository.jdbc.autoconfigure.JdbcChatMemoryRepositoryAutoConfiguration
@@ -26,11 +35,24 @@ redis:
     store-id: "${REDIS_AGENT_MEMORY_STORE_ID:your-store-id}"
 
 management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,info,metrics
+  endpoint:
+    prometheus:
+      enabled: true
+    metrics:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
   opentelemetry:
     tracing:
       export:
         otlp:
-          endpoint: ${LANGFUSE_OTEL_ENDPOINT:http://localhost:3000/api/public/otel/v1/traces}
+          endpoint: ${LANGFUSE_OTEL_ENDPOINT:http://localhost:3000/api/public/otel}
           headers:
             Authorization: ${LANGFUSE_OTEL_AUTH:Basic cGstbGYtZGVmYXVsdDpzay1sZi1kZWZhdWx0}
             x-langfuse-ingestion-version: "4"
@@ -56,9 +78,6 @@ app:
       max-token-budget: 100000
       max-observation-tokens: 2000
       self-correction-enabled: true
-      custom-rules:
-        - "Output must not contain any sensitive API keys or plain-text credentials."
-        - "The final conclusion must directly address the initial request goal."
     pricing:
       "gemini-1.5-pro":
         input-cost-per-million: 1.25
@@ -144,6 +163,28 @@ app:
         max-context-window: 1000000
         models:
           judge: "${PROJECT_C_LEVEL_1_MODEL:gemini-1.5-flash}"
+      - id: "project-c-level-2"
+        base-url: "${GEMINI_PROJECT_C_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_C_API_KEY:your-key-c}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          judge: "${PROJECT_C_LEVEL_2_MODEL:gemini-1.5-pro}"
+      - id: "project-c-level-3"
+        base-url: "${GEMINI_PROJECT_C_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_C_API_KEY:your-key-c}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          judge: "${PROJECT_C_LEVEL_3_MODEL:gemini-1.5-flash-8b}"
+      - id: "project-c-level-4"
+        base-url: "${GEMINI_PROJECT_C_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}"
+        api-key: "${GEMINI_PROJECT_C_API_KEY:your-key-c}"
+        is-primary: false
+        max-context-window: 1000000
+        models:
+          judge: "${PROJECT_C_LEVEL_4_MODEL:gemma-2-9b-it}"
+
 
       # --- GLOBAL FALLBACK ---
       - id: "global-fallback-openrouter"

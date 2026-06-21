@@ -53,7 +53,7 @@ public class RedisMemoryToolExecutorTest {
     public void testSearchMemory() {
         String jsonArgs = "{\"query\": \"Capstone\"}";
         List<LongTermMemory> searchResults = List.of(
-            new LongTermMemory("123", "Spring AI Capstone Project is active")
+            new LongTermMemory("123", "Spring AI Capstone Project is active", "test-user-123")
         );
         SearchResponse mockResponse = new SearchResponse(searchResults);
         when(mockRestClient.searchLongTermMemory(any())).thenReturn(mockResponse);

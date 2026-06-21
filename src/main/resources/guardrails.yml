@@ -1,0 +1,6 @@
+app:
+  llm:
+    guardrails:
+      custom-rules:
+        - "Output must not contain any sensitive API keys or plain-text credentials."
+        - "The final conclusion must directly address the initial request goal."

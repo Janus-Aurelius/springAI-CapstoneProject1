@@ -27,7 +27,11 @@ public class RedisAgentMemoryDtos {
         List<SessionEvent> events
     ) {}
 
-    public record LongTermMemory(String id, String text) {}
+    public record LongTermMemory(
+        String id,
+        String text,
+        @com.fasterxml.jackson.annotation.JsonProperty("OwnerID") String ownerId
+    ) {}
 
     public record AddLongTermMemoryRequest(List<LongTermMemory> memories) {}
 

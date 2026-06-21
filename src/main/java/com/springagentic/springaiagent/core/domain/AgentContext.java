@@ -9,6 +9,7 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.UUID;
 
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
 public class AgentContext {
     private String threadId;  // Grouping for persistent history (The Conversation)
     private String runId;     // Unique ID for THIS specific concurrent execution
@@ -154,6 +155,7 @@ public class AgentContext {
         totalTokensConsumed.set(val);
     }
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public List<String> getObservationsList() {
         return this.observations;
     }
@@ -191,6 +193,7 @@ public class AgentContext {
 
     public String getTerminationReason() { return terminationReason; }
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public Object getObservations() {
         return this.observations;
     }

@@ -6,4 +6,5 @@ import java.util.UUID;
 
 @Repository
 public interface AgentEvaluationRepository extends JpaRepository<AgentEvaluationEntity, UUID> {
+    java.util.Optional<AgentEvaluationEntity> findByRunId(String runId);
 }

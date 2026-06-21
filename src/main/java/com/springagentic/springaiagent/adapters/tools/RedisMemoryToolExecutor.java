@@ -66,7 +66,11 @@ public class RedisMemoryToolExecutor implements ToolExecutor {
                 }
                 
                 String id = UUID.randomUUID().toString();
-                LongTermMemory memory = new LongTermMemory(id, params.text());
+                String ownerId = org.slf4j.MDC.get("threadId");
+                if (ownerId == null || ownerId.isBlank()) {
+                    ownerId = "test-user-123";
+                }
+                LongTermMemory memory = new LongTermMemory(id, params.text(), ownerId);
                 AddLongTermMemoryRequest request = new AddLongTermMemoryRequest(List.of(memory));
                 
                 restClient.addLongTermMemories(request);

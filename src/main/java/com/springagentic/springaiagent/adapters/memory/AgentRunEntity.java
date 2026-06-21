@@ -8,6 +8,8 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "agent_runs")
@@ -20,14 +22,14 @@ public class AgentRunEntity {
     @Column(name = "thread_id", nullable = false)
     private String threadId;
 
-    @Column(name = "user_goal", length = 4000)
+    @Column(name = "user_goal", columnDefinition = "TEXT")
     private String userGoal;
 
     @Column(name = "status", nullable = false)
     private String status;
 
-    @Lob
-    @Column(name = "context_json", columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "context_json")
     private String contextJson;
 
     @Column(name = "total_cost_usd", nullable = false)
