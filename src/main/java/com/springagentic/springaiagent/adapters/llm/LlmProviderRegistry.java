@@ -11,6 +11,7 @@ import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.stereotype.Component;
 
+import io.micrometer.observation.ObservationRegistry;
 import java.time.Duration;
 
 import java.util.List;
@@ -22,11 +23,13 @@ public class LlmProviderRegistry {
 
     private static final Logger log = LoggerFactory.getLogger(LlmProviderRegistry.class);
     private final LlmProperties properties;
+    private final ObservationRegistry observationRegistry;
     private final Map<String, OpenAiChatModel> materializedClients = new ConcurrentHashMap<>();
     private final Map<String, LlmProperties.ProviderConfig> configs = new ConcurrentHashMap<>();
 
-    public LlmProviderRegistry(LlmProperties properties) {
+    public LlmProviderRegistry(LlmProperties properties, ObservationRegistry observationRegistry) {
         this.properties = properties;
+        this.observationRegistry = observationRegistry;
         if (properties.providers() != null) {
             for (LlmProperties.ProviderConfig config : properties.providers()) {
                 log.info("Registering LLM Provider: {} with base URL: {}", config.id(), config.baseUrl());
@@ -58,13 +61,13 @@ public class LlmProviderRegistry {
         OpenAIClient openAiClient = OpenAIOkHttpClient.builder()
                 .baseUrl(config.baseUrl())
                 .apiKey(config.apiKey())
-                .timeout(Duration.ofSeconds(30))
+                .timeout(Duration.ofSeconds(90))
                 .build();
 
         OpenAIClientAsync openAiClientAsync = OpenAIOkHttpClientAsync.builder()
                 .baseUrl(config.baseUrl())
                 .apiKey(config.apiKey())
-                .timeout(Duration.ofSeconds(30))
+                .timeout(Duration.ofSeconds(90))
                 .build();
 
         OpenAiChatOptions options = OpenAiChatOptions.builder()
@@ -76,6 +79,7 @@ public class LlmProviderRegistry {
                 .openAiClient(openAiClient)
                 .openAiClientAsync(openAiClientAsync)
                 .options(options)
+                .observationRegistry(observationRegistry)
                 .build();
     }
 

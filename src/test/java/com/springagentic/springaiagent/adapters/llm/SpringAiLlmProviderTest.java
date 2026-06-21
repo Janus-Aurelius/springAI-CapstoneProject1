@@ -89,6 +89,61 @@ public class SpringAiLlmProviderTest {
         verify(mockLlmRouter, times(2)).generate(any(), any(), any());
     }
 
+    @Test
+    public void testStructuredRequestWithMathBracesAndValidJson() {
+        String responseContent = "To calculate 2^10 + 2^80, we know that 2^80 in binary is " +
+            "{100000000000000000000000000000000000000000000000000000000000000000000000000000000}. " +
+            "Here is the plan:\n" +
+            "```json\n" +
+            "{\n" +
+            "  \"steps\": [\n" +
+            "    {\n" +
+            "      \"stepId\": \"step1\",\n" +
+            "      \"description\": \"Calculate 2^10\",\n" +
+            "      \"expectedOutcome\": \"1024\",\n" +
+            "      \"dependsOn\": []\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}\n" +
+            "```";
+
+        setupMockRouterResponse(responseContent, null);
+
+        AgentContext context = new AgentContext("thread-1", "calc 2^10 + 2^80");
+        com.springagentic.springaiagent.core.domain.Plan plan = llmProvider.structuredRequest(
+            context,
+            "System prompt",
+            "User prompt",
+            com.springagentic.springaiagent.core.domain.Plan.class
+        );
+
+        System.out.println("TEST PLAN: " + plan);
+        assertNotNull(plan);
+        assertNotNull(plan.steps(), "Plan steps should not be null!");
+        assertEquals(1, plan.steps().size());
+        assertEquals("step1", plan.steps().get(0).stepId());
+        assertEquals("Calculate 2^10", plan.steps().get(0).description());
+    }
+
+    @Test
+    public void testStructuredRequestFallbackForMalformedJson() {
+        String responseContent = "Explanation: { \"steps\": [ { \"stepId\": \"step1\", description: \"desc\" } ] ";
+        
+        setupMockRouterResponse(responseContent, null);
+
+        AgentContext context = new AgentContext("thread-1", "test");
+        
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+            llmProvider.structuredRequest(
+                context,
+                "System prompt",
+                "User prompt",
+                com.springagentic.springaiagent.core.domain.Plan.class
+            );
+        });
+        assertTrue(ex.getMessage().contains("LLM request failed"));
+    }
+
     private static class AssistantMessage extends org.springframework.ai.chat.messages.AssistantMessage {
         public AssistantMessage(String content) {
             super(content);

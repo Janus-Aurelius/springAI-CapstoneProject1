@@ -88,25 +88,13 @@ public class ResilientLlmRouter implements LlmRouter {
                     OpenAiChatModel client = registry.getClient(config.id());
                     
                     try {
-                       Flux<ChatResponse> responseFlux = client.stream(new Prompt(truncatedMessages, options));
-                       
-                       List<ChatResponse> chunks = responseFlux
-                               .timeout(Duration.ofSeconds(30)) 
-                               .collectList()
-                               .block(Duration.ofMinutes(2));
-
-                       if (chunks == null || chunks.isEmpty()) {
-                           throw new RuntimeException("Empty response stream from provider " + config.id());
-                       }
-
-                       return aggregateChunks(chunks);
-                    } catch (com.openai.errors.OpenAIInvalidDataException streamEx) {
-                       log.warn("Streaming chunk deserialization failed for provider {}. Falling back to non-streaming call.", config.id());
-                       ChatResponse res = client.call(new Prompt(truncatedMessages, options));
-                       if (res == null) {
-                           throw new RuntimeException("Empty response from provider " + config.id());
-                       }
-                       return res;
+                        ChatResponse res = client.call(new Prompt(truncatedMessages, options));
+                        if (res == null) {
+                            throw new RuntimeException("Empty response from provider " + config.id());
+                        }
+                        return res;
+                    } catch (Exception e) {
+                        throw new RuntimeException("Call failed for provider " + config.id() + ": " + e.getMessage(), e);
                     }
                 }).get();
 

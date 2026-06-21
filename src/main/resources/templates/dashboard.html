@@ -103,7 +103,7 @@
                 <div id="task-list" class="flex-1 overflow-y-auto pr-1 flex flex-col gap-3 custom-scrollbar">
                     <!-- Task rows rendered dynamically -->
                     <th:block th:each="run : ${runs}">
-                        <div th:replace="~{fragments :: task-row(run=${run})}"></div>
+                        <div th:replace="~{fragments :: task-row(run=${run}, eval=${evaluations.get(run.runId)})}"></div>
                     </th:block>
                     
                     <!-- Empty State -->

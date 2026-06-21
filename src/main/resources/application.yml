@@ -1,4 +1,11 @@
+server:
+  max-http-header-size: 65536
+
 spring:
+  ai:
+    openai:
+      client:
+        timeout: 90s
   config:
     import: optional:classpath:guardrails.yml
   application:
@@ -52,7 +59,7 @@ management:
     tracing:
       export:
         otlp:
-          endpoint: ${LANGFUSE_OTEL_ENDPOINT:http://localhost:3000/api/public/otel}
+          endpoint: ${LANGFUSE_OTEL_ENDPOINT:http://localhost:3000/api/public/otel/v1/traces}
           headers:
             Authorization: ${LANGFUSE_OTEL_AUTH:Basic cGstbGYtZGVmYXVsdDpzay1sZi1kZWZhdWx0}
             x-langfuse-ingestion-version: "4"

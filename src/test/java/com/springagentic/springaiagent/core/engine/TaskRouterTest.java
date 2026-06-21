@@ -18,6 +18,7 @@ public class TaskRouterTest {
 
     private LlmProvider mockLlmProvider;
     private ExecutionEngine mockExecutionEngine;
+    private com.springagentic.springaiagent.core.spi.MemoryStore mockMemoryStore;
     private TaskRouter taskRouter;
     private AgentDefinition mockAgentDef;
 
@@ -25,7 +26,8 @@ public class TaskRouterTest {
     public void setUp() {
         mockLlmProvider = mock(LlmProvider.class);
         mockExecutionEngine = mock(ExecutionEngine.class);
-        taskRouter = new TaskRouter(mockLlmProvider, mockExecutionEngine);
+        mockMemoryStore = mock(com.springagentic.springaiagent.core.spi.MemoryStore.class);
+        taskRouter = new TaskRouter(mockLlmProvider, mockExecutionEngine, mockMemoryStore);
         mockAgentDef = new AgentDefinition("agent-01", "You are a helpful assistant.", Collections.emptyList(), 0.7);
     }
 

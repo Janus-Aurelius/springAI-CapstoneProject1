@@ -60,7 +60,7 @@ public class LlmFailoverIntegrationTest {
         // 2. Mock primary client to fail with 429
         OpenAiChatModel primaryClient = mock(OpenAiChatModel.class);
         when(mockRegistry.getClient("primary")).thenReturn(primaryClient);
-        when(primaryClient.stream(any(Prompt.class))).thenReturn(Flux.error(new RuntimeException("HTTP 429 Too Many Requests")));
+        when(primaryClient.call(any(Prompt.class))).thenThrow(new RuntimeException("HTTP 429 Too Many Requests"));
 
         // 3. Mock fallback client to succeed
         OpenAiChatModel fallbackClient = mock(OpenAiChatModel.class);
@@ -71,7 +71,7 @@ public class LlmFailoverIntegrationTest {
         when(successResponse.getResult()).thenReturn(gen);
         when(successResponse.getMetadata()).thenReturn(mock(org.springframework.ai.chat.metadata.ChatResponseMetadata.class));
         
-        when(fallbackClient.stream(any(Prompt.class))).thenReturn(Flux.just(successResponse));
+        when(fallbackClient.call(any(Prompt.class))).thenReturn(successResponse);
 
         // 4. Execute
         ChatResponse response = router.generate(List.of(), TaskType.PLANNER, null);
@@ -79,8 +79,8 @@ public class LlmFailoverIntegrationTest {
         // 5. Verify
         assertNotNull(response);
         assertEquals("Fallback success", response.getResult().getOutput().getText());
-        verify(primaryClient, times(3)).stream(any(Prompt.class));
-        verify(fallbackClient).stream(any(Prompt.class));
+        verify(primaryClient, times(3)).call(any(Prompt.class));
+        verify(fallbackClient).call(any(Prompt.class));
     }
 
     @Test
@@ -93,14 +93,14 @@ public class LlmFailoverIntegrationTest {
 
         OpenAiChatModel primaryClient = mock(OpenAiChatModel.class);
         when(mockRegistry.getClient("primary")).thenReturn(primaryClient);
-        // Fail with something that triggers retry (Resilience4j default handles many RuntimeExceptions)
-        when(primaryClient.stream(any(Prompt.class))).thenReturn(Flux.error(new RuntimeException("Empty response stream from provider primary")));
+        // Fail with something that triggers retry
+        when(primaryClient.call(any(Prompt.class))).thenThrow(new RuntimeException("Empty response from provider primary"));
 
         // 2. Execute - should retry and then throw
         assertThrows(RuntimeException.class, () -> router.generate(List.of(), TaskType.PLANNER, null));
         
-        // Verify primary client stream was called multiple times (3 attempts default)
-        verify(primaryClient, times(3)).stream(any(Prompt.class));
+        // Verify primary client was called multiple times (3 attempts default)
+        verify(primaryClient, times(3)).call(any(Prompt.class));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class LlmFailoverIntegrationTest {
         when(successResponse.getResult()).thenReturn(gen);
         when(successResponse.getMetadata()).thenReturn(mock(org.springframework.ai.chat.metadata.ChatResponseMetadata.class));
 
-        when(projectBClient.stream(any(Prompt.class))).thenReturn(Flux.just(successResponse));
+        when(projectBClient.call(any(Prompt.class))).thenReturn(successResponse);
 
         // 3. Execute with REASONER task type
         ChatResponse response = router.generate(List.of(), TaskType.REASONER, null);

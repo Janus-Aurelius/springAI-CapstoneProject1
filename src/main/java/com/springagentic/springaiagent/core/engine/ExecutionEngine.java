@@ -76,6 +76,10 @@ public class ExecutionEngine {
                 .setAttribute("agentType", agentDef.agentId())
                 .startSpan();
         try (Scope scope = runSpan.makeCurrent()) {
+            context.setParentTraceId(runSpan.getSpanContext().getTraceId());
+            context.setParentSpanId(runSpan.getSpanContext().getSpanId());
+            memoryStore.saveRun(context);
+
             executeLoop(context, agentDef);
             runSpan.setStatus(StatusCode.OK);
             return context;
@@ -89,13 +93,28 @@ public class ExecutionEngine {
     }
 
     public AgentContext resumeComplexTask(AgentContext context, AgentDefinition agentDef) {
-        Span runSpan = tracer.spanBuilder("Agent run")
+        io.opentelemetry.api.trace.SpanBuilder spanBuilder = tracer.spanBuilder("Agent run")
                 .setAttribute("threadId", context.getThreadId())
                 .setAttribute("runId", context.getRunId())
                 .setAttribute("userGoal", context.getUserGoal())
                 .setAttribute("agentType", agentDef.agentId())
-                .setAttribute("isResume", true)
-                .startSpan();
+                .setAttribute("isResume", true);
+
+        if (context.getParentTraceId() != null && context.getParentSpanId() != null) {
+            try {
+                io.opentelemetry.api.trace.SpanContext parentContext = io.opentelemetry.api.trace.SpanContext.create(
+                    context.getParentTraceId(),
+                    context.getParentSpanId(),
+                    io.opentelemetry.api.trace.TraceFlags.getSampled(),
+                    io.opentelemetry.api.trace.TraceState.getDefault()
+                );
+                spanBuilder.setParent(io.opentelemetry.context.Context.current().with(Span.wrap(parentContext)));
+            } catch (Exception e) {
+                log.error("Failed to reconstruct parent SpanContext", e);
+            }
+        }
+
+        Span runSpan = spanBuilder.startSpan();
         try (Scope scope = runSpan.makeCurrent()) {
             executeLoop(context, agentDef);
             runSpan.setStatus(StatusCode.OK);

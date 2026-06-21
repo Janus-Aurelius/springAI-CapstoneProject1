@@ -76,6 +76,7 @@ public class SpringAiLlmProvider implements LlmProvider {
             }
 
             String cleanJson = cleanAndExtractJson(rawContent);
+            System.out.println("DEBUG SpringAiLlmProvider structuredRequest: rawContent=" + rawContent + "\ncleanJson=" + cleanJson);
             return converter.convert(cleanJson);
         } catch (Exception e) {
             log.error("Failed to process structuredRequest for type: {}", returnType.getSimpleName(), e);
@@ -185,13 +186,22 @@ public class SpringAiLlmProvider implements LlmProvider {
 
     private String stripReasoning(String content) {
         if (content == null) return null;
-        if (content.contains("<think>")) {
-            int endThink = content.indexOf("</think>");
-            if (endThink != -1) {
-                return content.substring(endThink + 8).trim();
+        content = stripTag(content, "think");
+        content = stripTag(content, "thought");
+        return content.trim();
+    }
+
+    private String stripTag(String content, String tag) {
+        String startTag = "<" + tag + ">";
+        String endTag = "</" + tag + ">";
+        while (content.contains(startTag)) {
+            int start = content.indexOf(startTag);
+            int end = content.indexOf(endTag);
+            if (end != -1 && end > start) {
+                content = content.substring(0, start) + content.substring(end + endTag.length());
             } else {
-                int startThink = content.indexOf("<think>");
-                return content.substring(startThink + 7).trim();
+                content = content.substring(0, start);
+                break;
             }
         }
         return content;
@@ -199,16 +209,72 @@ public class SpringAiLlmProvider implements LlmProvider {
 
     private String extractReasoning(String content) {
         if (content == null) return null;
-        if (content.contains("<think>")) {
-            int startThink = content.indexOf("<think>");
-            int endThink = content.indexOf("</think>");
-            if (endThink != -1 && endThink > startThink) {
-                return content.substring(startThink + 7, endThink).trim();
+        StringBuilder sb = new StringBuilder();
+        extractTagContent(content, "think", sb);
+        extractTagContent(content, "thought", sb);
+        return sb.length() > 0 ? sb.toString().trim() : null;
+    }
+
+    private void extractTagContent(String content, String tag, StringBuilder sb) {
+        String startTag = "<" + tag + ">";
+        String endTag = "</" + tag + ">";
+        int pos = 0;
+        while ((pos = content.indexOf(startTag, pos)) != -1) {
+            int end = content.indexOf(endTag, pos);
+            if (end != -1 && end > pos) {
+                if (sb.length() > 0) sb.append("\n");
+                sb.append(content.substring(pos + startTag.length(), end).trim());
+                pos = end + endTag.length();
             } else {
-                return content.substring(startThink + 7).trim();
+                if (sb.length() > 0) sb.append("\n");
+                sb.append(content.substring(pos + startTag.length()).trim());
+                break;
             }
         }
-        return null;
+    }
+
+    private static final com.fasterxml.jackson.databind.ObjectMapper JSON_MAPPER = new com.fasterxml.jackson.databind.ObjectMapper();
+
+    private List<String> findJsonCandidates(String input) {
+        List<String> candidates = new java.util.ArrayList<>();
+        if (input == null || !input.contains("{")) {
+            return candidates;
+        }
+
+        for (int i = 0; i < input.length(); i++) {
+            if (input.charAt(i) == '{') {
+                int braceCount = 0;
+                boolean inString = false;
+                boolean isEscaped = false;
+                for (int j = i; j < input.length(); j++) {
+                    char c = input.charAt(j);
+                    if (isEscaped) {
+                        isEscaped = false;
+                        continue;
+                    }
+                    if (c == '\\') {
+                        isEscaped = true;
+                        continue;
+                    }
+                    if (c == '"') {
+                        inString = !inString;
+                        continue;
+                    }
+                    if (!inString) {
+                        if (c == '{') {
+                            braceCount++;
+                        } else if (c == '}') {
+                            braceCount--;
+                            if (braceCount == 0) {
+                                candidates.add(input.substring(i, j + 1));
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return candidates;
     }
 
     private String cleanAndExtractJson(String input) {
@@ -236,8 +302,20 @@ public class SpringAiLlmProvider implements LlmProvider {
                 processed = remainder;
             }
         }
+
+        // Try to find valid JSON candidates, prioritizing the longest (outermost) JSON blocks
+        List<String> candidates = findJsonCandidates(processed);
+        candidates.sort((a, b) -> Integer.compare(b.length(), a.length()));
+        for (String candidate : candidates) {
+            try {
+                JSON_MAPPER.readTree(candidate);
+                return candidate;
+            } catch (Exception e) {
+                // Ignore and try the next candidate
+            }
+        }
         
-        // Extract the JSON object boundaries
+        // Fallback: extract the JSON object boundaries
         int firstBrace = processed.indexOf('{');
         int lastBrace = processed.lastIndexOf('}');
         if (firstBrace != -1 && lastBrace != -1 && lastBrace > firstBrace) {

@@ -16,6 +16,7 @@ public class AgentContext {
     private String userGoal;
 
     private Plan plan;
+    @com.fasterxml.jackson.annotation.JsonProperty("observations")
     private final List<String> observations = new ArrayList<>();
     private final Map<String, String> stepSummaries = new ConcurrentHashMap<>();
     
@@ -47,6 +48,8 @@ public class AgentContext {
     private String humanDecision;
     private String humanFeedback;
     private String modifiedToolArgs;
+    private String parentTraceId;
+    private String parentSpanId;
 
     public synchronized void saveCheckpoint() {
         this.mementoStack.push(new AgentContextMemento(
@@ -193,7 +196,6 @@ public class AgentContext {
 
     public String getTerminationReason() { return terminationReason; }
 
-    @com.fasterxml.jackson.annotation.JsonIgnore
     public Object getObservations() {
         return this.observations;
     }
@@ -237,4 +239,10 @@ public class AgentContext {
     public String getHumanDecision() { return humanDecision; }
     public String getHumanFeedback() { return humanFeedback; }
     public String getModifiedToolArgs() { return modifiedToolArgs; }
+
+    public String getParentTraceId() { return parentTraceId; }
+    public void setParentTraceId(String parentTraceId) { this.parentTraceId = parentTraceId; }
+
+    public String getParentSpanId() { return parentSpanId; }
+    public void setParentSpanId(String parentSpanId) { this.parentSpanId = parentSpanId; }
 }

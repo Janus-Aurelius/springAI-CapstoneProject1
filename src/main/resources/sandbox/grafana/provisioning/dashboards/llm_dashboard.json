@@ -270,7 +270,7 @@
       "datasource": { "type": "postgres", "uid": "postgres_ds" },
       "targets": [
         {
-          "rawSql": "SELECT created_at AS \"Time\", run_id AS \"Run ID\", thread_id AS \"Thread ID\", is_goal_met AS \"Goal Met\", alignment_score * 100.0 AS \"Alignment Score %\", safety_score * 100.0 AS \"Safety Score %\", explanation AS \"Judge explanation\" FROM evaluation.agent_evaluations ORDER BY created_at DESC LIMIT 20;",
+          "rawSql": "SELECT r.updated_at AS \"Time\", r.run_id AS \"Run ID\", r.thread_id AS \"Thread ID\", r.status AS \"Status\", e.is_goal_met AS \"Goal Met\", e.alignment_score * 100.0 AS \"Alignment Score %\", e.safety_score * 100.0 AS \"Safety Score %\", e.explanation AS \"Judge explanation\" FROM public.agent_runs r LEFT JOIN evaluation.agent_evaluations e ON r.run_id = e.run_id ORDER BY r.updated_at DESC LIMIT 20;",
           "refId": "A",
           "format": "table"
         }
@@ -293,7 +293,8 @@
               {
                 "id": "custom.cellOptions",
                 "value": {
-                  "type": "markdown"
+                  "type": "auto",
+                  "wrapText": true
                 }
               }
             ]

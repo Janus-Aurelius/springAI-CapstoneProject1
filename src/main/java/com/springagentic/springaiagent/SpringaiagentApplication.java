@@ -22,12 +22,18 @@ public class SpringaiagentApplication {
 	}
 
 	private static void configureLangfuseCloud() {
-		String pubKey = System.getenv("LANGFUSE_PUBLIC_KEY");
-		String secKey = System.getenv("LANGFUSE_SECRET_KEY");
-		String host = System.getenv("LANGFUSE_HOST");
+		String pubKey = cleanValue(System.getenv("LANGFUSE_PUBLIC_KEY"));
+		String secKey = cleanValue(System.getenv("LANGFUSE_SECRET_KEY"));
+		String host = cleanValue(System.getenv("LANGFUSE_HOST"));
+		if (host == null || host.isEmpty()) {
+			host = cleanValue(System.getenv("LANGFUSE_BASE_URL"));
+		}
+		if (host == null || host.isEmpty()) {
+			host = "https://us.cloud.langfuse.com";
+		}
 
-		if (pubKey != null && !pubKey.isBlank() && secKey != null && !secKey.isBlank()) {
-			String rawCreds = pubKey.trim() + ":" + secKey.trim();
+		if (pubKey != null && !pubKey.isEmpty() && secKey != null && !secKey.isEmpty()) {
+			String rawCreds = pubKey + ":" + secKey;
 			String base64 = java.util.Base64.getEncoder().encodeToString(
 					rawCreds.getBytes(java.nio.charset.StandardCharsets.UTF_8)
 			);
@@ -35,18 +41,32 @@ public class SpringaiagentApplication {
 			System.out.println("LANGFUSE CONNECTION: Dynamically generated OTel Auth header from public & secret keys.");
 		}
 
-		if (host != null && !host.isBlank()) {
-			String endpoint = host.trim();
-			if (!endpoint.endsWith("/api/public/otel")) {
+		String endpoint = host;
+		if (!endpoint.endsWith("/api/public/otel/v1/traces")) {
+			if (endpoint.endsWith("/api/public/otel")) {
+				endpoint += "/v1/traces";
+			} else {
 				if (endpoint.endsWith("/")) {
-					endpoint += "api/public/otel";
+					endpoint += "api/public/otel/v1/traces";
 				} else {
-					endpoint += "/api/public/otel";
+					endpoint += "/api/public/otel/v1/traces";
 				}
 			}
-			System.setProperty("LANGFUSE_OTEL_ENDPOINT", endpoint);
-			System.out.println("LANGFUSE CONNECTION: Dynamically set OTel endpoint to " + endpoint);
 		}
+		System.setProperty("LANGFUSE_OTEL_ENDPOINT", endpoint);
+		System.out.println("LANGFUSE CONNECTION: Dynamically set OTel endpoint to " + endpoint);
+	}
+
+	private static String cleanValue(String val) {
+		if (val == null) return null;
+		val = val.trim();
+		if (val.startsWith("\"") && val.endsWith("\"")) {
+			val = val.substring(1, val.length() - 1);
+		}
+		if (val.startsWith("'") && val.endsWith("'")) {
+			val = val.substring(1, val.length() - 1);
+		}
+		return val.trim();
 	}
 
 }

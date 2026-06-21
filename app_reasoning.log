@@ -3160,3 +3160,568 @@ Args: {}
 2026-06-21 09:53:02.250 [virtual-132] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_START] Tool: write_database
 Args: {}
 2026-06-21 09:53:02.250 [virtual-132] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_RESULT] null
+2026-06-21 10:01:56.338 [virtual-304] INFO  ReasoningTrace - [37ee4d9f-c216-4066-9d5f-eb3d4455c015] [analyze_company_identity] [REASONER_START] Analyzing step: Perform a deep web search on 'BLI Inc.', 'buildlaunchiterate.ca', and 'Edward' to identify the actual nature of the entity, as it is not a standard corporate entity.
+2026-06-21 10:02:06.972 [virtual-304] INFO  ReasoningTrace - [37ee4d9f-c216-4066-9d5f-eb3d4455c015] [analyze_company_identity] [TOOL_EXECUTION_START] Tool: tavily_search
+Args: {"query": "'BLI Inc.' 'buildlaunchiterate.ca' 'Edward'"}
+2026-06-21 10:02:08.651 [virtual-304] INFO  ReasoningTrace - [37ee4d9f-c216-4066-9d5f-eb3d4455c015] [analyze_company_identity] [TOOL_EXECUTION_RESULT] Detailed Results:
+
+Title: Software Engineering Internship - Summer 2026 - fit@hcmus
+URL: https://www.fit.hcmus.edu.vn/vn/Default.aspx?tabid=891&id=17429
+Content: BLI Inc. is hiring a small number of high-agency software engineering interns. Email: edward@buildlaunchiterate.ca
+
+Title: Edward Tran - AI Engineer @BLI - Build Launch Iterate
+URL: https://ca.linkedin.com/in/edwardtran123
+Content: Edward Tran
+AI Engineer @BLI
+Surrey, British Columbia, Canada
+285 connections, 296 followers
+
+
+About
+SWE @BLI
+
+
+Experience
+Lead Software Engineer
+[BuildLaunchIterate](N/A)  
+Aug 2025 - Present
+Surrey, British Columbia, Canada
+Founding EngineerManage a team of 5+ engineers
+
+
+Education
+Douglas College
+N/A
+2022 - 2025
+None
+
+Title: Build Launch Iterate
+URL: https://buildlaunchiterate.ca
+Content: # I BUILD FAST.YOU GROWFASTER. AI-powered development at startup speed. From zero to launched product in weeks, not months. ## WHAT YOU GET WHEN YOU WORK WITH ME. ### SHIP FAST. From idea to working product in days, not quarters. I move at the speed of AI. ### ZERO BLOAT. You pay for code, not overhead. By the time they ship, the market has moved on. You're paying for their office ping pong table. ### Build Launch Iterate. Get to market while your idea is still fresh. I understand your users, market, and constraints before writing a single line of code. ### Design. Visual clarity without the design theatre. ### Build. Full-stack development at AI speed. Clean architecture, scalable from day one. ### Launch. Your product is live and collecting real user feedback. ## Ready to Move Fast? Tell me your problems, I'll help you solve them. Fill out the form and I'll get back to you within 24 hours.
+
+Title: Build Launch Iterate - Ship in weeks, not months
+URL: https://www.linkedin.com/company/build-launch-iterate
+Content: Overview:
+we ship faster than any other dev agency ever could
+
+Website: https://www.buildlaunchiterate.ca/
+Crunchbase Url: N/A
+Linkedin Url: N/A
+
+Industry:
+IT Services and IT Consulting
+
+Company size:
+2-10 employees
+1 associated members (LinkedIn members who’ve listed Build Launch Iterate as their current workplace on their profile)
+
+Founded:
+N/A
+
+Funding:
+Last Round Date: N/A
+Last Round Type: N/A
+Total Rounds: N/A
+Last Round Raised: N/A
+
+Investors:
+N/A
+
+Title: Edward.Domain@techli.com
+URL: https://techli.com/author/edward-domain-2
+Content: California startup MODE strengthens trust for on-site data with new certification. By Techli 4 septiembre, 2025. MODE, Inc., a pioneer in AI applications
+2026-06-21 10:02:08.654 [virtual-304] INFO  ReasoningTrace - [37ee4d9f-c216-4066-9d5f-eb3d4455c015] [analyze_company_identity] [REASONER_START] Analyzing step: Perform a deep web search on 'BLI Inc.', 'buildlaunchiterate.ca', and 'Edward' to identify the actual nature of the entity, as it is not a standard corporate entity.
+2026-06-21 10:02:20.260 [virtual-339] INFO  ReasoningTrace - [37ee4d9f-c216-4066-9d5f-eb3d4455c015] [synthesize_career_strategy_report] [REASONER_START] Analyzing step: Draft the analytical report covering the Business Model Taxonomy, JD Translation Matrix, Career Alignment Score, BS Meter, and Interview Weapons based on the gathered context and the provided JD.
+2026-06-21 10:03:38.391 [virtual-435] INFO  ReasoningTrace - [37ee4d9f-c216-4066-9d5f-eb3d4455c015] [analyze_business_model] [REASONER_START] Analyzing step: Analyze the 'Build Launch Iterate' (BLI Inc.) business model based on the provided JD and the context of it being a boutique consultancy. Determine if it is a product studio or a high-end staff augmentation firm.
+2026-06-21 10:03:42.956 [virtual-443] INFO  ReasoningTrace - [37ee4d9f-c216-4066-9d5f-eb3d4455c015] [translate_jd_realities] [REASONER_START] Analyzing step: Deconstruct the 'high-agency' and 'ship production software' requirements into day-to-day operational realities for an intern.
+2026-06-21 10:03:42.956 [virtual-444] INFO  ReasoningTrace - [37ee4d9f-c216-4066-9d5f-eb3d4455c015] [identify_red_flags] [REASONER_START] Analyzing step: Audit the JD for 'BS' markers, specifically looking for signs of 'intern-as-cheap-labor' or unrealistic expectations for a junior role.
+2026-06-21 10:03:45.217 [virtual-451] INFO  ReasoningTrace - [37ee4d9f-c216-4066-9d5f-eb3d4455c015] [evaluate_career_alignment] [REASONER_START] Analyzing step: Assess the alignment between this role's focus (Next.js/Supabase/AI-assisted CRUD) and the user's goal of becoming a Senior Backend Engineer in high-scale distributed systems.
+2026-06-21 10:03:51.200 [virtual-457] INFO  ReasoningTrace - [37ee4d9f-c216-4066-9d5f-eb3d4455c015] [synthesize_final_report] [REASONER_START] Analyzing step: Compile all findings into the final requested report format, including the two 'piercing' interview questions.
+2026-06-21 10:24:36.990 [virtual-421] INFO  ReasoningTrace - [4e86dbe1-8df4-46b2-9df1-0a15bc1531bb] [analyze_company_and_jd] [REASONER_START] Analyzing step: Perform a deep-dive analysis of the provided job description and the entity 'BLI Inc.' (buildlaunchiterate.ca) to determine the business model and the nature of the work.
+2026-06-21 10:24:44.061 [virtual-421] INFO  ReasoningTrace - [4e86dbe1-8df4-46b2-9df1-0a15bc1531bb] [analyze_company_and_jd] [TOOL_EXECUTION_START] Tool: tavily_extract
+Args: {"urls": ["https://buildlaunchiterate.ca"]}
+2026-06-21 10:24:45.048 [virtual-421] INFO  ReasoningTrace - [4e86dbe1-8df4-46b2-9df1-0a15bc1531bb] [analyze_company_and_jd] [TOOL_EXECUTION_RESULT] Detailed Results:
+
+Title: Build Launch Iterate
+URL: https://buildlaunchiterate.ca
+Content: undefined
+Raw Content: # I BUILD FAST.YOU GROWFASTER.
+
+AI-powered development at startup speed. From zero to launched product in weeks, not months. No bloated teams. No endless meetings. Just shipped code.
+
+SYSTEM ONLINE
+
+10xFaster delivery
+
+50%Lower cost
+
+24hrFirst prototype
+
+∞Iterations
+
+## WHAT YOU GET WHEN YOU WORK WITH ME
+
+### SHIP FAST
+
+No six-month timelines. No bloated teams. From idea to working product in days, not quarters. I move at the speed of AI.
+
+### OWN EVERYTHING
+
+You own the code. You own the infrastructure. No vendor lock-in, no hidden dependencies. Clean, documented, transferrable.
+
+### ZERO BLOAT
+
+No meetings about meetings. No project managers. Just a senior engineer who ships. You pay for code, not overhead.
+
+### Traditional Agencies
+
+Stuck in 2010
+
+6-month timelines
+
+Bloated teams & invoices
+
+Legacy everything
+
+By the time they ship, the market has moved on
+
+You're paying for their office ping pong table
+
+Old tech, old thinking, old pace
+
+### Build Launch Iterate
+
+Built for now
+
+Ship in weeks
+
+AI-augmented efficiency
+
+Modern stack, modern pace
+
+Get to market while your idea is still fresh
+
+Smaller team, bigger output, smarter solutions
+
+Latest tools, fastest workflows, best practices
+
+DELIVERED IN 2 WEEKS.
+
+FLAWLESS EXECUTION.
+
+SHIP OR DIE.
+
+ZERO TO LAUNCHED.
+
+PURE VELOCITY.
+
+CLEAN CODE.
+
+BUILT FOR SPEED.
+
+NO BLOAT.
+
+PRODUCT-MARKET FIT.
+
+MOVE FAST.
+
+AI-POWERED.
+
+ITERATE TO WIN.
+
+ITERATE TO WIN.
+
+AI-POWERED.
+
+MOVE FAST.
+
+PRODUCT-MARKET FIT.
+
+NO BLOAT.
+
+BUILT FOR SPEED.
+
+CLEAN CODE.
+
+PURE VELOCITY.
+
+ZERO TO LAUNCHED.
+
+SHIP OR DIE.
+
+FLAWLESS EXECUTION.
+
+DELIVERED IN 2 WEEKS.
+
+PearlPortal
+
+Enterprise-grade CRM that replaces Salesforce, managing $2M/day.
+
+3D kinetic display
+
+## Our process is our name
+
+BUILD. LAUNCH. ITERATE.
+
+01
+
+### Research
+
+Deep-dive into your problem space. I understand your users, market, and constraints before writing a single line of code.
+
+02
+
+### Design
+
+Rapid wireframes and prototypes. Visual clarity without the design theatre. Function drives form.
+
+03
+
+### Build
+
+Full-stack development at AI speed. TypeScript, React, Next.js, Node. Clean architecture, scalable from day one.
+
+04
+
+### Launch
+
+Ship to production. CI/CD, monitoring, analytics. Your product is live and collecting real user feedback.
+
+## What we build
+
+MVP Development
+
+AI Integration
+
+Web Applications
+
+API Development
+
+Product Strategy
+
+Rapid Prototyping
+
+## Ready to Move Fast?
+
+LET'S TALK BUSINESS
+
+Tell me your problems, I'll help you solve them. No bullshit, all result. Fill out the form and I'll get back to you within 24 hours.
+
+Available for new projects
+
+Response within 24 hours
+2026-06-21 10:24:45.052 [virtual-421] INFO  ReasoningTrace - [4e86dbe1-8df4-46b2-9df1-0a15bc1531bb] [analyze_company_and_jd] [REASONER_START] Analyzing step: Perform a deep-dive analysis of the provided job description and the entity 'BLI Inc.' (buildlaunchiterate.ca) to determine the business model and the nature of the work.
+2026-06-21 10:24:50.858 [virtual-440] INFO  ReasoningTrace - [4e86dbe1-8df4-46b2-9df1-0a15bc1531bb] [evaluate_career_alignment] [REASONER_START] Analyzing step: Compare the 'high-agency' startup internship experience against the user's goal of becoming a Senior Backend Engineer in high-scale distributed systems.
+2026-06-21 10:24:50.858 [virtual-441] INFO  ReasoningTrace - [4e86dbe1-8df4-46b2-9df1-0a15bc1531bb] [identify_red_flags_and_questions] [REASONER_START] Analyzing step: Identify contradictions in the JD (e.g., 'intern' vs 'end-to-end ownership') and formulate high-impact questions to probe the interviewer's technical maturity.
+2026-06-21 10:25:51.351 [virtual-496] INFO  ReasoningTrace - [4e86dbe1-8df4-46b2-9df1-0a15bc1531bb] [synthesize_final_report] [REASONER_START] Analyzing step: Synthesize the previously conducted analysis of BLI Inc.'s business model, the job description, and the user's career goals into the requested 5-section report: Business Model Taxonomy, JD Translation Matrix, Career Alignment Score, BS Meter, and Interview Weapon.
+2026-06-21 13:10:24.506 [virtual-166] INFO  ReasoningTrace - [thread-test-1] [identify_operands] [REASONER_START] Analyzing step: Identify the numbers to be added: 2 and 2.
+2026-06-21 13:10:26.012 [virtual-166] INFO  ReasoningTrace - [thread-test-1] [identify_operands] [TOOL_EXECUTION_START] Tool: execute_python_sandbox
+Args: {"code": "print(2 + 2)"}
+2026-06-21 13:10:26.129 [virtual-166] INFO  ReasoningTrace - [thread-test-1] [identify_operands] [TOOL_EXECUTION_RESULT_SANDBOX] 4
+2026-06-21 13:10:26.130 [virtual-166] INFO  ReasoningTrace - [thread-test-1] [identify_operands] [REASONER_START] Analyzing step: Identify the numbers to be added: 2 and 2.
+2026-06-21 13:10:27.642 [virtual-181] INFO  ReasoningTrace - [thread-test-1] [calculate_sum] [REASONER_START] Analyzing step: Perform the addition of 2 and 2.
+2026-06-21 13:10:28.574 [virtual-182] INFO  ReasoningTrace - [thread-test-1] [provide_result] [REASONER_START] Analyzing step: Provide the final result of the calculation.
+2026-06-21 13:13:22.992 [virtual-136] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_START] Tool: write_db
+Args: {}
+2026-06-21 13:13:22.993 [virtual-136] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_RESULT] null
+2026-06-21 13:13:23.036 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_START] Tool: write_database
+Args: {}
+2026-06-21 13:13:23.037 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_RESULT] null
+2026-06-21 13:35:16.293 [virtual-136] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_START] Tool: write_db
+Args: {}
+2026-06-21 13:35:16.294 [virtual-136] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_RESULT] null
+2026-06-21 13:35:16.361 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_START] Tool: write_database
+Args: {}
+2026-06-21 13:35:16.362 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_RESULT] null
+2026-06-21 13:38:44.194 [virtual-136] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_START] Tool: write_db
+Args: {}
+2026-06-21 13:38:44.195 [virtual-136] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_RESULT] null
+2026-06-21 13:38:44.235 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_START] Tool: write_database
+Args: {}
+2026-06-21 13:38:44.236 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_RESULT] null
+2026-06-21 13:40:44.988 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_START] Tool: write_db
+Args: {}
+2026-06-21 13:40:44.990 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_RESULT] null
+2026-06-21 13:40:45.041 [virtual-144] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_START] Tool: write_database
+Args: {}
+2026-06-21 13:40:45.042 [virtual-144] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_RESULT] null
+2026-06-21 13:44:28.946 [virtual-951] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [research_business_model] [REASONER_START] Analyzing step: Research Taptap by Vui Vietnam to understand their business model, product offerings, and market position in Southeast Asia.
+2026-06-21 13:44:44.462 [virtual-951] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [research_business_model] [TOOL_EXECUTION_START] Tool: tavily_research
+Args: {"input": "What is Taptap by Vui Vietnam? Explain their business model, product offerings, and market position in Southeast Asia.", "model": "pro"}
+2026-06-21 13:45:44.466 [virtual-951] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [research_business_model] [TOOL_EXECUTION_RESULT] {"status": "error", "message": "java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 60000ms in 'source(MonoDeferContextual)' (and no fallback has been configured)"}
+2026-06-21 13:45:44.466 [virtual-951] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [research_business_model] [REASONER_START] Analyzing step: Research Taptap by Vui Vietnam to understand their business model, product offerings, and market position in Southeast Asia.
+2026-06-21 13:45:45.941 [virtual-951] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [research_business_model] [TOOL_EXECUTION_START] Tool: tavily_search
+Args: {"query": "Taptap Vui Vietnam business model product offerings market position"}
+2026-06-21 13:45:47.617 [virtual-951] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [research_business_model] [TOOL_EXECUTION_RESULT] Detailed Results:
+
+Title: TAPTAP - VUI Vietnam Jobs and Careers 04/2026 - freeC Asia
+URL: https://freec.asia/company/taptap-vui-vietnam-fi10609
+Content: # TAPTAP - VUI Vietnam. ## Introduction TAPTAP - VUI Vietnam. Our coalition loyalty platform enables consumers to earn rewards conveniently and joyfully by interacting with the brands of their choices across nation-wide merchant network that today reaches 30% of the Vietnamese consumers. We aim to redefine the omni-channel shopping experience and set the standards on how brands should engage their customers by leveraging data to drive consumer insights, marketing efficiency and product personalization. TAPTAP is a trademark of VUI Vietnam, which is a Joint Venture company that is owned by Vietnam Investments Group (VIG) and United Overseas Bank Limited (UOB). VIG is a leading private equity firm in Vietnam with total funds under management of over USD 500 million and with stakes in over 35 brands in the market. UOB is a leading bank in Asia, headquartered in Singapore, with a global network of over 500 offices including Vietnam.
+
+Title: TAPTAP Vietnam - The Org
+URL: https://theorg.com/org/taptap
+Content: # TAPTAP Vietnam. TAPTAP offer a technology solution to help established businesses enhance their existing loyalty programs with access to a broad, diversified portfolio of brands and rewards. It's an application for accumulating VUI points, redeeming savings incentives of internal customers. ## Org chart. ## Teams. ### Engineering Team. ### Marketing and Strategy Team. ### Account Management. ### Compensation and Benefits. ### Data and Business Analysis. ### Engineering. ## Offices. ## Related companies.
+
+Title: TAPTAP Vietnam: Giải Pháp Loyalty & Sampling Marketing Toàn ...
+URL: https://taptap.com.vn
+Content: # TAPTAP Vietnam: Giải Pháp Loyalty & Sampling Marketing Toàn Diện. #### Giải pháp Loyalty toàn diện cho doanh nghiệp. TAPTAP tự hào là **hệ sinh thái khách hàng thn thiết** đồng hành cùng **400+ thương hiệu hàng đầu**. Gia nhập hệ sinh thái khách hàng thn thiết cùng các Thương hiệu toàn cầu. Giữ & gia tăng khách hàng qua các chiến lược Loyalty. Ứng dụng những công nghệ AI mới nhất để tối ưu trải nghiệm và hiệu suất trong việc giữ chn và gia tăng lượng khách hàng trung thành cho doanh nghiệp của bạn. Giải pháp chăm sóc khách hàng toàn diện (Loyalty platform)​. Kho game đa dạng, hấp dẫn thu hút khách hàng tương tác với các chương trình của thương hiệu và mang đến trải nghiệm độc đáo, tăng tỉ lệ chuyển đổi cho các mục tiêu marketing: Nhận diện thương hiệu, Chăm sóc khách hàng thn thiết.
+
+Title: TAPTAP - 2026 Company Profile, Team, Funding & Competitors
+URL: https://tracxn.com/d/companies/taptap/__FP0rcSPOx6xi0CtMxxdv4OS1yH7b8N0Gfy-qYHREFlU
+Content: # TAPTAP - Company Profile. ## TAPTAP - About the company. ### Company Details. ## TAPTAP's funding and investors. TAPTAP is a funded company. ## TAPTAP's founders and board of directors. ### TAPTAP's employee count trend. Employee count trend for TAPTAP. ## TAPTAP's Competitors and alternates. | Rank | Company Details | Short Description | Total Funding | Investors | Tracxn Score |. | 1st | Logo for Magicpin  Magicpin 2015, Gurugram  (India), Series D | Provider of a platform providing deals, discounts, and rewards across multiple categories | $106M | Lightspeed, Lightspeed Venture Partners  & 31 others | 80/100 |. | 3rd | Logo for LivingSocial  LivingSocial 2007, Washington, DC  (United States), Acquired | Online platform offering deals | $1.11B | IVP, Lightspeed Venture Partners  & 13 others | 70/100 |. | 69th | Logo for TAPTAP  TAPTAP 2019, Ho Chi Minh City  (Vietnam), Funding Raised | Provider of rewards based loyalty platform | - | Vietnam Investments Group | 42/100 |. ## TAPTAP's Investments and acquisitions.
+
+Title: What is Growth Strategy and Future Prospects of Taptap Send Company? – businessmodelcanvastemplate.com
+URL: https://businessmodelcanvastemplate.com/blogs/growth-strategy/taptap-send-growth-strategy
+Content: # What Are the Growth Strategy and Future Prospects of Taptap Send? ## How will Taptap Send scale its fee-free, mobile-first remittance model globally? Taptap Send burst onto the remittance scene by promising instant, zero-fee transfers to emerging markets, turning a social mission into a high-growth fintech play. Backed by over $80M in funding and a lean operational model, Taptap Send is positioning itself to displace legacy players while driving down global remittance costs. Explore its commercial blueprint in the Taptap Send Canvas Business Model. Strategic expansion into new corridors, productizing payouts and merchant rails, and tight cost control are core to capturing share from incumbents like Wise, Remitly, Sendwave, TransferGo, and Paysend, while optimizing UX to reduce cognitive load and accelerate top-of-funnel conversion. These expansion initiatives are a functional bridge between Taptap Send's current footprint and its value proposition as a low-cost, instant remittance platform; for context on the company's origins and evolution, see Brief History of Taptap Send.
+2026-06-21 13:45:47.619 [virtual-951] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [research_business_model] [REASONER_START] Analyzing step: Research Taptap by Vui Vietnam to understand their business model, product offerings, and market position in Southeast Asia.
+2026-06-21 13:45:51.447 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [REASONER_START] Analyzing step: Investigate the technical footprint of Taptap (website, job postings, LinkedIn, GitHub, or developer forums) to identify their actual tech stack (languages, frameworks, cloud providers, databases).
+2026-06-21 13:45:52.742 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [TOOL_EXECUTION_START] Tool: tavily_search
+Args: {"query": "Taptap Vui Vietnam engineering team tech stack job description"}
+2026-06-21 13:45:54.485 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [TOOL_EXECUTION_RESULT] Detailed Results:
+
+Title: nam đào - Technical Mobile Lead at VUI Vietnam - TAPTAP - LinkedIn
+URL: https://vn.linkedin.com/in/namdao1121
+Content: nam đào
+Technical Mobile Lead at VUI Vietnam - TAPTAP
+Vietnam
+219 connections, 231 followers
+
+
+About
+Experienced Engineer with a demonstrated history of working in the information technology…
+
+
+Experience
+Technical Lead Developer
+[VUI Vietnam - TAPTAP](https://vn.linkedin.com/company/taptapvn)  
+Sep 2020 - Present
+Ho Chi Minh City, Vietnam
+TAPTAP is a trademark of VUI Vietnam, which is a Joint Venture company that is owned by Vietnam Investments Group (VIG) and United Overseas Bank Limited (UOB).  VIG is a leading private equity firm in Vietnam with total funds under management of over USD 500 million and with stakes in over 35 brands in the market.My position is build structure and architect for mobile team to developer all platform android and iOS. After that I have building CI/CD to help developer build and deploy app easily.
+
+
+Education
+VNUHCM - University of Science
+N/A
+2011 - 2013
+None
+
+Title: Jobs at Taptap Send
+URL: https://www.itjobboard.co.uk/company/100893/taptap-send
+Content: Your role encompasses ownership of development processes, coding across the stack primarily in Python, and mentoring team members. Candidates should have 5+
+
+Title: Senior Engineer, Platform @ Taptap Send
+URL: https://jobs.ashbyhq.com/TaptapSend/9fe8d185-84ff-4a65-85e2-406cced5c769
+Content: Work with other engineering teams to assure optimal operation of Taptap ... Experience with hands-on software engineering as part of a larger team or project
+
+Title: TAPTAP - VUI Vietnam Jobs and Careers 04/2026 - freeC Asia
+URL: https://freec.asia/company/taptap-vui-vietnam-fi10609
+Content: # TAPTAP - VUI Vietnam. ## Introduction TAPTAP - VUI Vietnam. Our coalition loyalty platform enables consumers to earn rewards conveniently and joyfully by interacting with the brands of their choices across nation-wide merchant network that today reaches 30% of the Vietnamese consumers. We aim to redefine the omni-channel shopping experience and set the standards on how brands should engage their customers by leveraging data to drive consumer insights, marketing efficiency and product personalization. TAPTAP is a trademark of VUI Vietnam, which is a Joint Venture company that is owned by Vietnam Investments Group (VIG) and United Overseas Bank Limited (UOB). VIG is a leading private equity firm in Vietnam with total funds under management of over USD 500 million and with stakes in over 35 brands in the market. UOB is a leading bank in Asia, headquartered in Singapore, with a global network of over 500 offices including Vietnam.
+
+Title: TAPTAP - IT Jobs - ITviec
+URL: https://itviec.com/companies/taptap
+Content: Vietnam Best IT Companies 2026. Explore 28,340 Reviews of Top IT Companies. Top 30 Vietnam Best IT Companies in 2026, based on general company reviews from IT employees. *We are TAPTAP Vietnam – a Tech startup and a proud pioneer in building a comprehensive customer loyalty ecosystem, trusted by over 400 leading brands across diverse industries. Our mission is to deliver innovative, data-driven solutions that help businesses deepen customer relationships and accelerate growth.*. At TAPTAP, we empower brands to connect with customers across all channels through technology, creativity, and market insights.*. *At TAPTAP, we enable businesses of all sizes to better understand, engage, and retain their customers across both offline and online channels. We are committed to helping brands unlock the full potential of customer loyalty through the power of technology, creativity, and deep market insight*. Are you sure you want to stop following **TAPTAP**? #### Your feedback \*. #### Are you satisfied with ITviec? #### Want to post a job?
+2026-06-21 13:45:54.487 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [REASONER_START] Analyzing step: Investigate the technical footprint of Taptap (website, job postings, LinkedIn, GitHub, or developer forums) to identify their actual tech stack (languages, frameworks, cloud providers, databases).
+2026-06-21 13:45:56.343 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [TOOL_EXECUTION_START] Tool: tavily_search
+Args: {"query": "Taptap Vui Vietnam 'tech stack' OR 'engineering' OR 'frameworks' OR 'cloud' site:itviec.com OR site:linkedin.com"}
+2026-06-21 13:45:57.512 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [TOOL_EXECUTION_RESULT] Detailed Results:
+
+Title: TAPTAP Vietnam | LinkedIn
+URL: https://vn.linkedin.com/company/taptapvn
+Content: Overview:
+TAPTAP is a trademark of VUI Vietnam! TAPTAP is Vietnam’s #1 Engagement & Loyalty platform with 3.5M users and 4,500+ partner stores across 15 industries. TAPTAP’s innovative reward platform maximizes customers’ benefits when they engage with their favorite brands. Simultaneously, we enable businesses of all sizes to better understand and engage with their valuable customers across offline and online channels while streamlining and digitalizing their operations Our shareholders include Vietnam Investments Group (VIG) and United Overseas Bank Limited (UOB). VIG is a leading private equity firm in Vietnam with total funds under management of over USD 600 million and with stakes in over 35 brands in the market. UOB is a leading bank in Asia, headquartered in Singapore, with a global network of over 500 offices including Vietnam.
+
+Website: https://taptap.com.vn/
+Crunchbase Url: N/A
+Linkedin Url: N/A
+
+Industry:
+Technology, Information and Internet
+
+Company size:
+51-200 employees
+57 associated members (LinkedIn members who’ve listed TAPTAP Vietnam as their current workplace on their profile)
+
+Founded:
+2019
+
+Funding:
+Last Round Date: N/A
+Last Round Type: N/A
+Total Rounds: N/A
+Last Round Raised: N/A
+
+Investors:
+N/A
+
+Title: nam đào - Technical Mobile Lead at VUI Vietnam - TAPTAP - LinkedIn
+URL: https://vn.linkedin.com/in/namdao1121
+Content: nam đào
+Technical Mobile Lead at VUI Vietnam - TAPTAP
+Vietnam
+219 connections, 231 followers
+
+
+About
+Experienced Engineer with a demonstrated history of working in the information technology…
+
+
+Experience
+Technical Lead Developer
+[VUI Vietnam - TAPTAP](https://vn.linkedin.com/company/taptapvn)  
+Sep 2020 - Present
+Ho Chi Minh City, Vietnam
+TAPTAP is a trademark of VUI Vietnam, which is a Joint Venture company that is owned by Vietnam Investments Group (VIG) and United Overseas Bank Limited (UOB).  VIG is a leading private equity firm in Vietnam with total funds under management of over USD 500 million and with stakes in over 35 brands in the market.My position is build structure and architect for mobile team to developer all platform android and iOS. After that I have building CI/CD to help developer build and deploy app easily.
+
+
+Education
+VNUHCM - University of Science
+N/A
+2011 - 2013
+None
+
+Title: Middle / Senior DevOps Engineer - TAPTAP Vietnam - LinkedIn
+URL: https://vn.linkedin.com/jobs/view/middle-senior-devops-engineer-at-taptap-vietnam-3499758197
+Content: ABOUT TAPTAP - by VUI Vietnam. TAPTAP is Vietnam's #1 Engagement & Loyalty platform with 3M users and 3,000+ partner stores across 15 industries.
+
+Title: TAPTAP Vietnam hiring Engineer, DevOps cum Data Engineer ...
+URL: https://vn.linkedin.com/jobs/view/engineer-devops-cum-data-engineer-service-contract-at-taptap-vietnam-4288186782
+Content: We are VUI Vietnam – a Tech startup and a proud pioneer in building a comprehensive customer loyalty ecosystem, trusted by over 400 leading brands across
+
+Title: TAPTAP Vietnam - The Org
+URL: https://theorg.com/org/taptap
+Content: # TAPTAP Vietnam. TAPTAP offer a technology solution to help established businesses enhance their existing loyalty programs with access to a broad, diversified portfolio of brands and rewards. It's an application for accumulating VUI points, redeeming savings incentives of internal customers. ## Org chart. ## Teams. ### Engineering Team. ### Marketing and Strategy Team. ### Account Management. ### Compensation and Benefits. ### Data and Business Analysis. ### Engineering. ## Offices. ## Related companies.
+2026-06-21 13:45:57.513 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [REASONER_START] Analyzing step: Investigate the technical footprint of Taptap (website, job postings, LinkedIn, GitHub, or developer forums) to identify their actual tech stack (languages, frameworks, cloud providers, databases).
+2026-06-21 13:45:58.915 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [TOOL_EXECUTION_START] Tool: puppeteer_navigate
+Args: {"url": "https://taptap.com.vn/"}
+2026-06-21 13:45:58.948 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [TOOL_EXECUTION_RESULT] {"status": "error", "message": "MCP error -32603: Could not find Chrome (ver. 131.0.6778.204). This can occur if either
+ 1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+ 2. your cache path is incorrectly configured (which is: /home/pptruser/.cache/puppeteer).
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration."}
+2026-06-21 13:45:58.949 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [REASONER_START] Analyzing step: Investigate the technical footprint of Taptap (website, job postings, LinkedIn, GitHub, or developer forums) to identify their actual tech stack (languages, frameworks, cloud providers, databases).
+2026-06-21 13:46:00.711 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [TOOL_EXECUTION_START] Tool: tavily_search
+Args: {"query": "'Taptap Vietnam' 'tech stack' OR 'technologies' OR 'AWS' OR 'React' OR 'Node.js' OR 'Kubernetes' OR 'Golang'"}
+2026-06-21 13:46:04.177 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [TOOL_EXECUTION_RESULT] Detailed Results:
+
+Title: Web3 Full-Stack Developer (React Native + Golang/Rust & Node.js) $81k - $84k in Ho Chi Minh City at WeRate
+URL: https://web3.career/full-stack-developer-react-native-golang-rust-node-js-werate/99607
+Content: # WeRate is hiring a Web3 Full-Stack Developer (React Native + Golang/Rust & Node.js). Location: Ho Chi Minh City, Vietnam. As we scale towards mass adoption and prepare for our next funding round, we’re looking. for top-tier developers to shape the future of decentralized reputation systems. We are seeking a Full-Stack Developer with strong React Native expertise and backend. experience in Node.js and Golang (or Rust) microservices. Golang-based microservices architecture, deployed on AWS. This role involves working on both frontend and backend development, contributing to Web3. integrations, Solana programs (smart contracts), and decentralized infrastructure. * Develop and maintain the mobile application, ensuring high performance and seamless. * Implement Web3 interactions and integrate blockchain wallets (e.g., Solana Wallet,. * Drizzle ORM) to Golang microservices. * Develop scalable and secure backend services using Golang. * Work on Solana programs (Rust) for reputation tracking, rewards, and NFTs. * Work across Golang, Rust (Solana), and TypeScript for different system components. ✅ Experience with React Native (TypeScript, performance optimization, mobile UI/UX best. ✅ Expertise with Golang (or Rust) for backend microservices. ✅ Backend experience in Node.js (Fastify, TypeScript, PostgreSQL, Drizzle ORM. ✅ Knowledge of microservices architecture, RESTful API design, and system scalability. ✅ Understanding of blockchain/Web3 fundamentals, including smart contract interactions. ✅ Experience with Solana (Rust/Anchor) programs or willingness to learn. 🔹 Familiarity with Solana program development (Rust, Anchor framework). Work on cutting-edge Web3 and decentralized technologies. Be part of a highly skilled team transitioning to a scalable Golang microservices. Contribute to a crypto-native ecosystem and Solana-based reputation systems. Direct impact on product and company direction during our scaling and funding phase. If you are passionate about scalability, Web3, and decentralized. Location: Ho Chi Minh City, Vietnam. javascript dev full stack golang node react native mobile react rust aws blockchain crypto docker kubernetes solana typescript. Ho Chi Minh City, Vietnam. ## Web3 Golang Developer Salary. The average yearly salary for a Web3 Golang Developer is $160k per year, with a minimum base salary of $85k and a maximum of $250k. Check more information about Web3 Golang Developer Salary. ## Web3 Golang Developer Jobs. ## Recommended Web3 Golang Developers for this job.
+
+Title: Tran Hoang Vu - Senior AI & Blockchain Full Stack Web & Mobile Developer | JavaScript, TypeScript, React, Next, Node, Python, Golang, Swift, AWS - Itransition Group
+URL: https://www.linkedin.com/in/tran-hoang-vu-a93394317
+Content: Tran Hoang Vu
+Senior AI & Blockchain Full Stack Web & Mobile Developer | JavaScript, TypeScript, React, Next, Node, Python, Golang, Swift, AWS
+Da Nang City, Vietnam
+500 connections, 665 followers
+
+
+About
+Experienced Blockchain Full Stack Developer with a strong technical background in Golang, React, and C++. Adept at developing and maintaining scalable, high-performance web applications and decentralized applications (dApps). Proficient in modern frontend and backend technologies, including TypeScript, Next.js, Node.js, and microservices architecture. Extensive experience with blockchain technologies such as Ethereum, Polygon, Solana, and Binance Smart Chain, including smart contract development using Solidity. Strong understanding of SQL and NoSQL databases, containerization with Docker and Kubernetes, and DevOps practices including CI/CD pipelines and AWS cloud services. Committed to continuous learning and staying updated with the latest industry trends and best practices. ********** Skills ********** • Frontend Development – JavaScript, TypeScript, React/React Native, Next.js, Vue.js, Tailwind, MUI • Backend Development with microservices or serverless architecture– Node.js, Golang, Nest.js, Python • Blockchain Technologies: Ethereum, Polygon, Solana, Binance Smart Chain, ImmutableX, Smart Contracts, Solidity, Web3.js, Truffle, Hardhat • API and messaging - Restful API, GraphQL, Apache Kafka, Amazon SQS/SNS • Databases (SQL/NoSQL) - PostgreSQL, MySQL, MongoDB, AWS DynamoDB, Redis • Virtualization, containerization with Docker, Kubernetes • SDLC - Agile, Scrum, TDD and BDD • DevOps engineering with AWS, Terraform • CI/CD pipeline with Github actions, AWS ECS/EKS, Jenkins • Unit testing – Mocha, Chai, Jest, Jasmine, Karma • Version Control with Git, SVN and Ticket management with Jira, Trello
+
+
+Experience
+Blockchain & AI Full Stack Developer
+[Itransition Group](https://www.linkedin.com/company/itransition)  
+Apr 2021 - Jul 2024
+N/A
+
+
+
+Education
+University of Mount Saint Vincent
+N/A
+N/A - Present
+None
+
+Title: Full-Stack Developer - React, Java, TypeScript, Golang, Node.js on www.freelancermap.com
+URL: https://www.freelancermap.com/project/full-stack-developer-react-java-typescript-golang-node-js
+Content: Title: Full-Stack Developer - React, Java, TypeScript, Golang, Node.js on www.freelancermap.com
+## Change availability. # Full-Stack Developer - React, Java, TypeScript, Golang, Node.js. Not Specified,  SpainOn-siteFreelanceMay or June 202612months + with potential for longer term. ## Share project. Share this project with others via email. ## Report project. After submitting, you will receive a confirmation email. We will review your information and take action if necessary. Java (Programming Language)Application Programming Interfaces (APIs)Artificial IntelligenceAmazon Web ServicesUnit TestingDevOpsDigital ArchitectureElasticsearchExperimentationSalesGithubGoogle AnalyticsMariaDBNode.JsScrum MethodologySalesforce.ComSecure CodingSystems IntegrationTypeScriptWeb AnalyticsReactJSKubernetesFull Stack DevelopmentDockerGolang. ## Description. My Client an Enterprise level customer in Finland is looking for a Full Stack Developer with React, TypeScript, Golang, Node.js experience. The team is focusing in implementing world class webstore and selfservice portal for their corporate customers. Focus depending on the team either in bringing new services and products into assisted and unassisted sales channels, and improving customer and user experiences. * Full-stack development and DevOps responsibilities over website and self-service portals. * Coach and support "juniors" in the team. * Proven experience as a Full Stack Developer. * A proactive, solution-driven Mindset with eagerness to learn and get things done. * Solid experience with the core tech stack: **React, TypeScript, Java, Golang, Node.js, MariaDB, Elasticsearch, Docker, Kubernetes, AWS/GCP, GitHub Actions**. * Practical experience using AI tools in development (eg, GitHub Copilot). * Quality-driven engineering approach: writing unit tests, secure coding practices, performance awareness, etc. * Experience building customer-facing user interfaces. * Familiarity with TM Forum Open Digital Architecture. * Experience working with public and/or private cloud environments. * Interest in experimentation and Validating new ideas in practice. * Solid understanding of Agile/Scrum (Scrum Master experience is a plus). * Experience Integrating with Salesforce APIs. * Understanding of web analytics tools (eg, GA4). * 100% Remote work possible but candidates must be based and live in Poland, Spain, Portugal, Lithuania, Romania or Croatia. * Start: 2 start dates are possible in May or June and this is an ongoing project for 12 months + with potential to go on for the longer term. ## Application form.
+
+Title: Top 14 Golang Development Companies of 2026: Best Go Experts
+URL: https://azumo.com/guides/golang-development-companies
+Content: Top Golang Companies of 2026: Complete Guide to the Best Go Development Partners. ## Top 14 Golang Development Companies of 2026: Best Go Experts. Explore the top Golang development companies of 2026. Compare Go experts, services, and leading companies using Golang for scalable software. * Top 10 Python Development Companies of 2026 | Expert Guide. * Top 10 Software Companies for the Austin Market: 2026 Edition. * Top 11 Software Development Companies for the Dallas Market (2026). * Top 10 Software Development Companies for the New York Market (2025). * Top 7 Nearshore Software Development Companies in 2026. * Top AI Development Companies in the US: 2026. With 5.8 million developers worldwide, Golang has become a key language for high-performance, scalable systems in 2026. This guide highlights the top Golang development companies of 2026, focusing on their expertise, specializations, pricing models, and client feedback. ## **Why Golang Development Companies Are in High Demand in 2026**. ## **Top 14 Golang Development Companies of 2026**.
+
+Title: Full-Stack Developer (React Native + Golang/Rust & Node.js) @ WeRate | Solana Network Opportunities Job Board
+URL: https://jobs.solana.com/companies/werate/jobs/48123605-full-stack-developer-react-native-golang-rust-node-js
+Content: Title: Full-Stack Developer (React Native + Golang/Rust & Node.js) @ WeRate | Solana Network Opportunities Job Board
+## Full-Stack Developer (React Native + Golang/Rust & Node.js). See open jobs at WeRate.See open jobs similar to "Full-Stack Developer (React Native + Golang/Rust & Node.js)" Solana Network Opportunities.). Interested in shaping the future of decentralized reputation and trust? (Bonus points for links to open-source contributions or Web3 projects.). for top-tier developers to shape the future of decentralized reputation systems. WeRate is backed by the Solana Foundation. We are seeking a Full-Stack Developer with strong React Native expertise and backend. experience in Node.js and Golang (or Rust) microservices. Golang-based microservices architecture, deployed on AWS. This role involves working on both frontend and backend development, contributing to Web3. integrations, Solana programs (smart contracts), and decentralized infrastructure. * Develop and maintain the mobile application, ensuring high performance and seamless. * Implement Web3 interactions and integrate blockchain wallets (e.g., Solana Wallet,. * Support and contribute to the migration from Node.js (Fastify, TypeScript, PostgreSQL,. * Drizzle ORM) to Golang microservices. * Develop scalable and secure backend services using Golang. * Work with Docker and containerization (Kubernetes experience is a plus). * Work on Solana programs (Rust) for reputation tracking, rewards, and NFTs. * Work across Golang, Rust (Solana), and TypeScript for different system components. ✅ Experience with React Native (TypeScript, performance optimization, mobile UI/UX best. ✅ Expertise with Golang (or Rust) for backend microservices. ✅ Backend experience in Node.js (Fastify, TypeScript, PostgreSQL, Drizzle ORM. ✅ Knowledge of microservices architecture, RESTful API design, and system scalability. ✅ Understanding of blockchain/Web3 fundamentals, including smart contract interactions. ✅ Experience with Solana (Rust/Anchor) programs or willingness to learn. 🔹 Familiarity with Solana program development (Rust, Anchor framework). 🔹 Contributions to open-source crypto projects. 🔹 DevOps experience, including GitHub Actions, CI/CD pipelines, Kubernetes, and. Work on cutting-edge Web3 and decentralized technologies. Be part of a highly skilled team transitioning to a scalable Golang microservices. Contribute to a crypto-native ecosystem and Solana-based reputation systems. If you are passionate about scalability, Web3, and decentralized. See open jobs at WeRate.See open jobs similar to "Full-Stack Developer (React Native + Golang/Rust & Node.js)" Solana Network Opportunities.). Click here to add your company or job posting to the Solana job board.
+2026-06-21 13:46:04.191 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [REASONER_START] Analyzing step: Investigate the technical footprint of Taptap (website, job postings, LinkedIn, GitHub, or developer forums) to identify their actual tech stack (languages, frameworks, cloud providers, databases).
+2026-06-21 13:46:05.691 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [TOOL_EXECUTION_START] Tool: tavily_search
+Args: {"query": "Taptap Vietnam engineering team mobile development stack"}
+2026-06-21 13:46:06.905 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [TOOL_EXECUTION_RESULT] Detailed Results:
+
+Title: nam đào - Technical Mobile Lead at VUI Vietnam - TAPTAP - LinkedIn
+URL: https://vn.linkedin.com/in/namdao1121
+Content: nam đào
+Technical Mobile Lead at VUI Vietnam - TAPTAP
+Vietnam
+219 connections, 231 followers
+
+
+About
+Experienced Engineer with a demonstrated history of working in the information technology…
+
+
+Experience
+Technical Lead Developer
+[VUI Vietnam - TAPTAP](https://vn.linkedin.com/company/taptapvn)  
+Sep 2020 - Present
+Ho Chi Minh City, Vietnam
+TAPTAP is a trademark of VUI Vietnam, which is a Joint Venture company that is owned by Vietnam Investments Group (VIG) and United Overseas Bank Limited (UOB).  VIG is a leading private equity firm in Vietnam with total funds under management of over USD 500 million and with stakes in over 35 brands in the market.My position is build structure and architect for mobile team to developer all platform android and iOS. After that I have building CI/CD to help developer build and deploy app easily.
+
+
+Education
+VNUHCM - University of Science
+N/A
+2011 - 2013
+None
+
+Title: Taptap Send Tech Stack - Himalayas
+URL: https://himalayas.app/companies/taptap-send/tech-stack
+Content: Tech stack at Taptap Send. Learn about the 18 tools and technologies that Taptap Send uses to build, market, and sell its products.
+
+Title: Web Application Development Company in Vietnam: Top 20 Trusted
+URL: https://topon.tech/en/web-application-development-company-in-vietnam
+Content: Key Services: Mobile & web application development, full-stack custom software, Agile/Scrum project management, maintenance, and offshore dedicated teams.
+
+Title: Top Mobile App Development Companies in Vietnam 2024
+URL: https://kvytechnology.com/blog/software/top-mobile-app-development-companies-in-vietnam
+Content: Top Mobile App Development Companies in Vietnam: Leading Innovators You Need to Know. Vietnam has become a hotspot for mobile app creation.
+
+Title: Top 10 Mobile App Developers in Vietnam - Kyanon Digital
+URL: https://kyanon.digital/blog/top-10-mobile-app-developers-in-vietnam
+Content: Based on the Vietnam Top 100 Mobile App Developers list from The Manifest, they will introduce you to top 10 mobile app developers in Vietnam.
+2026-06-21 13:46:06.907 [virtual-1035] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [investigate_tech_stack] [REASONER_START] Analyzing step: Investigate the technical footprint of Taptap (website, job postings, LinkedIn, GitHub, or developer forums) to identify their actual tech stack (languages, frameworks, cloud providers, databases).
+2026-06-21 13:46:10.519 [virtual-1054] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [analyze_jd_reality] [REASONER_START] Analyzing step: Analyze the provided Job Description against the discovered business model and tech stack to identify potential 'hidden' tasks and the level of engineering depth.
+2026-06-21 13:46:12.891 [virtual-1058] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [calculate_alignment] [REASONER_START] Analyzing step: Evaluate the alignment between the identified role/tech stack and the user's goal of becoming a Senior Backend Engineer for high-scale distributed systems.
+2026-06-21 13:46:14.056 [virtual-1059] INFO  ReasoningTrace - [a4eddabb-40bd-4405-87a5-68bf8d45acfc] [generate_final_report] [REASONER_START] Analyzing step: Synthesize all findings into the requested structured report format: Business Model Taxonomy, JD Translation Matrix, Career Alignment Score, BS Meter, and Interview Weapons.
+2026-06-21 13:47:02.137 [virtual-136] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_START] Tool: write_db
+Args: {}
+2026-06-21 13:47:02.139 [virtual-136] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_RESULT] null
+2026-06-21 13:47:02.223 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_START] Tool: write_database
+Args: {}
+2026-06-21 13:47:02.224 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_RESULT] null
+2026-06-21 14:12:35.722 [virtual-120] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_START] Tool: write_db
+Args: {}
+2026-06-21 14:12:35.724 [virtual-120] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_RESULT] null
+2026-06-21 14:12:35.806 [virtual-124] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_START] Tool: write_database
+Args: {}
+2026-06-21 14:12:35.815 [virtual-124] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_RESULT] null
+2026-06-21 14:14:06.424 [virtual-136] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_START] Tool: write_db
+Args: {}
+2026-06-21 14:14:06.427 [virtual-136] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_RESULT] null
+2026-06-21 14:14:06.513 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_START] Tool: write_database
+Args: {}
+2026-06-21 14:14:06.514 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_RESULT] null
+2026-06-21 14:16:42.885 [virtual-136] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_START] Tool: write_db
+Args: {}
+2026-06-21 14:16:42.885 [virtual-136] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_RESULT] null
+2026-06-21 14:16:42.936 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_START] Tool: write_database
+Args: {}
+2026-06-21 14:16:42.937 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_RESULT] null
+2026-06-21 14:35:01.104 [virtual-136] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_START] Tool: write_db
+Args: {}
+2026-06-21 14:35:01.106 [virtual-136] INFO  ReasoningTrace - [thread-1] [step-A] [TOOL_EXECUTION_RESULT] null
+2026-06-21 14:35:01.147 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_START] Tool: write_database
+Args: {}
+2026-06-21 14:35:01.148 [virtual-140] INFO  ReasoningTrace - [thread-1] [step-1] [TOOL_EXECUTION_RESULT] null

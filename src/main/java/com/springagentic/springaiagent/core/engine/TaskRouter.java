@@ -12,10 +12,12 @@ public class TaskRouter {
     private static final Logger log = LoggerFactory.getLogger(TaskRouter.class);
     private final LlmProvider llmProvider;
     private final ExecutionEngine executionEngine;
+    private final com.springagentic.springaiagent.core.spi.MemoryStore memoryStore;
 
-    public TaskRouter(LlmProvider llmProvider, ExecutionEngine executionEngine) {
+    public TaskRouter(LlmProvider llmProvider, ExecutionEngine executionEngine, com.springagentic.springaiagent.core.spi.MemoryStore memoryStore) {
         this.llmProvider = llmProvider;
         this.executionEngine = executionEngine;
+        this.memoryStore = memoryStore;
     }
 
     public AgentContext routeAndExecute(String threadId, String userGoal, AgentDefinition agentDef) {
@@ -61,6 +63,7 @@ public class TaskRouter {
             String result = llmProvider.structuredRequest(agentDef.systemPrompt(), userGoal, String.class);
             AgentContext context = new AgentContext(threadId, userGoal);
             context.terminate("SUCCESS", result);
+            memoryStore.saveRun(context);
             return context;
         } else {
             log.info("ROUTER: Booting up Execution Engine for complex task based on routed category [{}]...", route);

@@ -59,7 +59,7 @@ public class EngineConfig {
 
     // 4. Create the Task Router (The Front Door)
     @Bean
-    public TaskRouter taskRouter(LlmProvider llmProvider, ExecutionEngine executionEngine) {
-        return new TaskRouter(llmProvider, executionEngine);
+    public TaskRouter taskRouter(LlmProvider llmProvider, ExecutionEngine executionEngine, MemoryStore memoryStore) {
+        return new TaskRouter(llmProvider, executionEngine, memoryStore);
     }
 }

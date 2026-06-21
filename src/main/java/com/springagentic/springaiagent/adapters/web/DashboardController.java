@@ -83,6 +83,14 @@ public class DashboardController {
     public String getDashboard(Model model) {
         List<AgentRunEntity> runs = agentRunRepository.findAll(Sort.by(Sort.Direction.DESC, "updatedAt"));
         model.addAttribute("runs", runs);
+
+        Map<String, AgentEvaluationEntity> evaluations = new HashMap<>();
+        for (AgentRunEntity run : runs) {
+            agentEvaluationRepository.findFirstByRunIdOrderByCreatedAtDesc(run.getRunId())
+                    .ifPresent(eval -> evaluations.put(run.getRunId(), eval));
+        }
+        model.addAttribute("evaluations", evaluations);
+
         return "dashboard";
     }
 
@@ -91,33 +99,43 @@ public class DashboardController {
                             @RequestParam(value = "threadId", required = false) String threadIdOpt,
                             Model model) {
         String threadId = (threadIdOpt != null && !threadIdOpt.trim().isEmpty()) ? threadIdOpt.trim() : UUID.randomUUID().toString();
-        String runId = UUID.randomUUID().toString();
 
-        log.info("Dashboard: Starting asynchronous task for Thread: {}, Run: {}", threadId, runId);
+        log.info("Dashboard: Starting asynchronous task for Thread: {}", threadId);
 
-        // Pre-create the AgentContext entity in the database so it's visible in the UI immediately
-        AgentContext context = new AgentContext(threadId, prompt);
-        // Use reflection or private field writing if needed, but AgentContext has a constructor that generates a random runId,
-        // let's look at the fields we can write.
-        // We can save the run details
-        memoryStore.saveRun(context);
-
-        // Run the agent synchronously in a background thread to prevent UI freezing
-        CompletableFuture.runAsync(() -> {
+        // Run the agent in a background thread — the engine will create and persist its own AgentContext
+        CompletableFuture.runAsync(io.opentelemetry.context.Context.current().wrap(() -> {
             try {
                 taskRouter.routeAndExecute(threadId, prompt, getDummyAgent());
             } catch (Exception e) {
                 log.error("Dashboard: Error running agent task", e);
             }
-        });
+        }));
 
-        // Retrieve the saved entity
-        AgentRunEntity runEntity = agentRunRepository.findById(context.getRunId()).orElse(null);
-        if (runEntity == null) {
-            runEntity = new AgentRunEntity(context.getRunId(), threadId, prompt, "RUNNING", "");
+        // Return a pending placeholder card that self-polls until the real run appears in the DB
+        model.addAttribute("threadId", threadId);
+        model.addAttribute("prompt", prompt);
+        return "fragments :: pending-task-row";
+    }
+
+    @GetMapping("/tasks/pending/{threadId}")
+    public String getPendingTaskRow(@PathVariable("threadId") String threadId,
+                                    @RequestParam("prompt") String prompt,
+                                    Model model,
+                                    jakarta.servlet.http.HttpServletResponse response) {
+        // Look for the latest real run for this thread
+        List<AgentRunEntity> runs = agentRunRepository.findByThreadId(threadId);
+        if (!runs.isEmpty()) {
+            // Return the real task-row, replacing the pending placeholder
+            AgentRunEntity latestRun = runs.get(runs.size() - 1);
+            model.addAttribute("run", latestRun);
+            agentEvaluationRepository.findFirstByRunIdOrderByCreatedAtDesc(latestRun.getRunId())
+                    .ifPresent(eval -> model.addAttribute("eval", eval));
+            return "fragments :: task-row";
         }
-        model.addAttribute("run", runEntity);
-        return "fragments :: task-row";
+        // No real run yet — re-render the pending placeholder (keeps polling)
+        model.addAttribute("threadId", threadId);
+        model.addAttribute("prompt", prompt);
+        return "fragments :: pending-task-row";
     }
 
     @GetMapping("/tasks/{runId}/row")
@@ -128,6 +146,8 @@ public class DashboardController {
             return null;
         }
         model.addAttribute("run", run);
+        agentEvaluationRepository.findFirstByRunIdOrderByCreatedAtDesc(runId)
+                .ifPresent(eval -> model.addAttribute("eval", eval));
         return "fragments :: task-row";
     }
 
@@ -145,7 +165,7 @@ public class DashboardController {
             model.addAttribute("context", contextOpt.get());
         }
 
-        Optional<AgentEvaluationEntity> evalOpt = agentEvaluationRepository.findByRunId(runId);
+        Optional<AgentEvaluationEntity> evalOpt = agentEvaluationRepository.findFirstByRunIdOrderByCreatedAtDesc(runId);
         if (evalOpt.isPresent()) {
             model.addAttribute("evaluation", evalOpt.get());
         }
@@ -173,13 +193,13 @@ public class DashboardController {
         memoryStore.saveRun(context);
 
         // Resume in background thread
-        CompletableFuture.runAsync(() -> {
+        CompletableFuture.runAsync(io.opentelemetry.context.Context.current().wrap(() -> {
             try {
                 executionEngine.resumeComplexTask(context, getDummyAgent());
             } catch (Exception e) {
                 log.error("Dashboard: Error resuming task", e);
             }
-        });
+        }));
 
         AgentRunEntity run = agentRunRepository.findById(runId).orElse(null);
         model.addAttribute("run", run);

@@ -26,7 +26,8 @@ services:
       - DOCKER_HOST=unix:///var/run/docker.sock
       - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY}
       - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY}
-      - LANGFUSE_HOST=${LANGFUSE_HOST:-https://us.cloud.langfuse.com}
+      - LANGFUSE_HOST=${LANGFUSE_HOST}
+      - LANGFUSE_BASE_URL=${LANGFUSE_BASE_URL}
       - OTEL_SDK_DISABLED=${OTEL_SDK_DISABLED:-false}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -96,7 +97,9 @@ services:
     restart: unless-stopped
 
   mcp-puppeteer:
-    image: ghcr.io/puppeteer/puppeteer:latest
+    build:
+      context: ./mcp-puppeteer
+      dockerfile: Dockerfile
     container_name: mcp-puppeteer
     command: npx -y mcp-proxy --debug --shell --port 8083 -- npx -y @modelcontextprotocol/server-puppeteer
     ports:
@@ -135,7 +138,7 @@ services:
     restart: unless-stopped
 
   grafana:
-    image: grafana/grafana:10.4.2
+    image: grafana/grafana:11.1.0
     container_name: grafana
     ports:
       - "3005:3000"

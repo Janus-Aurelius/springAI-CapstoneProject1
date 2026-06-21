@@ -4,13 +4,45 @@
     <meta charset="UTF-8">
 </head>
 <body>
+    <!-- Pending Task Row Fragment (self-polling placeholder until real run exists) -->
+    <div th:fragment="pending-task-row"
+         th:id="'pending-task-row-' + ${threadId}"
+         th:attr="hx-get=@{/dashboard/tasks/pending/{tid}(tid=${threadId}, prompt=${prompt})}"
+         hx-trigger="every 2s"
+         hx-swap="outerHTML"
+         class="group p-4 rounded-xl border border-indigo-500/40 bg-indigo-500/5 hover:bg-indigo-500/10 cursor-pointer transition-all duration-200 flex flex-col gap-2 relative overflow-hidden animate-pulse">
+
+        <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl -mr-6 -mt-6"></div>
+
+        <div class="flex items-start justify-between gap-3 z-10">
+            <div class="flex flex-col min-w-0">
+                <span class="text-xs font-mono font-semibold text-slate-400">Initializing...</span>
+                <span class="text-xs text-slate-500 font-mono mt-0.5" th:text="'Thread: ' + ${#strings.abbreviate(threadId, 12)}">thread-id</span>
+            </div>
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
+                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-ping"></span>
+                STARTING
+            </span>
+        </div>
+
+        <p class="text-sm text-slate-300 font-medium line-clamp-2 mt-1 z-10" th:text="${prompt}">
+            Goal prompt snippet goes here...
+        </p>
+
+        <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1 pt-2 border-t border-slate-800/40 z-10">
+            <span>$0.00</span>
+            <span>Waiting for engine...</span>
+        </div>
+    </div>
 
     <!-- Task Row Fragment -->
-    <div th:fragment="task-row(run)"
+    <div th:fragment="task-row(run, eval)"
          th:id="'task-row-' + ${run.runId}"
          th:attr="hx-get=@{/dashboard/tasks/{id}(id=${run.runId})}, hx-trigger='click', hx-target='#task-details-pane'"
          th:classappend="${run.status == 'RUNNING' ? 'border-indigo-500/40 bg-indigo-500/5 hover:bg-indigo-500/10' : 
                           run.status == 'AWAITING_APPROVAL' ? 'border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10' : 
+                          (eval != null && eval.isGoalMet()) ? 'border-emerald-500/40 bg-emerald-500/5 hover:bg-emerald-500/10' : 
+                          (eval != null && !eval.isGoalMet()) ? 'border-rose-500/40 bg-rose-500/5 hover:bg-rose-500/10' :
                           run.status == 'SUCCESS' ? 'border-emerald-500/40 bg-emerald-500/5 hover:bg-emerald-500/10' : 
                           'border-slate-800 bg-slate-900/20 hover:bg-slate-900/40'}"
          class="group p-4 rounded-xl border hover:border-slate-700 cursor-pointer transition-all hover:translate-x-1 duration-200 flex flex-col gap-2 relative overflow-hidden">
@@ -42,10 +74,16 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
                 PENDING HUMAN
             </span>
-            <span th:if="${run.status == 'SUCCESS'}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            <span th:if="${run.status != 'RUNNING' && run.status != 'AWAITING_APPROVAL' && eval != null && eval.isGoalMet()}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                 SUCCESS
             </span>
-            <span th:if="${run.status != 'RUNNING' && run.status != 'AWAITING_APPROVAL' && run.status != 'SUCCESS'}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30" th:text="${run.status}">
+            <span th:if="${run.status != 'RUNNING' && run.status != 'AWAITING_APPROVAL' && eval != null && !eval.isGoalMet()}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30">
+                FAILED (ALIGNMENT)
+            </span>
+            <span th:if="${run.status != 'RUNNING' && run.status != 'AWAITING_APPROVAL' && eval == null && run.status == 'SUCCESS'}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                SUCCESS
+            </span>
+            <span th:if="${run.status != 'RUNNING' && run.status != 'AWAITING_APPROVAL' && eval == null && run.status != 'SUCCESS'}" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30" th:text="${run.status}">
                 TERMINATED
             </span>
         </div>
