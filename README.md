@@ -1,8 +1,5 @@
 # Spring Boot Agentic Orchestrator
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/Janus-Aurelius/springAI-CapstoneProject1/ci.yml?branch=main)](https://github.com/Janus-Aurelius/springAI-CapstoneProject1/actions)
-[![Test Coverage](https://img.shields.io/codecov/c/github/Janus-Aurelius/springAI-CapstoneProject1)](https://codecov.io)
-[![Spring Boot Version](https://img.shields.io/badge/Spring%20Boot-4.0.6-brightgreen)](https://spring.io/projects/spring-boot)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
@@ -74,14 +71,59 @@ flowchart TD
 
 ## 3. Core Domain & Features
 
-*   **Dynamic Task Routing**: Inspects incoming goals and classifies them as `SIMPLE` (serviced directly via the LLM) or `COMPLEX` (delegated to the execution engine) to optimize resource consumption.
-*   **Parallel Step Execution**: Generates multi-step execution plans modeled as dependency graphs (DAGs) and concurrently executes runnable steps using a virtual thread-per-task executor.
-*   **Transactional Rollback (Memento Pattern)**: Retains in-memory snapshots of the agent's context. A soft execution failure triggers a database-backed state rollback and a cognitive replan to bypass errors.
-*   **Model Context Protocol (MCP) Client**: Dynamically queries and interacts with standalone MCP servers hosting PostgreSQL connectors, GitHub integrations, Puppeteer browsers, and Tavily search engines.
-*   **Human-in-the-Loop (HITL) Gates**: Automatically suspends execution state (`AWAITING_APPROVAL`) when a tool flagged as mutating or high-risk is triggered, enabling users to approve, reject, or provide feedback/modified arguments.
-*   **Data Loss Prevention (DLP)**: Features a central interceptor proxy (`SecretRedactor`) that validates tool inputs and blocks execution before credentials, secrets, or api keys leak downstream.
-*   **Secure Code Sandboxing**: Evaluates scripts and network actions inside temporary, isolated Docker containers governed by custom Squid proxy configuration to prevent server compromise.
-*   **Live Metrics & OpenTelemetry**: Instruments execution loops, tracking token budgets, costs, and timings, streaming progress over WebSockets, and piping trace records to Langfuse.
+### Orchestration & Execution
+
+*   **Dynamic Task Routing**: The `TaskRouter` inspects incoming goals and classifies them as `SIMPLE` (serviced directly via a single LLM call) or `COMPLEX` (delegated to the full execution engine) to optimize resource consumption and latency. Reasoning model `<think>` tags are automatically stripped from classification output.
+*   **Parallel DAG Step Execution**: The `Planner` generates multi-step execution plans modeled as directed acyclic graphs (DAGs) with explicit `dependsOn` dependencies. The `ExecutionEngine` resolves ready steps and concurrently dispatches them on Java 21 Virtual Threads (`Executors.newVirtualThreadPerTaskExecutor()`).
+*   **Transactional Rollback (Memento Pattern)**: Before each parallel batch, the engine snapshots the entire `AgentContext` state (plan, observations, step summaries, action/replan counters) onto an internal memento stack. A soft execution failure triggers a full state rollback followed by a cognitive replan to recover.
+*   **Batch Transaction Coordinator (Poison-Pill Pattern)**: The `BatchTransactionCoordinator` tracks health across parallel sibling steps using an `AtomicReference<BatchState>`. If any step throws a fatal exception, it atomically transitions to `INVALIDATED` and cancels all in-flight `Future` instances, preventing corrupted convergent writes.
+*   **Self-Correcting Evaluator Loop**: After all plan steps complete, the `AgentEvaluator` invokes a dedicated LLM judge (routed to a separate `project-c` provider pool) that scores the output on `alignmentScore` and `safetyScore` (0.0–1.0). If `selfCorrectionEnabled` is true and the goal is not met (score < 0.8), the engine injects a critique observation and triggers an automatic recovery replan — creating a closed-loop self-correction cycle.
+*   **Configurable Guardrail Engine**: All execution limits are externalized via `LlmProperties.GuardrailProperties` and loaded from `application.yml`. Configurable parameters include `maxActions` (20), `maxReplans` (5), `stagnationThreshold` (3), `maxTokenBudget` (100,000), and `maxObservationTokens` (2,000). Custom guardrail rules are loaded from `guardrails.yml` and injected into the evaluator's judging prompt.
+*   **Stagnation Detection**: Within each step's reasoning loop, the engine tracks action hashes. If the last `N` actions (configurable threshold) produce identical hashes, a `STAGNATION_ERROR` observation is injected and a replan is forced to break infinite loops.
+
+### LLM Abstraction & Resilience
+
+*   **4-Layer LLM Abstraction**: The system implements a clean abstraction stack decoupled via interfaces and composition:
+    1.  **`LlmProvider` (SPI Port)** — A core interface declaring `structuredRequest()` and `think()` contracts. The domain layer depends only on this interface.
+    2.  **`SpringAiLlmProvider` (Adapter)** — Implements the port, handling JSON extraction, `<think>` tag stripping, structured output parsing with retry, and reasoning model output normalization.
+    3.  **`ResilientLlmRouter` (Router)** — Implements `LlmRouter`, iterating through provider tiers filtered by `TaskType` (PLANNER, REASONER, JUDGE) and wrapping each call in Resilience4j retry decorators.
+    4.  **`LlmProviderRegistry` (Registry)** — Lazily materializes `OpenAiChatModel` clients per provider ID with configurable base URLs, API keys, and timeouts.
+*   **Multi-Tier Model Failover with Exponential Backoff**: Each LLM call is wrapped in a Resilience4j `Retry` with 3 max attempts and exponential backoff (2s base, multiplier 2×). On exhaustion of a provider tier (e.g., `project-a-level-1`), the router cascades to the next tier (level-2, level-3, level-4) before falling back to a global OpenRouter endpoint — achieving N-deep failover across 13 configured provider entries.
+*   **Task-Aware Provider Routing**: The `ResilientLlmRouter` filters the provider pool based on the `TaskType` enum. Planning tasks use `project-a` providers, reasoning tasks use `project-b`, and judging tasks are isolated to `project-c` — preventing cross-contamination of rate limits and model selection.
+*   **Per-Model Cost Tracking**: Every LLM response is instrumented with token usage metrics. The router resolves per-model pricing from a configurable `pricing` map (input/output cost per million tokens) and increments Micrometer counters (`llm.cost.usd`, `llm.tokens.input`, `llm.tokens.output`, `llm.latency`) tagged by model name and task type.
+*   **Streaming-with-Fallback**: The router first attempts a streaming `Flux<ChatResponse>` call with a 90-second timeout and aggregates chunks. If streaming deserialization fails (e.g., `OpenAIInvalidDataException`), it automatically falls back to a synchronous blocking `call()`.
+*   **Robust JSON Extraction**: The `SpringAiLlmProvider` implements a multi-strategy JSON extraction pipeline: strip `<think>` tags → remove markdown code fences → find all valid JSON candidates via brace-matching with string-escape awareness → validate each candidate against Jackson's `ObjectMapper` → select the longest valid block. This handles LLMs that wrap JSON in commentary, code blocks, or reasoning tags.
+
+### Token & Context Management
+
+*   **Hybrid Binary-Search Token Truncator**: The `HybridJTokkitTruncator` uses the JTokkit BPE tokenizer (CL100K_BASE encoding) to precisely truncate large tool observations. It splits the token budget 50/50 between head and tail segments, uses a binary search algorithm with surrogate-pair-safe boundaries to find the optimal cut points, and injects a structured `[SYSTEM WARNING]` banner in the middle indicating how many characters were removed.
+*   **Context Window Manager**: The `ContextManager` truncates message lists to fit within each provider's `maxContextWindow`. It preserves the system message (index 0) and the last 2 messages, pruning from the middle with a 10% safety buffer. Token counting uses JTokkit with a per-message overhead of 4 tokens.
+
+### Tool System
+
+*   **Composite Tool Executor Chain**: The `CompositeToolExecutor` implements the `ToolExecutor` SPI using the Composite pattern. It aggregates multiple executor implementations (`CoreToolExecutor`, `McpToolExecutor`, `RedisMemoryToolExecutor`) and routes each tool call to the first executor that `supports()` it — with self-exclusion to prevent infinite recursion.
+*   **Dynamic Tool Registry with Runtime Schema Generation**: The `JacksonToolRegistry` implements `ToolRegistry` and stores tool definitions with metadata flags (`isMutating`, `requiresApproval`, `SandboxProfile`). For Java record-based parameter classes, it generates JSON schemas at runtime using Spring AI's `JsonSchemaGenerator`. For MCP-sourced tools, it accepts pre-serialized JSON schemas directly.
+*   **Custom Built-In Tools**: The `CoreToolExecutor` registers and executes a suite of built-in tools with typed parameter records annotated with `@JsonPropertyDescription`: `search_database`, `calculate_metrics`, `write_database`, `search_archive`, `web_search`, `list_system_resources`, `manage_system_resource`, and `get_system_health`.
+*   **MCP Tool Auto-Discovery**: The `McpToolProvider` listens for `ApplicationReadyEvent` and introspects all `McpSyncClient` beans in the Spring context. It automatically registers every discovered MCP tool into the `ToolRegistry` with heuristic-based metadata classification (fetch vs. mutating) derived from tool name patterns.
+*   **Redis Long-Term Memory Tools**: The `RedisMemoryToolExecutor` exposes `save_memory` and `search_memory` tools that persist and query agent facts against a Redis Cloud vector store via a REST client, giving the agent persistent long-term memory across sessions.
+
+### Mock/Static System for Integration Testing
+
+*   **Static Mock API Layer**: The `MockRestController` exposes a self-contained REST API (`/api/health`, `/api/resources`, `/api/action`) with in-memory state backed by `CopyOnWriteArrayList`. It simulates an external system with CRUD operations on mock resources (e.g., `Task-Processor`, `Database-Sync`, `Notification-Service`). This enables end-to-end agent testing without external dependencies — the agent can discover, query, and mutate these resources through its tool system, validating the full orchestration pipeline against a deterministic backend.
+
+### Security & Isolation
+
+*   **Human-in-the-Loop (HITL) Gates**: Automatically suspends execution state (`AWAITING_APPROVAL`) when a tool flagged as mutating or high-risk is triggered, enabling users to approve, reject, or provide feedback with modified arguments. The `ResumeRequest` validates decisions against an allowlist (`APPROVED`, `REJECTED`, `FEEDBACK`).
+*   **CAS-Based Double-Click Prevention**: The `claimSuspendedRun()` method on `JpaMemoryStore` uses a synchronized Compare-And-Swap (CAS) pattern to atomically transition a run from `AWAITING_APPROVAL` to `RUNNING`, preventing race conditions from concurrent resume requests.
+*   **Data Loss Prevention (DLP)**: The `DefaultSecretRedactor` collects all configured API keys at startup (from `LlmProperties` providers and OpenAI config) and scans every tool argument payload before dispatch. If any known secret value is found in the arguments, execution is blocked with a `SecurityException`.
+*   **Sandbox Container Pooling**: The `McpContainerFactory` manages a warm pool of pre-created Docker containers per `SandboxProfile` (COMPUTE and FETCH). It implements a three-phase leasing strategy: (1) poll the warm queue for 500ms, (2) burst a cold ephemeral container if under `maxPoolSize`, (3) block up to 10s for a returning container. Returned containers are reset (workspace wiped) and re-enqueued; failed resets trigger self-healing replacement.
+*   **Hardened Container Configuration**: COMPUTE containers run with `networkMode=none`, read-only root filesystem, a 64MB tmpfs at `/workspace` with `noexec,nosuid` flags, 256MB memory cap, and 50% CPU quota. FETCH containers run on the `sandbox_net` bridge with all Linux capabilities dropped (`CAP_DROP ALL`) and internet access routed exclusively through the Squid HTTP proxy.
+
+### Observability & Monitoring
+
+*   **End-to-End OpenTelemetry Tracing**: Every agent run, step execution, and tool invocation is wrapped in an OTel span with structured attributes (`threadId`, `runId`, `stepId`, `tool.name`, `tool.args`). Resume operations reconstruct the parent span context to maintain a single distributed trace across suspend/resume boundaries.
+*   **Real-Time WebSocket Progress**: The `McpProgressWebSocketHandler` broadcasts tool execution progress to connected UI clients over a persistent WebSocket channel, enabling live dashboard updates without polling.
+*   **Prometheus Metrics Export**: Actuator exposes `/actuator/prometheus` with counters for LLM cost (USD), input/output tokens, total tokens, and latency timers — all tagged by model name and task type. A pre-configured Grafana instance auto-provisions dashboards from the `sandbox/grafana/provisioning` directory.
 
 ---
 
