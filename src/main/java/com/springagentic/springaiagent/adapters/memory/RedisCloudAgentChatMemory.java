@@ -50,8 +50,8 @@ public class RedisCloudAgentChatMemory implements ChatMemory {
 
     @Override
     public void clear(String conversationId) {
-        // Redis Session Memory API doesn't have a direct "clear" for session-memory events 
-        // in the provided snippets, but typically clearing involves deleting the session 
+        // Redis Session Memory API doesn't have a direct "clear" for session-memory events
+        // in the provided snippets, but typically clearing involves deleting the session
         // or we can implement it as a no-op if the cloud service handles TTL.
         // For now, we will log that clear is not directly supported via the session-memory endpoint snippets.
     }
@@ -69,7 +69,7 @@ public class RedisCloudAgentChatMemory implements ChatMemory {
         String text = event.content().stream()
                 .map(RedisAgentMemoryDtos.ContentItem::text)
                 .collect(Collectors.joining(" "));
-        
+
         return switch (event.role().toUpperCase()) {
             case "SYSTEM" -> new SystemMessage(text);
             case "ASSISTANT" -> new AssistantMessage(text);

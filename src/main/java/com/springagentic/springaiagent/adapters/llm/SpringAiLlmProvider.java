@@ -49,14 +49,14 @@ public class SpringAiLlmProvider implements LlmProvider {
                     context
                 );
                 String content = response.getResult().getOutput().getText();
-                
+
                 if (llmProperties.stripReasoning()) {
                     content = stripReasoning(content);
                 }
                 return (T) content;
             }
 
-            org.springframework.ai.converter.BeanOutputConverter<T> converter = 
+            org.springframework.ai.converter.BeanOutputConverter<T> converter =
                     new org.springframework.ai.converter.BeanOutputConverter<>(returnType);
 
             String fullUserPrompt = userPrompt + "\n\nIMPORTANT: Your response must consist ONLY of the raw JSON object matching the schema above. " +
@@ -102,13 +102,13 @@ public class SpringAiLlmProvider implements LlmProvider {
         // 2. Define prompt templates for secure rendering
         String systemPromptTemplate = """
             You are an AI Reasoner. Your task is: {task}
-            
+
             Available tools (with strict schemas):
             {tools}
-            
+
             Past Observations:
             {observations}
-            
+
             You must decide what to do next. Output JSON matching exactly ONE of these types:
             1. ACTION: {"type": "ACTION", "thought": "explain why you are taking this action and your plan", "toolName": "name_of_tool", "jsonArgs": "{\\"arg\\": \\"val\\"}"}
             2. REPLAN: {"type": "REPLAN", "reason": "why we need a new plan"}
@@ -282,10 +282,10 @@ public class SpringAiLlmProvider implements LlmProvider {
             return null;
         }
         String processed = input.trim();
-        
+
         // Always strip <think> for JSON extraction if present
         processed = stripReasoning(processed);
-        
+
         // Remove markdown code blocks
         if (processed.contains("```")) {
             int firstIdx = processed.indexOf("```");
@@ -294,7 +294,7 @@ public class SpringAiLlmProvider implements LlmProvider {
             if (remainder.toLowerCase().startsWith("json")) {
                 remainder = remainder.substring(4).trim();
             }
-            
+
             int lastIdx = remainder.lastIndexOf("```");
             if (lastIdx != -1) {
                 processed = remainder.substring(0, lastIdx).trim();
@@ -314,14 +314,14 @@ public class SpringAiLlmProvider implements LlmProvider {
                 // Ignore and try the next candidate
             }
         }
-        
+
         // Fallback: extract the JSON object boundaries
         int firstBrace = processed.indexOf('{');
         int lastBrace = processed.lastIndexOf('}');
         if (firstBrace != -1 && lastBrace != -1 && lastBrace > firstBrace) {
             processed = processed.substring(firstBrace, lastBrace + 1).trim();
         }
-        
+
         return processed;
     }
 }

@@ -33,8 +33,8 @@ public class ResilientLlmRouter implements LlmRouter {
     private final MeterRegistry meterRegistry;
     private final LlmProperties llmProperties;
 
-    public ResilientLlmRouter(LlmProviderRegistry registry, ContextManager contextManager, 
-                              RetryRegistry retryRegistry, MeterRegistry meterRegistry, 
+    public ResilientLlmRouter(LlmProviderRegistry registry, ContextManager contextManager,
+                              RetryRegistry retryRegistry, MeterRegistry meterRegistry,
                               LlmProperties llmProperties) {
         this.registry = registry;
         this.contextManager = contextManager;
@@ -59,7 +59,7 @@ public class ResilientLlmRouter implements LlmRouter {
                     .filter(config -> !config.id().startsWith("project-c"))
                     .collect(Collectors.toList());
         }
-        
+
         Exception lastException = null;
 
         for (LlmProperties.ProviderConfig config : providers) {
@@ -67,10 +67,10 @@ public class ResilientLlmRouter implements LlmRouter {
                 long start = System.nanoTime();
                 ChatResponse response = Retry.decorateCheckedSupplier(retry, () -> {
                     log.info("Attempting generation with provider: {}", config.id());
-                    
+
                     // 1. Truncate context for this provider
                     List<Message> truncatedMessages = contextManager.truncate(messages, config.maxContextWindow());
-                    
+
                     // 2. Resolve model name for the task
                     String modelName = config.models().get(taskType.name().toLowerCase());
                     if (modelName == null) {
@@ -86,7 +86,7 @@ public class ResilientLlmRouter implements LlmRouter {
 
                     // 4. Call LLM
                     OpenAiChatModel client = registry.getClient(config.id());
-                    
+
                     try {
                         ChatResponse res = client.call(new Prompt(truncatedMessages, options));
                         if (res == null) {
@@ -164,7 +164,7 @@ public class ResilientLlmRouter implements LlmRouter {
 
     private ChatResponse aggregateChunks(List<ChatResponse> chunks) {
         if (chunks.size() == 1) return chunks.get(0);
-        
+
         StringBuilder contentBuilder = new StringBuilder();
         // Just a simple aggregation for now. For tool calls, we'd need more logic.
         for (ChatResponse chunk : chunks) {
@@ -175,13 +175,13 @@ public class ResilientLlmRouter implements LlmRouter {
                 }
             }
         }
-        
+
         // Return a new ChatResponse with aggregated content
         // Note: usage metadata might be only in the last chunk
         ChatResponse lastChunk = chunks.get(chunks.size() - 1);
         AssistantMessage aggregatedMessage = new AssistantMessage(contentBuilder.toString());
         Generation generation = new Generation(aggregatedMessage);
-        
+
         return new ChatResponse(List.of(generation), lastChunk.getMetadata());
     }
 }

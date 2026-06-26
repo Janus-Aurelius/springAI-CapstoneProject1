@@ -28,7 +28,7 @@ public class LlmProviderRegistry {
     private final Map<String, OpenAiChatModel> materializedClients = new ConcurrentHashMap<>();
     private final Map<String, LlmProperties.ProviderConfig> configs = new ConcurrentHashMap<>();
 
-    public LlmProviderRegistry(LlmProperties properties, 
+    public LlmProviderRegistry(LlmProperties properties,
                                ObservationRegistry observationRegistry,
                                org.springframework.beans.factory.ObjectProvider<org.springframework.ai.chat.observation.ChatModelObservationConvention> chatModelObservationConventionProvider) {
         this.properties = properties;
@@ -61,7 +61,7 @@ public class LlmProviderRegistry {
         String key = config.apiKey();
         String keyHint = (key != null && key.length() > 5) ? key.substring(0, 5) + "..." : "null/short";
         log.info("Creating OpenAI client for [{}] at [{}] with key hint: {}", config.id(), config.baseUrl(), keyHint);
-        
+
         OpenAIClient openAiClient = OpenAIOkHttpClient.builder()
                 .baseUrl(config.baseUrl())
                 .apiKey(config.apiKey())
@@ -85,9 +85,9 @@ public class LlmProviderRegistry {
                 .options(options)
                 .observationRegistry(observationRegistry)
                 .build();
-        
+
         chatModelObservationConventionProvider.ifAvailable(chatModel::setObservationConvention);
-        
+
         return chatModel;
     }
 
