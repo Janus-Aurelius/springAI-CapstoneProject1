@@ -19,7 +19,7 @@ public class AgentContext {
     @com.fasterxml.jackson.annotation.JsonProperty("observations")
     private final List<String> observations = new ArrayList<>();
     private final Map<String, String> stepSummaries = new ConcurrentHashMap<>();
-    
+
     @com.fasterxml.jackson.annotation.JsonIgnore
     private final Deque<AgentContextMemento> mementoStack = new ArrayDeque<>();
 
@@ -29,7 +29,7 @@ public class AgentContext {
     // Guardrails / Termination tracking
     private int totalReplanCount = 0;
     private int totalActionCount = 0;
-    
+
     @com.fasterxml.jackson.annotation.JsonIgnore
     private final java.util.concurrent.atomic.AtomicLong totalTokensConsumed = new java.util.concurrent.atomic.AtomicLong(0);
 

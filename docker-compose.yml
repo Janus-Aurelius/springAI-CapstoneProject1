@@ -44,7 +44,7 @@ services:
       mcp-github:
         condition: service_started
       mcp-puppeteer:
-        condition: service_healthy
+        condition: service_started
       mcp-tavily-search:
         condition: service_started
     networks:
@@ -101,17 +101,17 @@ services:
       context: ./mcp-puppeteer
       dockerfile: Dockerfile
     container_name: mcp-puppeteer
-    command: npx -y mcp-proxy --debug --shell --port 8083 -- npx -y @modelcontextprotocol/server-puppeteer
+    command: npx -y supergateway --stdio "npx -y @modelcontextprotocol/server-puppeteer" --port 8083
     ports:
       - "8083:8083"
     networks:
       - external_net
     healthcheck:
-      test: ["CMD", "node", "-e", "const net = require('net'); const client = net.createConnection({ port: 8083 }, () => { client.end(); process.exit(0); }); client.on('error', () => process.exit(1));"]
-      interval: 5s
-      timeout: 5s
-      retries: 15
-      start_period: 10s
+      test: [ "CMD", "node", "-e", "const net = require('net'); const c = net.createConnection({port:8083}, () => { c.end(); process.exit(0); }); c.on('error', () => process.exit(1));" ]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
     restart: unless-stopped
 
   mcp-tavily-search:

@@ -39,12 +39,12 @@ public class HybridJTokkitTruncator implements ObservationTruncator {
 
         // 3. Prepare Warning Banner and reserve tokens
         String warningTemplate = "\n... [SYSTEM WARNING: Payload exceeded %d tokens. MIDDLE %d CHARACTERS TRUNCATED. Please refine your tool arguments using LIMIT, OFFSET, or strict search filters.] ...\n";
-        
+
         // Approximate warning length for token budgeting
         String dummyWarning = String.format(warningTemplate, maxTokens, text.length());
         int warningTokens = encoding.countTokens(dummyWarning);
         int remainingTokens = Math.max(0, maxTokens - warningTokens);
-        
+
         int headTokens = remainingTokens / 2;
         int tailTokens = remainingTokens - headTokens;
 
@@ -64,14 +64,14 @@ public class HybridJTokkitTruncator implements ObservationTruncator {
         }
         // Heuristic slice
         String searchRange = text.substring(0, Math.min(text.length(), cutoffIndex));
-        
+
         int low = 0;
         int high = searchRange.length();
         int bestLength = 0;
 
         while (low <= high) {
             int mid = (low + high) / 2;
-            
+
             // Adjust mid to not split surrogate pairs
             if (mid > 0 && mid < searchRange.length() && Character.isHighSurrogate(searchRange.charAt(mid - 1))) {
                 mid--;
