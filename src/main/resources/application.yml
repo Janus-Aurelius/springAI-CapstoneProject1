@@ -225,7 +225,7 @@ mcp:
     github:
       url: ${MCP_GITHUB_URL:http://mcp-github:8082/sse}
     puppeteer:
-      url: ${MCP_PUPPETEER_URL:http://mcp-puppeteer:8083/sse}
+      url: ${MCP_PUPPETEER_URL:http://mcp-puppeteer:8083}
     tavily-search:
       url: ${MCP_TAVILY_SEARCH_URL:http://mcp-tavily-search:8084/sse}
 

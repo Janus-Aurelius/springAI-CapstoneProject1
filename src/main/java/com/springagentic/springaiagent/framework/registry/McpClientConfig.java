@@ -67,7 +67,7 @@ public class McpClientConfig {
             McpSyncClient client = McpClient.sync(transport)
                     .clientInfo(new McpSchema.Implementation("springaiagent", "1.0.0"))
                     .requestTimeout(Duration.ofSeconds(120))
-                    .initializationTimeout(Duration.ofSeconds(2))
+                    .initializationTimeout(Duration.ofSeconds(30))
                     .progressConsumer(notification -> {
                         String msg = notification.message() != null ? notification.message() : "";
                         Double progress = notification.progress();

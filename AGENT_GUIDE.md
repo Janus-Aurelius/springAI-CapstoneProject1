@@ -17,7 +17,7 @@ A practical guide for teammates to start the system, understand how it works, an
 Copy `.env.example` to `.env` and configure your **LLM Fleet**:
 
 ```bash
-cp .env.example .env
+cp ..env.example ..env
 ```
 
 The system supports a **Resilient Multi-Provider Gateway**. You can configure a primary provider (e.g., Groq for speed) and a fallback (e.g., OpenAI for reliability):

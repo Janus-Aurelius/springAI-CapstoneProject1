@@ -106,7 +106,7 @@ cd springaiagent
 ### Step 2: Configure Environment Settings
 Copy the example environment file and populate it with your API keys:
 ```bash
-cp .env.example .env
+cp ..env.example ..env
 ```
 Ensure you update the following parameters inside `.env`:
 *   `GEMINI_PROJECT_A_API_KEY`, `GEMINI_PROJECT_B_API_KEY`, `GEMINI_PROJECT_C_API_KEY`: API keys for your AI model endpoints.
