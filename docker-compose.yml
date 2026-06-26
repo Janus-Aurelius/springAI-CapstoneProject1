@@ -31,8 +31,7 @@ services:
       - OTEL_SDK_DISABLED=${OTEL_SDK_DISABLED:-false}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./app_reasoning.log:/app/app_reasoning.log
-      - ./app.log:/app/app.log
+      - ./logs:/app/logs
     stop_grace_period: 30s
     depends_on:
       squid:
